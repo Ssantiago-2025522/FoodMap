@@ -1,0 +1,27 @@
+.historial-container {
+    max-width: 1000px;
+
+    margin: auto;
+
+    padding: 2rem;
+}
+
+.historial-card {
+    background-color: #353d40;
+
+    border-left: 5px solid #2E8B57;
+
+    padding: 1.5rem;
+
+    border-radius: 12px;
+
+    margin-bottom: 1rem;
+}
+
+.historial-card h3 {
+    color: #FAF7F2;
+}
+
+.historial-card p {
+    color: #e0e0e0;
+}

@@ -116,7 +116,7 @@ CREATE TABLE solicitud (
 
     fecha_solicitud TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    estado BOOLEAN NOT NULL DEFAULT TRUE,
+    estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
 
     id_donacion BIGINT NOT NULL,
 
@@ -233,6 +233,44 @@ CREATE TABLE notificacion (
     id_usuario BIGINT NOT NULL,
 
     CONSTRAINT fk_notificacion_usuario
+        FOREIGN KEY (id_usuario)
+        REFERENCES usuario(id_usuario)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE chat (
+    id_chat BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+    fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    id_solicitud BIGINT NOT NULL UNIQUE,
+
+    CONSTRAINT fk_chat_solicitud
+        FOREIGN KEY (id_solicitud)
+        REFERENCES solicitud(id_solicitud)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
+
+CREATE TABLE mensaje (
+    id_mensaje BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+    contenido VARCHAR(255) NOT NULL,
+
+    fecha_envio TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    id_chat BIGINT NOT NULL,
+
+    id_usuario BIGINT NOT NULL,
+
+    CONSTRAINT fk_mensaje_chat
+        FOREIGN KEY (id_chat)
+        REFERENCES chat(id_chat)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+    CONSTRAINT fk_mensaje_usuario
         FOREIGN KEY (id_usuario)
         REFERENCES usuario(id_usuario)
         ON DELETE CASCADE

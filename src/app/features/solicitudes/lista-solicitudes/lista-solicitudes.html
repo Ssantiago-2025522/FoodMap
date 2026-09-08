@@ -1,0 +1,107 @@
+<section class="solicitudes-container">
+
+    <h1>{{ titulo_solicitud }}</h1>
+
+    <div class="solicitudes-grid">
+
+        <div class="solicitud-card">
+
+            <div
+                class="solicitud-card"
+                *ngFor="let solicitud of solicitudes">
+
+                <h3>{{ solicitud.titulo }}</h3>
+
+                <p>
+                    Cantidad:
+                    {{ solicitud.cantidad }}
+                </p>
+
+                <p>
+                    Descripcion:
+                    {{solicitud.descripcion }}
+                </p>
+
+                <p>
+                    Cantidad:
+                    {{ solicitud.cantidad }}
+                </p>
+
+                <p>
+                    Beneficiario:
+                    {{ solicitud.beneficiario }}
+                </p>
+
+                <p>
+                    Ubicación:
+                    {{ solicitud.ubicacion }}
+                </p>
+
+                <p>
+                    Fecha:
+                    {{ solicitud.fecha }}
+                </p>
+
+                <p>
+                    Estado:
+                    {{ solicitud.estado }}
+                </p>
+
+            </div>
+
+            <div class="solicitud-card">
+
+                <h3>Pan Integral</h3>
+
+                <p>
+                    <strong>Descripción:</strong>
+                    Donación de Pan Integral.
+                </p>
+
+                <p>
+                    <strong>Cantidad:</strong>
+                    5
+                </p>
+
+                <p>
+                    <strong>Beneficiario:</strong>
+                    María López
+                </p>
+
+                <p>
+                    <strong>Ubicación:</strong>
+                    Zona 7, Guatemala
+                </p>
+
+                <p>
+                    <strong>Fecha:</strong>
+                    08/09/2026
+                </p>
+
+                <p>
+                    <strong>Estado:</strong>
+
+                    <span class="estado-pendiente">
+                        Pendiente
+                    </span>
+                </p>
+
+                <div class="acciones">
+
+                    <button class="btn-aceptar" (click)="aceptarSolicitud()">
+                        Aceptar
+                    </button>
+
+                    <button class="btn-rechazar" (click)="rechazarSolicitud()">
+                        Rechazar
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>

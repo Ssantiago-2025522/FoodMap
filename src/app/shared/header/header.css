@@ -1,0 +1,42 @@
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background-color: #2D3436;
+
+    padding: 1rem 3rem;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    border-bottom: 3px solid #2E8B57;
+}
+
+.logo {
+    color: #FAF7F2;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.nav-links {
+    display: flex;
+    gap: 3rem;
+}
+
+.nav-links a {
+    color: #FAF7F2;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: #F4A261;
+}
+
+.profile {
+    color: #FAF7F2;
+    font-weight: 600;
+}
