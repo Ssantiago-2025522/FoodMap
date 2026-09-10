@@ -1,0 +1,247 @@
+.detalle-container {
+
+    max-width: 1000px;
+
+    margin: 2rem auto;
+
+    padding: 1rem;
+}
+
+.page-header {
+
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+
+    font-size: 2.3rem;
+
+    margin-bottom: .5rem;
+}
+
+.page-header p {
+
+    font-size: 1rem;
+
+    color: #9f9f9f;
+}
+
+.detalle-card {
+
+    background: #353D40;
+
+    border-left: 6px solid #2E8B57;
+
+    border-radius: 16px;
+
+    padding: 2rem;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,.20);
+
+    transition: .3s;
+}
+
+.detalle-card:hover {
+
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,.25);
+}
+
+.detalle-card h2 {
+
+    color: #FAF7F2;
+
+    margin-bottom: 2rem;
+}
+
+.detalle-card {
+
+    color: #E6E6E6;
+}
+
+.detalle-info {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(250px, 1fr));
+
+    gap: 1rem;
+
+    margin-bottom: 2rem;
+}
+
+.info-item {
+
+    background: rgba(255,255,255,.04);
+
+    padding: 1rem;
+
+    border-radius: 10px;
+
+    color: #E6E6E6;
+}
+
+
+.comentario {
+
+    margin-top: 2rem;
+
+    padding: 1.5rem;
+
+    border-left: 4px solid #F4A261;
+
+    background: rgba(255,255,255,.05);
+
+    border-radius: 8px;
+}
+
+.comentario h3 {
+
+    color: #F4A261;
+
+    margin-bottom: .8rem;
+}
+
+.comentario p {
+
+    margin-bottom: 0;
+}
+
+.form-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: .5rem;
+
+    margin-bottom: 1rem;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 30%;
+
+    box-sizing: border-box;
+}
+
+.estado-pendiente {
+
+    background: #F4A261;
+
+    color: #2D3436;
+
+    padding: .3rem .8rem;
+
+    border-radius: 30px;
+
+    font-weight: bold;
+}
+
+.estado-aceptada {
+
+    background: #2E8B57;
+
+    color: white;
+
+    padding: .3rem .8rem;
+
+    border-radius: 30px;
+
+    font-weight: bold;
+}
+
+.estado-rechazada {
+
+    background: #C0392B;
+
+    color: white;
+
+    padding: .3rem .8rem;
+
+    border-radius: 30px;
+
+    font-weight: bold;
+}
+
+.acciones {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 1rem;
+
+    margin-top: 2rem;
+}
+
+.btn-aceptar {
+
+    background: #2E8B57;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: .8rem 1.3rem;
+
+    cursor: pointer;
+}
+
+.btn-rechazar {
+
+    background: #F4A261;
+
+    color: #2D3436;
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: .8rem 1.3rem;
+
+    cursor: pointer;
+}
+
+.btn-aceptar:hover {
+
+    transform: translateY(-2px);
+
+    background: #257247;
+}
+
+.btn-rechazar:hover {
+
+    transform: translateY(-2px);
+}
+
+.btn-regresar {
+
+    margin-top: 1rem;
+
+    background: transparent;
+
+    border: 2px solid #F4A261;
+
+    color: #F4A261;
+
+    padding: .7rem 1.2rem;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition: .3s;
+}
+
+.btn-regresar:hover {
+
+    background: #F4A261;
+
+    color: #2D3436;
+}

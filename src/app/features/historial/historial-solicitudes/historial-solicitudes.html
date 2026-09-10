@@ -8,38 +8,29 @@
         </p>
     </div>
 
-    <div class="historial-card">
+    <div class="historial-card" 
+    
+    *ngFor="let item of historial">
 
-        <h3>Frutas y Verduras</h3>
-
-        <p><strong>Beneficiario:</strong> María López</p>
-
-        <p><strong>Fecha de Entrega:</strong> 08/09/2026</p>
-
-        <p><strong>Estado:</strong> Entregada</p>
+        <h3>
+            {{ item.donacion }}
+        </h3>
 
         <p>
-            <strong>Observaciones:</strong>
-            Entrega realizada exitosamente.
+            Fecha:
+            {{ item.fecha }}
+        </p>
+
+        <p>
+            Estado:
+            {{ item.estado }}
+        </p>
+
+        <p>
+            {{ item.observacion }}
         </p>
 
     </div>
 
-    <div class="historial-card">
-
-        <h3>Pan Integral</h3>
-
-        <p><strong>Beneficiario:</strong> Juan Pérez</p>
-
-        <p><strong>Fecha de Entrega:</strong> 05/09/2026</p>
-
-        <p><strong>Estado:</strong> Entregada</p>
-
-        <p>
-            <strong>Observaciones:</strong>
-            Entregado en punto acordado.
-        </p>
-
-    </div>
 
 </section>

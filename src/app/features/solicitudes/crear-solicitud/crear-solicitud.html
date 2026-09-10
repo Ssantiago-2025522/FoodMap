@@ -1,1 +1,72 @@
-<p>crear-solicitud works!</p>
+<section class="crear-solicitud-container">
+
+    <div class="page-header">
+
+        <h1>Solicitar Donación</h1>
+
+        <p>
+            Completa la información para enviar tu solicitud.
+        </p>
+
+    </div>
+
+    <form class="solicitud-form">
+
+        <div class="form-group">
+
+            <label>Donación</label>
+
+            <div class="donacion-info">
+                Frutas y Verduras
+            </div>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Cantidad solicitada</label>
+
+            <input
+                type="number"
+                placeholder="Ingrese la cantidad">
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Comentario</label>
+
+            <textarea
+                rows="4"
+                placeholder="Describe por qué necesitas esta donación">
+            </textarea>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Ubicación de entrega</label>
+
+            <input
+                type="text"
+                placeholder="Ej. Zona 7, Guatemala">
+
+        </div>
+
+        <div class="acciones">
+
+            <button type="submit">
+                Enviar Solicitud
+            </button>
+
+        </div>
+
+    </form>
+
+    <div>
+        <button routerLink="/solicitudes">
+            Regresar
+        </button>
+    </div>
+
+</section>

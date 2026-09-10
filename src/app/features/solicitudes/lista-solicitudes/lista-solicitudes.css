@@ -4,14 +4,14 @@
 
 .solicitudes-container {
     max-width: 1200px;
-    margin: 2rem auto;
-    padding: 2rem auto;
+    margin: auto;
+    padding: 2rem;
 }
 
 .solicitud-grid {
     display: grid;
 
-    grid-template-columns: repeat(auto-fill, minimax(400px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
 
     gap: 1.5rem;
 }
@@ -40,7 +40,7 @@
     box-shadow: 0 3px 8px rgba(0,0,0,0.2);
 }
 
-.solicitud.card:hover {
+.solicitud-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.25);
 }
@@ -95,9 +95,32 @@
     margin-top: 1rem;
 }
 
+.btn-crear {
+
+    background: #2E8B57;
+
+    color: white;
+
+    border: none;
+
+    padding: .8rem 1.2rem;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    margin-bottom: 1.5rem;
+}
+
+.btn-crear:hover {
+
+    opacity: .9;
+}
+
 .btn-aceptar,
 .btn-rechazar {
     border: none;
+    
     border-radius: 8px;
 
     padding: 10px 18px;
@@ -121,4 +144,28 @@
     color: #2D3436;
 
     margin-left: .7rem;
+}
+
+.btn-detalle {
+
+    background: transparent;
+
+    border: 2px solid #F4A261;
+
+    color: #F4A261;
+
+    padding: .7rem 1.2rem;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition: .3s;
+}
+
+.btn-detalle:hover {
+
+    background: #F4A261;
+
+    color: #2D3436;
 }

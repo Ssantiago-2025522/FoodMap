@@ -4,6 +4,8 @@ import { ListaNotificaciones } from './features/notificaciones/lista-notificacio
 import { HistorialSolicitudes } from './features/historial/historial-solicitudes/historial-solicitudes';
 import { Chat } from './features/chat/chat/chat';
 import { ListaChats } from './features/chat/lista-chats/lista-chats';
+import { CrearSolicitud } from './features/solicitudes/crear-solicitud/crear-solicitud';
+import { DetalleSolicitud } from './features/solicitudes/detalle-solicitud/detalle-solicitud';
 
 export const routes: Routes = [
     {
@@ -15,6 +17,16 @@ export const routes: Routes = [
     {
         path: 'solicitudes',
         component: ListaSolicitudes
+    },
+
+    {
+        path: 'crear-solicitud',
+        component: CrearSolicitud
+    },
+
+    {
+        path: 'detalle-solicitud',
+        component: DetalleSolicitud
     },
 
     {

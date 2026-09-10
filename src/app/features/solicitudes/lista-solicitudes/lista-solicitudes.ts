@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-lista-solicitudes',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './lista-solicitudes.html',
   styleUrl: './lista-solicitudes.css',
 })
@@ -32,13 +33,5 @@ export class ListaSolicitudes {
     estado: 'RECHAZADA'
   }
   ];
-
-  aceptarSolicitud() {
-    console.log('Solicitud aceptada');
-  }
-
-  rechazarSolicitud() {
-    console.log('Solicitud rechazada');
-  }
 
 }

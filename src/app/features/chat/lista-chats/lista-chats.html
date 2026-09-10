@@ -16,55 +16,26 @@
         placeholder="Buscar conversación..."
     >
 
-    <div class="chat-card">
+    <div class="chat-card" 
+    *ngFor="let chat of chats">
 
         <div class="avatar">
-            M
+            {{ chat.usuario.charAt(0) }}
         </div>
 
         <div class="chat-info">
 
-            <h3>María López</h3>
+            <h3>
+            {{ chat.usuario }}
+        </h3>
 
-            <p>Frutas y Verduras</p>
+            <p>
+            {{ chat.ultimoMensaje }}
+            </p>
 
-            <small>Hace 5 minutos</small>
-
-        </div>
-
-    </div>
-
-    <div class="chat-card">
-
-        <div class="avatar">
-            J
-        </div>
-
-        <div class="chat-info">
-
-            <h3>Juan Pérez</h3>
-
-            <p>Pan Integral</p>
-
-            <small>Hace 20 minutos</small>
-
-        </div>
-
-    </div>
-
-    <div class="chat-card">
-
-        <div class="avatar">
-            C
-        </div>
-
-        <div class="chat-info">
-
-            <h3>Carlos López</h3>
-
-            <p>Leche</p>
-
-            <small>Ayer</small>
+            <small>
+            {{ chat.fecha }}
+            </small>
 
         </div>
 
