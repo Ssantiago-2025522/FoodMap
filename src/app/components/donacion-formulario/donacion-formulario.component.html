@@ -28,36 +28,49 @@
       </div>
     </div>
 
+    <!-- Nuevo selector de país en el formulario -->
+    <div class="fila">
+      <div class="campo">
+        <label for="codigoPais">País *</label>
+        <select id="codigoPais" formControlName="codigoPais">
+          <option value="gt">Guatemala</option>
+          <option value="mx">México</option>
+          <option value="es">España</option>
+          <option value="us">Estados Unidos</option>
+          <option value="co">Colombia</option>
+          <option value="ar">Argentina</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="fechaExpiracion">Fecha de Expiración *</label>
+        <input id="fechaExpiracion" type="date" formControlName="fechaExpiracion" />
+      </div>
+    </div>
+
     <div class="campo">
       <label for="ubicacion">Ubicación / Dirección Exacta *</label>
       <input 
         id="ubicacion" 
         type="text" 
         formControlName="ubicacion" 
-        placeholder="Ej. Av. Reforma 10-00, Zona 10, Ciudad de Guatemala" 
+        placeholder="Ej. Calle de Alcalá 45, Madrid" 
       />
       @if (form.get('ubicacion')?.touched && form.get('ubicacion')?.invalid) {
         <span class="error">La ubicación es requerida.</span>
       }
     </div>
 
-    <div class="fila">
+    @if (modoEdicion) {
       <div class="campo">
-        <label for="fechaExpiracion">Fecha de Expiración *</label>
-        <input id="fechaExpiracion" type="date" formControlName="fechaExpiracion" />
+        <label for="estado">Estado</label>
+        <select id="estado" formControlName="estado">
+          @for (est of estados; track est) {
+            <option [value]="est">{{ est }}</option>
+          }
+        </select>
       </div>
-
-      @if (modoEdicion) {
-        <div class="campo">
-          <label for="estado">Estado</label>
-          <select id="estado" formControlName="estado">
-            @for (est of estados; track est) {
-              <option [value]="est">{{ est }}</option>
-            }
-          </select>
-        </div>
-      }
-    </div>
+    }
 
     <div class="acciones-form">
       <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>

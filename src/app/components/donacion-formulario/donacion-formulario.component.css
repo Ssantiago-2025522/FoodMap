@@ -1,86 +1,88 @@
 .contenedor-formulario {
-  background: #ffffff;
-  padding: 1.5rem;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  max-width: 600px;
-  margin: 0 auto;
+  background: #FFFFFF;
+  padding: 28px;
+  border-radius: 24px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
 }
 
-.contenedor-formulario h2 {
-  margin-top: 0;
-  color: #1e293b;
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.fila {
-  display: flex;
-  gap: 1rem;
-}
-
-.fila .campo {
-  flex: 1;
+h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: #2D3436;
+  margin-bottom: 20px;
 }
 
 .campo {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  margin-bottom: 16px;
 }
 
-.campo label {
+.fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #475569;
+  color: #555;
+  margin-bottom: 6px;
 }
 
-.campo input,
-.campo select,
-.campo textarea {
-  padding: 0.5rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  font-size: 0.9rem;
+input, select, textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #EAE5DC;
+  border-radius: 12px;
+  background-color: #FAF7F2;
   font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #2E8B57;
+  background-color: #FFFFFF;
 }
 
 .error {
-  color: #ef4444;
+  color: #d63031;
   font-size: 0.75rem;
+  margin-top: 4px;
 }
 
 .acciones-form {
   display: flex;
   justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 1rem;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .btn-cancelar {
-  background-color: #94a3b8;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  background: transparent;
+  border: 1.5px solid #EAE5DC;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 600;
   cursor: pointer;
 }
 
 .btn-guardar {
-  background-color: #10b981;
-  color: white;
+  background-color: #F4A261;
+  color: #FFFFFF;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  padding: 10px 24px;
+  border-radius: 50px;
+  font-weight: 700;
   cursor: pointer;
 }
 
-.btn-cancelar:hover { background-color: #64748b; }
-.btn-guardar:hover { background-color: #059669; }
+.btn-guardar:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

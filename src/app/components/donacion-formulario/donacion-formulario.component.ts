@@ -1,78 +1,58 @@
-import { Component, inject, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DonacionService } from '../../services/donacion.service';
 import { GeocodingService } from '../../services/geocoding.service';
-import { DonacionMapaComponent } from '../donacion-mapa/donacion-mapa.component';
 import { Donacion, CategoriaDonacion, EstadoDonacion } from '../../models/donacion';
 
 @Component({
   selector: 'app-donacion-formulario',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, DonacionMapaComponent],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './donacion-formulario.component.html',
   styleUrl: './donacion-formulario.component.css'
 })
-export class DonacionFormularioComponent implements OnInit, OnChanges {
+export class DonacionFormularioComponent implements OnInit {
   private fb = inject(FormBuilder);
   private donacionService = inject(DonacionService);
   private geocodingService = inject(GeocodingService);
 
   @Input() donacionEditar: Donacion | null = null;
-  @Output() cancelado = new EventEmitter<void>();
-  @Output() guardado = new EventEmitter<void>();
+  @Output() cerrar = new EventEmitter<void>();
 
   form!: FormGroup;
-  modoEdicion = false;
   cargandoUbicacion = false;
+  modoEdicion = false;
 
   categorias: CategoriaDonacion[] = [
-    'Frutas',
-    'Verduras',
-    'Lácteos',
-    'Pan',
-    'Comida preparada',
+    'Frutas', 
+    'Verduras', 
+    'Lácteos', 
+    'Pan', 
+    'Comida preparada', 
     'Bebidas'
   ];
 
-  estados: EstadoDonacion[] = ['Disponible', 'Reservada', 'Entregada', 'Expirada'];
+  estados: EstadoDonacion[] = [
+    'Disponible', 
+    'Reservada', 
+    'Entregada', 
+    'Expirada'
+  ];
 
   ngOnInit(): void {
-    this.inicializarFormulario();
-  }
+    this.modoEdicion = !!this.donacionEditar;
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['donacionEditar'] && this.form) {
-      this.cargarDatosEdicion();
-    }
-  }
-
-  private inicializarFormulario(): void {
     this.form = this.fb.group({
-      titulo: ['', [Validators.required, Validators.minLength(3)]],
-      descripcion: ['', [Validators.required, Validators.minLength(5)]],
-      categoria: ['Frutas', [Validators.required]],
-      cantidad: [1, [Validators.required, Validators.min(1)]],
-      ubicacion: ['', [Validators.required]],
-      fechaExpiracion: ['', [Validators.required]],
-      estado: ['Disponible']
+      titulo: [this.donacionEditar?.titulo || '', Validators.required],
+      descripcion: [this.donacionEditar?.descripcion || '', Validators.required],
+      categoria: [this.donacionEditar?.categoria || 'Comida preparada', Validators.required],
+      cantidad: [this.donacionEditar?.cantidad || 1, [Validators.required, Validators.min(1)]],
+      codigoPais: ['gt', Validators.required],
+      ubicacion: [this.donacionEditar?.ubicacion || '', Validators.required],
+      fechaExpiracion: [this.donacionEditar?.fechaExpiracion || '', Validators.required],
+      estado: [this.donacionEditar?.estado || 'Disponible']
     });
-
-    this.cargarDatosEdicion();
-  }
-
-  private cargarDatosEdicion(): void {
-    if (this.donacionEditar) {
-      this.modoEdicion = true;
-      this.form.patchValue(this.donacionEditar);
-    } else {
-      this.modoEdicion = false;
-      this.form?.reset({
-        categoria: 'Frutas',
-        cantidad: 1,
-        estado: 'Disponible'
-      });
-    }
   }
 
   async guardar(): Promise<void> {
@@ -82,23 +62,42 @@ export class DonacionFormularioComponent implements OnInit, OnChanges {
     }
 
     this.cargandoUbicacion = true;
-    const datosForm = this.form.value;
+    const datos = this.form.value;
 
-    // Obtiene latitud y longitud automáticamente usando la dirección exacta ingresada
-    const { latitud, longitud } = await this.geocodingService.obtenerCoordenadas(datosForm.ubicacion);
-    const donacionConCoords = { ...datosForm, latitud, longitud };
+    try {
+      const coords = await this.geocodingService.obtenerCoordenadas(
+        datos.ubicacion, 
+        datos.codigoPais
+      );
 
-    if (this.modoEdicion && this.donacionEditar) {
-      this.donacionService.actualizarDonacion(this.donacionEditar.id, donacionConCoords);
-    } else {
-      this.donacionService.crearDonacion(donacionConCoords);
+      const payloadDonacion: any = {
+        titulo: datos.titulo,
+        descripcion: datos.descripcion,
+        categoria: datos.categoria,
+        cantidad: datos.cantidad,
+        ubicacion: datos.ubicacion,
+        fechaExpiracion: datos.fechaExpiracion,
+        estado: datos.estado,
+        latitud: coords.latitud,
+        longitud: coords.longitud
+      };
+
+      if (this.modoEdicion && this.donacionEditar) {
+        this.donacionService.actualizarDonacion(this.donacionEditar.id, payloadDonacion);
+      } else {
+        // Uso de crearDonacion en lugar de agregarDonacion
+        this.donacionService.crearDonacion(payloadDonacion);
+      }
+
+      this.cerrar.emit();
+    } catch (error) {
+      console.error('Error al obtener coordenadas:', error);
+    } finally {
+      this.cargandoUbicacion = false;
     }
-
-    this.cargandoUbicacion = false;
-    this.guardado.emit();
   }
 
   cancelar(): void {
-    this.cancelado.emit();
+    this.cerrar.emit();
   }
 }

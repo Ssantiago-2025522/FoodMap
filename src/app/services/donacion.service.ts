@@ -14,14 +14,12 @@ export class DonacionService {
     estado: 'Todos'
   });
 
-  // Signal computado para lista filtrada y verificación automática de expiración
   readonly donacionesFiltradas = computed(() => {
     const lista = this.donacionesSignal();
     const { busqueda, categoria, estado } = this.filtrosSignal();
     const hoy = new Date().toISOString().split('T')[0];
 
     return lista.map(donacion => {
-      // Si la fecha límite ya pasó y sigue disponible, pasa a expirada
       if (donacion.estado === 'Disponible' && donacion.fechaExpiracion < hoy) {
         return { ...donacion, estado: 'Expirada' as EstadoDonacion };
       }

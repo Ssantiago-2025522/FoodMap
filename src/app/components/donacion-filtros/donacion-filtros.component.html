@@ -1,19 +1,28 @@
-<div class="contenedor-filtros">
+<div class="card-blanca contenedor-filtros">
+  <!-- Escribir País con Autocompletado Mundial -->
   <div class="grupo-filtro">
-    <label for="pais">País:</label>
-    <select id="pais" [(ngModel)]="paisSeleccionado" (change)="onFiltroChange()">
+    <label for="input-pais">País:</label>
+    <input
+      id="input-pais"
+      type="text"
+      list="lista-paises"
+      placeholder="Escribe un país (ej. México, España)..."
+      [(ngModel)]="nombrePaisEscrito"
+      (change)="alSeleccionarPais()"
+    />
+    <datalist id="lista-paises">
       @for (p of paises; track p.codigo) {
-        <option [value]="p.codigo">{{ p.nombre }}</option>
+        <option [value]="p.nombre"></option>
       }
-    </select>
+    </datalist>
   </div>
 
-  <div class="grupo-filtro busqueda">
+  <div class="grupo-filtro busqueda-amplia">
     <label for="busqueda">Buscar:</label>
     <input
       id="busqueda"
       type="text"
-      placeholder="Buscar por título, descripción o dirección exacta..."
+      placeholder="Buscar alimento, ONG o zona..."
       [(ngModel)]="textoBusqueda"
       (ngModelChange)="onFiltroChange()"
     />
@@ -37,5 +46,5 @@
     </select>
   </div>
 
-  <button class="btn-limpiar" (click)="limpiarFiltros()">Limpiar</button>
+  <button class="btn-outline btn-limpiar" (click)="limpiarFiltros()">Limpiar</button>
 </div>

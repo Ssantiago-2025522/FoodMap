@@ -1,28 +1,39 @@
 <main class="contenedor-principal">
   <header class="encabezado-app">
-    <h1>FoodMap - Módulo de Donaciones</h1>
-    <button class="btn-nueva-donacion" (click)="abrirFormularioCrear()">
-      + Nueva Donación
-    </button>
+    <div>
+      <span class="badge-sostenible">FoodMap Global</span>
+      <h1>Módulo de Donaciones</h1>
+    </div>
+    <button class="btn-naranja" (click)="abrirFormularioCrear()">+ Nueva Donación</button>
   </header>
 
-  @if (mostrarFormulario) {
-    <section class="seccion-formulario">
-      <app-donacion-formulario
-        [donacionEditar]="donacionSeleccionada"
-        (cancelado)="cerrarFormulario()"
-        (guardado)="cerrarFormulario()"
-      ></app-donacion-formulario>
-    </section>
-  }
-
-  <section class="seccion-modulo">
+  <section class="seccion-espaciada">
     <app-donacion-filtros></app-donacion-filtros>
+  </section>
+
+  <section class="seccion-espaciada">
+    <div class="card-verde contenedor-mapa-destacado">
+      <div class="encabezado-mapa">
+        <h2>Ubicación de Donaciones</h2>
+        <p>Explora las donaciones disponibles en tiempo real según tu filtro.</p>
+      </div>
+      <app-donacion-mapa></app-donacion-mapa>
+    </div>
+  </section>
+
+  <section class="seccion-espaciada">
+    <h2 class="titulo-seccion">Donaciones Activas</h2>
     <app-donacion-lista (editarDonacion)="abrirFormularioEditar($event)"></app-donacion-lista>
   </section>
-  <section class="seccion-modulo">
-  <app-donacion-filtros></app-donacion-filtros>
-  <app-donacion-mapa></app-donacion-mapa>
-  <app-donacion-lista (editarDonacion)="abrirFormularioEditar($event)"></app-donacion-lista>
-</section>
+
+  @if (mostrarFormulario) {
+    <div class="overlay-modal">
+      <div class="modal-contenido">
+        <app-donacion-formulario 
+          [donacionEditar]="donacionSeleccionada" 
+          (cerrar)="cerrarFormulario()">
+        </app-donacion-formulario>
+      </div>
+    </div>
+  }
 </main>

@@ -16,7 +16,6 @@ export class DonacionListaComponent {
 
   @Output() editarDonacion = new EventEmitter<Donacion>();
 
-  // Consumimos directamente la Signal del servicio
   donaciones = this.donacionService.donacionesFiltradas;
 
   onCambiarEstado(evento: { id: string; estado: EstadoDonacion }): void {

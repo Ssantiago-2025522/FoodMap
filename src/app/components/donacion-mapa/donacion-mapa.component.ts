@@ -1,68 +1,88 @@
-import { Component, inject, ElementRef, ViewChild, AfterViewInit, EffectRef, effect } from '@angular/core';
+import { Component, AfterViewInit, inject, EffectRef, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import * as L from 'leaflet';
 import { DonacionService } from '../../services/donacion.service';
-import { Donacion } from '../../models/donacion';
+import * as L from 'leaflet';
+
+const iconoPersonalizado = L.icon({
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34]
+});
 
 @Component({
   selector: 'app-donacion-mapa',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './donacion-mapa.component.html',
-  styleUrl: './donacion-mapa.component.css'
+  template: `<div id="mapa-leaf"></div>`,
+  styles: [`
+    #mapa-leaf {
+      width: 100%;
+      height: 380px;
+      border-radius: 16px;
+      z-index: 1;
+    }
+  `]
 })
 export class DonacionMapaComponent implements AfterViewInit {
-  @ViewChild('mapaContainer') mapaContainer!: ElementRef<HTMLDivElement>;
-
   private donacionService = inject(DonacionService);
-  private mapa!: L.Map;
-  private grupoMarcadores = L.layerGroup();
+  private map!: L.Map;
+  private capasMarcadores: L.Marker[] = [];
 
   constructor() {
-    // Escucha cambios en las donaciones filtradas y actualiza los pines del mapa en tiempo real
     effect(() => {
       const donaciones = this.donacionService.donacionesFiltradas();
-      if (this.mapa) {
+      if (this.map) {
         this.actualizarMarcadores(donaciones);
       }
     });
   }
 
   ngAfterViewInit(): void {
-    this.inicializarMapa();
-  }
-
-  private inicializarMapa(): void {
-    // Coordenadas iniciales por defecto (Guatemala)
-    this.mapa = L.map(this.mapaContainer.nativeElement).setView([14.6349, -90.5069], 12);
+    this.map = L.map('mapa-leaf').setView([14.6349, -90.5069], 10);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(this.mapa);
+      maxZoom: 19,
+      attribution: '© OpenStreetMap'
+    }).addTo(this.map);
 
-    this.grupoMarcadores.addTo(this.mapa);
-    this.actualizarMarcadores(this.donacionService.donacionesFiltradas());
+    setTimeout(() => {
+      this.map.invalidateSize();
+      this.actualizarMarcadores(this.donacionService.donacionesFiltradas());
+    }, 250);
   }
 
-  private actualizarMarcadores(donaciones: Donacion[]): void {
-    this.grupoMarcadores.clearLayers();
+  private actualizarMarcadores(donaciones: any[]): void {
+    this.capasMarcadores.forEach(m => this.map.removeLayer(m));
+    this.capasMarcadores = [];
 
-    donaciones.forEach((donacion) => {
+    if (!donaciones || donaciones.length === 0) return;
+
+    const puntosCoordenadas: L.LatLngExpression[] = [];
+
+    donaciones.forEach(donacion => {
       if (donacion.latitud && donacion.longitud) {
-        const popupContenido = `
-          <div style="font-family: system-ui, sans-serif;">
-            <h4 style="margin: 0 0 5px 0; color: #1e293b;">${donacion.titulo}</h4>
-            <p style="margin: 0 0 5px 0; font-size: 0.85rem; color: #64748b;">${donacion.descripcion}</p>
-            <p style="margin: 0; font-size: 0.8rem;"><b>Categoría:</b> ${donacion.categoria}</p>
-            <p style="margin: 0; font-size: 0.8rem;"><b>Estado:</b> ${donacion.estado}</p>
-            <p style="margin: 0; font-size: 0.8rem;"><b>Ubicación:</b> ${donacion.ubicacion}</p>
-          </div>
-        `;
+        const marker = L.marker([donacion.latitud, donacion.longitud], { icon: iconoPersonalizado })
+          .addTo(this.map)
+          .bindPopup(`
+            <b style="color: #2E8B57;">${donacion.titulo}</b><br>
+            <span>${donacion.ubicacion}</span><br>
+            <small>Cantidad: ${donacion.cantidad}</small>
+          `);
 
-        L.marker([donacion.latitud, donacion.longitud])
-          .bindPopup(popupContenido)
-          .addTo(this.grupoMarcadores);
+        this.capasMarcadores.push(marker);
+        puntosCoordenadas.push([donacion.latitud, donacion.longitud]);
       }
     });
+
+    if (puntosCoordenadas.length > 0) {
+      if (puntosCoordenadas.length === 1) {
+        this.map.flyTo(puntosCoordenadas[0], 13);
+      } else {
+        const bounds = L.latLngBounds(puntosCoordenadas);
+        this.map.fitBounds(bounds, { padding: [40, 40] });
+      }
+    }
   }
 }
