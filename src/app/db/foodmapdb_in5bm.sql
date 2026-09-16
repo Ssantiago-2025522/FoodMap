@@ -158,7 +158,8 @@ CREATE TABLE reporte (
     motivo VARCHAR(225) NOT NULL,
     descripcion VARCHAR(225) NOT NULL,
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    estado BOOLEAN NOT NULL DEFAULT TRUE,
+    estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
+    resolucion VARCHAR(255),
     id_usuario BIGINT NOT NULL,
     id_donacion BIGINT NOT NULL,
  

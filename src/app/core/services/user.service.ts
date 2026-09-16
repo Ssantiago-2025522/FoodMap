@@ -1,74 +1,28 @@
+// src/app/core/services/user.service.ts
 import { Injectable } from '@angular/core';
-
-import { Auth } from '../models/auth.model';
+import { BehaviorSubject } from 'rxjs';
+import { User } from '../models/auth.model';
 
 @Injectable({
     providedIn: 'root'
 })
 export class UserService {
+    private userSubject = new BehaviorSubject<User | null>(null);
+    user$ = this.userSubject.asObservable();
 
-    private readonly USER_KEY = 'usuario';
-
-    private usuario: Auth | null = null;
-
-    constructor() {
-        this.restoreUser();
+    setUser(user: User): void {
+        this.userSubject.next(user);
     }
 
-    getUser(): Auth | null {
-        return this.usuario;
-    }
-
-    setUser(usuario: Auth): void {
-
-        this.usuario = usuario;
-
-        localStorage.setItem(
-            this.USER_KEY,
-            JSON.stringify(usuario)
-        );
-    }
-
-    removeUser(): void {
-
-        this.usuario = null;
-
-        localStorage.removeItem(
-            this.USER_KEY
-        );
+    getUser(): User | null {
+        return this.userSubject.value;
     }
 
     hasUser(): boolean {
-        return this.usuario !== null;
+        return !!this.userSubject.value;
     }
 
-    getUserId(): number | null {
-
-        return this.usuario?.id_usuario ?? null;
-    }
-
-    getRoleId(): number | null {
-
-        return this.usuario?.id_rol ?? null;
-    }
-
-    private restoreUser(): void {
-
-        const usuarioGuardado =
-            localStorage.getItem(this.USER_KEY);
-
-        if (!usuarioGuardado) {
-            return;
-        }
-
-        try {
-
-            this.usuario =
-                JSON.parse(usuarioGuardado);
-
-        } catch {
-
-            this.removeUser();
-        }
+    removeUser(): void {
+        this.userSubject.next(null);
     }
 }

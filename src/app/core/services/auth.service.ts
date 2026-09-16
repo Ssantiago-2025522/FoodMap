@@ -1,88 +1,56 @@
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-
-import {
-    AuthResponse,
-    LoginCredentials,
-    RegisterData
-} from '../models/auth.model';
-
-import { AuthApiService } from './api.service';
+import { AuthResponse, LoginCredentials, RegisterData } from '../models/auth.model';
+import { AuthApiService } from './auth-api.service';
 import { TokenService } from './token.service';
 import { UserService } from './user.service';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class AuthService {
+  constructor(
+    private authApiService: AuthApiService,
+    private tokenService: TokenService,
+    private userService: UserService
+  ) {}
 
-    constructor(
-        private authApiService: AuthApiService,
-        private tokenService: TokenService,
-        private userService: UserService
-    ) {}
+  login(credentials: LoginCredentials): Observable<AuthResponse> {
+    return this.authApiService
+      .login(credentials)
+      .pipe(
+        tap((response: AuthResponse) => {
+          this.tokenService.setToken(response.token);
+          this.userService.setUser(response.usuario);
+        })
+      );
+  }
 
-    login(
-        credentials: LoginCredentials
-    ): Observable<AuthResponse> {
+  register(data: RegisterData): Observable<AuthResponse> {
+    return this.authApiService
+      .register(data)
+      .pipe(
+        tap((response: AuthResponse) => {
+          this.tokenService.setToken(response.token);
+          this.userService.setUser(response.usuario);
+        })
+      );
+  }
 
-        return this.authApiService
-            .login(credentials)
-            .pipe(
+  isAuthenticated(): boolean {
+    return this.tokenService.hasToken() && this.userService.hasUser();
+  }
 
-                tap(response => {
+  getUsuario() {
+    return this.userService.getUser();
+  }
 
-                    this.tokenService.setToken(
-                        response.token
-                    );
+  getToken(): string | null {
+    return this.tokenService.getToken();
+  }
 
-                    this.userService.setUser(
-                        response.usuario
-                    );
-                })
-            );
-    }
-
-    register(
-        data: RegisterData
-    ): Observable<AuthResponse> {
-
-        return this.authApiService
-            .register(data)
-            .pipe(
-
-                tap(response => {
-
-                    this.tokenService.setToken(
-                        response.token
-                    );
-
-                    this.userService.setUser(
-                        response.usuario
-                    );
-                })
-            );
-    }
-
-    isAuthenticated(): boolean {
-
-        return (
-            this.tokenService.hasToken() &&
-            this.userService.hasUser()
-        );
-    }
-
-    getUsuario() {
-        return this.userService.getUser();
-    }
-
-    getToken(): string | null {
-        return this.tokenService.getToken();
-    }
-
-    logout(): void {
-
-        this.tokenService.removeToken();
-        this.userService.removeUser();
-    }
+  logout(): void {
+    this.tokenService.removeToken();
+    this.userService.removeUser();
+  }
 }

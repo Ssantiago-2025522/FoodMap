@@ -45,11 +45,36 @@ export const routes: Routes = [
   {
     path: 'admin',
     canActivate: [authGuard, roleGuard],
-    data: {
-      roles: [Role.ADMIN],
-    },
+    data: { roles: [Role.ADMIN] },
     loadComponent: () =>
       import('./features/admin/admin').then((m) => m.Admin),
+  },
+  {
+    path: 'admin/reportes',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [Role.ADMIN] },
+    loadComponent: () =>
+      import('./features/admin/reportes/lista/reportes-lista').then(
+        (m) => m.ReportesLista
+      ),
+  },
+  {
+    path: 'admin/reportes/nuevo',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [Role.ADMIN] },
+    loadComponent: () =>
+      import('./features/admin/reportes/formulario/reporte-formulario').then(
+        (m) => m.ReporteFormulario
+      ),
+  },
+  {
+    path: 'admin/reportes/:id',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: [Role.ADMIN] },
+    loadComponent: () =>
+      import('./features/admin/reportes/formulario/reporte-formulario').then(
+        (m) => m.ReporteFormulario
+      ),
   },
   {
     path: 'acceso-denegado',
