@@ -1,1 +1,18 @@
-<p>donacion-lista works!</p>
+<div class="contenedor-lista">
+  @if (donaciones().length === 0) {
+    <div class="lista-vacia">
+      <p>No se encontraron publicaciones de donaciones.</p>
+    </div>
+  } @else {
+    <div class="grid-donaciones">
+      @for (donacion of donaciones(); track donacion.id) {
+        <app-donacion-tarjeta
+          [donacion]="donacion"
+          (cambiarEstado)="onCambiarEstado($event)"
+          (eliminar)="onEliminar($event)"
+          (editar)="onEditar($event)"
+        ></app-donacion-tarjeta>
+      }
+    </div>
+  }
+</div>
