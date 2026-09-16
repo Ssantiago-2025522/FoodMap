@@ -1,18 +1,9 @@
-import {
-    Component
-} from '@angular/core';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
-import {
-    Router
-} from '@angular/router';
+import { Auth } from '../../../core/models/auth.model';
+import { AuthService } from '../../../core/services/auth.service';
 
-import {
-    Auth
-} from '../../models/auth.model';
-
-import {
-    AuthService
-} from '../../services/auth.service';
 
 @Component({
     selector: 'app-profile',
@@ -27,17 +18,12 @@ export class Profile {
         private authService: AuthService,
         private router: Router
     ) {
-
-        this.usuario =
-            this.authService.getUsuario();
+        this.usuario = this.authService.getUsuario();
     }
 
     logout(): void {
-
         this.authService.logout();
 
-        this.router.navigate([
-            '/login'
-        ]);
+        this.router.navigate(['/login']);
     }
 }

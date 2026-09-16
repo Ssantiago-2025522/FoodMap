@@ -1,21 +1,33 @@
+export type CategoriaDonacion =
+  | 'Frutas'
+  | 'Verduras'
+  | 'Lácteos'
+  | 'Pan'
+  | 'Comida preparada'
+  | 'Bebidas';
+
+export type EstadoDonacion =
+  | 'Disponible'
+  | 'Reservada'
+  | 'Entregada'
+  | 'Expirada';
+
 export interface Donacion {
-    id_donacion: number;
-    titulo: string;
-    descripcion: string;
-    cantidad: number;
-    fecha_publicacion: string;
-    fecha_vencimiento?: string | null;
-    estado: boolean;
-    imagen: string;
-    id_usuario: number;
-    id_ubicacion: number;
-    id_categoria: number;
+  id: string;
+  titulo: string;
+  descripcion: string;
+  categoria: CategoriaDonacion;
+  cantidad: number;
+  estado: EstadoDonacion;
+  ubicacion: string;
+  latitud: number;
+  longitud: number;
+  fechaCreacion: string;
+  fechaExpiracion: string;
 }
 
-export interface DonacionResponse {
-    donacion: Donacion;
-}
-
-export interface DonacionResponses {
-    donaciones: Donacion[];
+export interface FiltrosDonacion {
+  busqueda?: string;
+  categoria?: CategoriaDonacion | 'Todas';
+  estado?: EstadoDonacion | 'Todos';
 }

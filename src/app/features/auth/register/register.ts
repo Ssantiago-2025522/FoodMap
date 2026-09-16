@@ -12,15 +12,15 @@ import {
 
 import {
     RegisterData
-} from '../../models/auth.model';
+} from '../../../core/models/auth.model';
 
 import {
     AuthService
-} from '../../services/auth.service';
+} from '../../../core/services/auth.service';
 
 import {
     Role
-} from '../../models/role.enum';
+} from '../../../core/models/role.enum';
 
 @Component({
     selector: 'app-register',
@@ -38,7 +38,7 @@ export class Register {
         correo: '',
         telefono: '',
         contrasena: '',
-        id_rol: Role.ESTUDIANTE,
+        id_rol: Role.USER,
         foto: null
 
     };

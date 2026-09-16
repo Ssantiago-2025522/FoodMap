@@ -7,7 +7,7 @@ import {
     RegisterData
 } from '../models/auth.model';
 
-import { AuthApiService } from './auth-api.service';
+import { AuthApiService } from './api.service';
 import { TokenService } from './token.service';
 import { UserService } from './user.service';
 

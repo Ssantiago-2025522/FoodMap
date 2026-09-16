@@ -1,22 +1,8 @@
-import {
-    Component
-} from '@angular/core';
-
-import {
-    FormsModule
-} from '@angular/forms';
-
-import {
-    Router
-} from '@angular/router';
-
-import {
-    LoginCredentials
-} from '../../models/auth.model';
-
-import {
-    AuthService
-} from '../../services/auth.service';
+import {Component} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {Router} from '@angular/router';
+import {LoginCredentials} from '../../../core/models/auth.model';
+import {AuthService} from '../../../core/services/auth.service';
 
 @Component({
     selector: 'app-login',
@@ -24,7 +10,8 @@ import {
     imports: [
         FormsModule
     ],
-    templateUrl: './login.html'
+    templateUrl: './login.html',
+    styleUrl: './login.css' 
 })
 export class Login {
 
@@ -34,7 +21,6 @@ export class Login {
     };
 
     isLoading = false;
-
     errorMessage = '';
 
     constructor(
@@ -43,15 +29,12 @@ export class Login {
     ) {}
 
     login(): void {
-
         if (
             !this.credentials.correo ||
             !this.credentials.contrasena
         ) {
-
             this.errorMessage =
                 'Debe ingresar correo y contraseña.';
-
             return;
         }
 
@@ -61,30 +44,22 @@ export class Login {
         this.authService
             .login(this.credentials)
             .subscribe({
-
                 next: () => {
-
                     this.isLoading = false;
-
                     this.router.navigate([
                         '/inicio'
                     ]);
                 },
-
                 error: error => {
-
                     this.isLoading = false;
-
                     console.error(
                         'Error de login:',
                         error
                     );
-
                     this.errorMessage =
                         error?.error?.message ??
                         'No se pudo iniciar sesión.';
                 }
-
             });
     }
 }

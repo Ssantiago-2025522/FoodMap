@@ -5,7 +5,7 @@ import {
 
 import {
     Donacion
-} from '../../models/donacion.model';
+} from '../../../core/models/donacion.model';
 
 @Component({
     selector: 'app-donaciones',
