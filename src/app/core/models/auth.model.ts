@@ -1,11 +1,10 @@
-import { Rol } from './role.model';
-
-export interface Auth {
-    id_usuario: number;
+export interface User {
+    id_usuario?: number;
     username: string;
     correo: string;
+    telefono: string;
     id_rol: number;
-    rol?: Rol;
+    foto?: string | null;
 }
 
 export interface LoginCredentials {
@@ -24,13 +23,5 @@ export interface RegisterData {
 
 export interface AuthResponse {
     token: string;
-    refreshToken?: string;
-    usuario: Auth;
-}
-
-export interface AuthState {
-    usuario: Auth | null;
-    token: string | null;
-    isAuthenticated: boolean;
-    isLoading: boolean;
+    usuario: User;
 }

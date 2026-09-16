@@ -1,50 +1,27 @@
-import {
-    Component
-} from '@angular/core';
-
-import {
-    FormsModule
-} from '@angular/forms';
-
-import {
-    Router
-} from '@angular/router';
-
-import {
-    RegisterData
-} from '../../models/auth.model';
-
-import {
-    AuthService
-} from '../../services/auth.service';
-
-import {
-    Role
-} from '../../models/role.enum';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { RegisterData } from '../../../core/models/auth.model';
+import { AuthService } from '../../../core/services/auth.service';
+import { Role } from '../../../core/models/role.enum';
 
 @Component({
     selector: 'app-register',
     standalone: true,
-    imports: [
-        FormsModule
-    ],
+    imports: [FormsModule],
     templateUrl: './register.html'
 })
 export class Register {
-
     registerData: RegisterData = {
-
         username: '',
         correo: '',
         telefono: '',
         contrasena: '',
         id_rol: Role.ESTUDIANTE,
         foto: null
-
     };
 
     isLoading = false;
-
     errorMessage = '';
 
     constructor(
@@ -53,7 +30,6 @@ export class Register {
     ) {}
 
     register(): void {
-
         this.errorMessage = '';
 
         if (
@@ -62,10 +38,7 @@ export class Register {
             !this.registerData.telefono ||
             !this.registerData.contrasena
         ) {
-
-            this.errorMessage =
-                'Todos los campos obligatorios deben completarse.';
-
+            this.errorMessage = 'Todos los campos obligatorios deben completarse.';
             return;
         }
 
@@ -74,30 +47,15 @@ export class Register {
         this.authService
             .register(this.registerData)
             .subscribe({
-
                 next: () => {
-
                     this.isLoading = false;
-
-                    this.router.navigate([
-                        '/inicio'
-                    ]);
+                    this.router.navigate(['/inicio']);
                 },
-
-                error: error => {
-
+                error: (error: any) => {
                     this.isLoading = false;
-
-                    console.error(
-                        'Error de registro:',
-                        error
-                    );
-
-                    this.errorMessage =
-                        error?.error?.message ??
-                        'No se pudo registrar el usuario.';
+                    console.error('Error de registro:', error);
+                    this.errorMessage = error?.error?.message ?? 'No se pudo registrar el usuario.';
                 }
-
             });
     }
 }

@@ -1,12 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-
-import {
-    AuthResponse,
-    LoginCredentials,
-    RegisterData
-} from '../models/auth.model';
-
+import { AuthResponse, LoginCredentials, RegisterData } from '../models/auth.model';
 import { AuthApiService } from './auth-api.service';
 import { TokenService } from './token.service';
 import { UserService } from './user.service';
@@ -15,61 +9,36 @@ import { UserService } from './user.service';
     providedIn: 'root'
 })
 export class AuthService {
-
     constructor(
         private authApiService: AuthApiService,
         private tokenService: TokenService,
         private userService: UserService
     ) {}
 
-    login(
-        credentials: LoginCredentials
-    ): Observable<AuthResponse> {
-
+    login(credentials: LoginCredentials): Observable<AuthResponse> {
         return this.authApiService
             .login(credentials)
             .pipe(
-
-                tap(response => {
-
-                    this.tokenService.setToken(
-                        response.token
-                    );
-
-                    this.userService.setUser(
-                        response.usuario
-                    );
+                tap((response: AuthResponse) => {
+                    this.tokenService.setToken(response.token);
+                    this.userService.setUser(response.usuario);
                 })
             );
     }
 
-    register(
-        data: RegisterData
-    ): Observable<AuthResponse> {
-
+    register(data: RegisterData): Observable<AuthResponse> {
         return this.authApiService
             .register(data)
             .pipe(
-
-                tap(response => {
-
-                    this.tokenService.setToken(
-                        response.token
-                    );
-
-                    this.userService.setUser(
-                        response.usuario
-                    );
+                tap((response: AuthResponse) => {
+                    this.tokenService.setToken(response.token);
+                    this.userService.setUser(response.usuario);
                 })
             );
     }
 
     isAuthenticated(): boolean {
-
-        return (
-            this.tokenService.hasToken() &&
-            this.userService.hasUser()
-        );
+        return this.tokenService.hasToken() && this.userService.hasUser();
     }
 
     getUsuario() {
@@ -81,7 +50,6 @@ export class AuthService {
     }
 
     logout(): void {
-
         this.tokenService.removeToken();
         this.userService.removeUser();
     }

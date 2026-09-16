@@ -1,61 +1,38 @@
-import {
-    Routes
-} from '@angular/router';
-
-import {
-    authGuard
-} from './core/guards/auth.guard';
-
-import {
-    roleGuard
-} from './core/guards/role.guard';
-
-import {
-    Role
-} from './core/models/role.enum';
+import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
+import { Role } from './core/models/role.enum';
 
 export const routes: Routes = [
-
     {
         path: 'login',
         loadComponent: () =>
             import('./features/auth/login/login')
                 .then(m => m.Login)
     },
-
     {
         path: 'register',
         loadComponent: () =>
             import('./features/auth/register/register')
                 .then(m => m.Register)
     },
-
     {
         path: 'inicio',
-        canActivate: [
-            authGuard
-        ],
+        canActivate: [authGuard],
         loadComponent: () =>
             import('./features/home/home')
                 .then(m => m.Home)
     },
-
     {
         path: 'profile',
-        canActivate: [
-            authGuard
-        ],
+        canActivate: [authGuard],
         loadComponent: () =>
             import('./features/user/profile/profile')
                 .then(m => m.Profile)
     },
-
     {
         path: 'donaciones',
-        canActivate: [
-            authGuard,
-            roleGuard
-        ],
+        canActivate: [authGuard, roleGuard],
         data: {
             roles: [
                 Role.ADMIN,
@@ -68,52 +45,41 @@ export const routes: Routes = [
             import('./shared/components/donaciones/donaciones')
                 .then(m => m.Donaciones)
     },
-
     {
-        path: 'admin',
-        canActivate: [
-            authGuard,
-            roleGuard
-        ],
+        path: 'admin/reportes',
+        canActivate: [authGuard, roleGuard],
         data: {
-            roles: [
-                Role.ADMIN
-            ]
+            roles: [Role.ADMIN]
         },
         loadComponent: () =>
-            import('./pages/admin/admin')
-                .then(m => m.Admin)
+            import('./features/admin/reportes/lista/reportes-lista')
+                .then(m => m.ReportesLista)
     },
-
     {
-        path: 'moderador',
-        canActivate: [
-            authGuard,
-            roleGuard
-        ],
+        path: 'admin/reportes/nuevo',
+        canActivate: [authGuard, roleGuard],
         data: {
-            roles: [
-                Role.MODERADOR
-            ]
+            roles: [Role.ADMIN]
         },
         loadComponent: () =>
-            import('./pages/moderador/moderador')
-                .then(m => m.Moderador)
+            import('./features/admin/reportes/formulario/reporte-formulario')
+                .then(m => m.ReporteFormulario)
     },
-
     {
-        path: 'acceso-denegado',
+        path: 'admin/reportes/:id',
+        canActivate: [authGuard, roleGuard],
+        data: {
+            roles: [Role.ADMIN]
+        },
         loadComponent: () =>
-            import('./pages/acceso-denegado/acceso-denegado')
-                .then(m => m.AccesoDenegado)
+            import('./features/admin/reportes/formulario/reporte-formulario')
+                .then(m => m.ReporteFormulario)
     },
-
     {
         path: '',
         redirectTo: 'inicio',
         pathMatch: 'full'
     },
-
     {
         path: '**',
         redirectTo: 'inicio'
