@@ -1,1 +1,32 @@
-<p>donacion-filtros works!</p>
+<div class="contenedor-filtros">
+  <div class="grupo-filtro busqueda">
+    <label for="busqueda">Buscar:</label>
+    <input
+      id="busqueda"
+      type="text"
+      placeholder="Buscar por título, descripción o ubicación..."
+      [(ngModel)]="textoBusqueda"
+      (ngModelChange)="onFiltroChange()"
+    />
+  </div>
+
+  <div class="grupo-filtro">
+    <label for="categoria">Categoría:</label>
+    <select id="categoria" [(ngModel)]="categoriaSeleccionada" (change)="onFiltroChange()">
+      @for (cat of categorias; track cat) {
+        <option [value]="cat">{{ cat }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="grupo-filtro">
+    <label for="estado">Estado:</label>
+    <select id="estado" [(ngModel)]="estadoSeleccionado" (change)="onFiltroChange()">
+      @for (est of estados; track est) {
+        <option [value]="est">{{ est }}</option>
+      }
+    </select>
+  </div>
+
+  <button class="btn-limpiar" (click)="limpiarFiltros()">Limpiar</button>
+</div>

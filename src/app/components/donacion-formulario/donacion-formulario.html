@@ -1,1 +1,83 @@
-<p>donacion-formulario works!</p>
+<div class="contenedor-formulario">
+  <h2>{{ modoEdicion ? 'Editar Donación' : 'Crear Nueva Donación' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()">
+    <div class="campo">
+      <label for="titulo">Título *</label>
+      <input id="titulo" type="text" formControlName="titulo" placeholder="Ej. Manzanas frescas" />
+      @if (form.get('titulo')?.touched && form.get('titulo')?.invalid) {
+        <span class="error">El título es requerido (mínimo 3 caracteres).</span>
+      }
+    </div>
+
+    <div class="campo">
+      <label for="descripcion">Descripción *</label>
+      <textarea id="descripcion" formControlName="descripcion" rows="3" placeholder="Detalles sobre los alimentos..."></textarea>
+      @if (form.get('descripcion')?.touched && form.get('descripcion')?.invalid) {
+        <span class="error">La descripción es requerida (mínimo 5 caracteres).</span>
+      }
+    </div>
+
+    <div class="fila">
+      <div class="campo">
+        <label for="categoria">Categoría *</label>
+        <select id="categoria" formControlName="categoria">
+          @for (cat of categorias; track cat) {
+            <option [value]="cat">{{ cat }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="cantidad">Cantidad *</label>
+        <input id="cantidad" type="number" formControlName="cantidad" min="1" />
+      </div>
+    </div>
+
+    <div class="campo">
+      <label for="ubicacion">Ubicación / Dirección *</label>
+      <input id="ubicacion" type="text" formControlName="ubicacion" placeholder="Ej. Av. Reforma 10-20, Zona 10" />
+      @if (form.get('ubicacion')?.touched && form.get('ubicacion')?.invalid) {
+        <span class="error">La ubicación es requerida.</span>
+      }
+    </div>
+
+    <div class="fila">
+      <div class="campo">
+        <label for="latitud">Latitud *</label>
+        <input id="latitud" type="number" step="any" formControlName="latitud" />
+      </div>
+
+      <div class="campo">
+        <label for="longitud">Longitud *</label>
+        <input id="longitud" type="number" step="any" formControlName="longitud" />
+      </div>
+    </div>
+
+    <div class="fila">
+      <div class="campo">
+        <label for="fechaExpiracion">Fecha de Expiración *</label>
+        <input id="fechaExpiracion" type="date" formControlName="fechaExpiracion" />
+        @if (form.get('fechaExpiracion')?.touched && form.get('fechaExpiracion')?.invalid) {
+          <span class="error">Selecciona una fecha de expiración.</span>
+        }
+      </div>
+
+      @if (modoEdicion) {
+        <div class="campo">
+          <label for="estado">Estado</label>
+          <select id="estado" formControlName="estado">
+            @for (est of estados; track est) {
+              <option [value]="est">{{ est }}</option>
+            }
+          </select>
+        </div>
+      }
+    </div>
+
+    <div class="acciones-form">
+      <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+      <button type="submit" class="btn-guardar">{{ modoEdicion ? 'Actualizar' : 'Guardar Donación' }}</button>
+    </div>
+  </form>
+</div>
