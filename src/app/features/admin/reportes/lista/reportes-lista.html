@@ -1,0 +1,90 @@
+<section class="reportes">
+
+    <header class="reportes__header">
+        <h1>Gestión de Reportes</h1>
+        <a class="boton" routerLink="/admin/reportes/nuevo">Nuevo reporte</a>
+    </header>
+
+    <div class="reportes__filtros">
+
+        <label>
+            Estado
+            <select [(ngModel)]="filtroEstado">
+                <option value="TODOS">Todos</option>
+                <option value="PENDIENTE">Pendiente</option>
+                <option value="EN_REVISION">En revisión</option>
+                <option value="RESUELTO">Resuelto</option>
+            </select>
+        </label>
+
+        <label>
+            Tipo
+            <select [(ngModel)]="filtroTipo">
+                <option value="TODOS">Todos</option>
+                @for (tipo of tipos; track tipo) {
+                    <option [value]="tipo">{{ tipo }}</option>
+                }
+            </select>
+        </label>
+
+    </div>
+
+    @if (isLoading) {
+        <p>Cargando reportes...</p>
+    }
+
+    @if (errorMessage) {
+        <p class="reportes__error">{{ errorMessage }}</p>
+    }
+
+    @if (!isLoading && reportesFiltrados.length === 0) {
+        <p>No hay reportes que coincidan con los filtros.</p>
+    }
+
+    @if (!isLoading && reportesFiltrados.length > 0) {
+
+        <table class="reportes__tabla">
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Donación</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @for (reporte of reportesFiltrados; track reporte.id_reporte) {
+                    <tr>
+                        <td>{{ reporte.id_reporte }}</td>
+                        <td>{{ reporte.motivo }}</td>
+                        <td>{{ reporte.descripcion }}</td>
+                        <td>{{ reporte.fecha | date: 'short' }}</td>
+                        <td>{{ reporte.id_usuario }}</td>
+                        <td>{{ reporte.id_donacion }}</td>
+                        <td>
+                            <select
+                                [ngModel]="reporte.estado"
+                                (ngModelChange)="cambiarEstado(reporte, $event)"
+                            >
+                                <option value="PENDIENTE">Pendiente</option>
+                                <option value="EN_REVISION">En revisión</option>
+                                <option value="RESUELTO">Resuelto</option>
+                            </select>
+                        </td>
+                        <td>
+                            <a [routerLink]="['/admin/reportes', reporte.id_reporte]">Ver</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    }
+
+</section>
