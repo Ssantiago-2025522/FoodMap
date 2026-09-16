@@ -8,8 +8,8 @@ import { Donacion } from '../../models/donacion';
   selector: 'app-donacion-mapa',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './donacion-mapa.html',
-  styleUrl: './donacion-mapa.css'
+  templateUrl: './donacion-mapa.component.html',
+  styleUrl: './donacion-mapa.component.css'
 })
 export class DonacionMapaComponent implements AfterViewInit {
   @ViewChild('mapaContainer') mapaContainer!: ElementRef<HTMLDivElement>;

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DonacionMapaComponent } from './donacion-mapa';
+import { DonacionMapaComponent } from './donacion-mapa.component';
 
 describe('DonacionMapaComponent', () => {
   let component: DonacionMapaComponent;

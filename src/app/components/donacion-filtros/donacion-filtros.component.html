@@ -1,10 +1,19 @@
 <div class="contenedor-filtros">
+  <div class="grupo-filtro">
+    <label for="pais">País:</label>
+    <select id="pais" [(ngModel)]="paisSeleccionado" (change)="onFiltroChange()">
+      @for (p of paises; track p.codigo) {
+        <option [value]="p.codigo">{{ p.nombre }}</option>
+      }
+    </select>
+  </div>
+
   <div class="grupo-filtro busqueda">
     <label for="busqueda">Buscar:</label>
     <input
       id="busqueda"
       type="text"
-      placeholder="Buscar por título, descripción o ubicación..."
+      placeholder="Buscar por título, descripción o dirección exacta..."
       [(ngModel)]="textoBusqueda"
       (ngModelChange)="onFiltroChange()"
     />

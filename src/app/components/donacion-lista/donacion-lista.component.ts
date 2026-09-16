@@ -1,15 +1,15 @@
 import { Component, inject, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DonacionService } from '../../services/donacion.service';
-import { DonacionTarjetaComponent } from '../donacion-tarjeta/donacion-tarjeta';
+import { DonacionTarjetaComponent } from '../donacion-tarjeta/donacion-tarjeta.component';
 import { Donacion, EstadoDonacion } from '../../models/donacion';
 
 @Component({
   selector: 'app-donacion-lista',
   standalone: true,
   imports: [CommonModule, DonacionTarjetaComponent],
-  templateUrl: './donacion-lista.html',
-  styleUrl: './donacion-lista.css'
+  templateUrl: './donacion-lista.component.html',
+  styleUrl: './donacion-lista.component.css'
 })
 export class DonacionListaComponent {
   private donacionService = inject(DonacionService);
