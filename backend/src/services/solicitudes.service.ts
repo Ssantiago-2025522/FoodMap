@@ -1,37 +1,51 @@
+import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import { pool } from '../config/db';
 import { CrearSolicitudDTO, SolicitudDetalle } from '../models/solicitud.types';
-
-export class ApiError extends Error {
-  status: number;
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-  }
-}
+import { ApiError } from '../utils/apiError';
+import { crearNotificacionInterna } from './notificaciones.service';
 
 export async function crearSolicitud(dto: CrearSolicitudDTO) {
-  const donacion = await pool.query(
-    'SELECT id_donacion, estado FROM donacion WHERE id_donacion = $1',
+  const [donaciones] = await pool.query<RowDataPacket[]>(
+    'SELECT id_donacion, estado, id_usuario, titulo FROM donacion WHERE id_donacion = ?',
     [dto.id_donacion]
   );
 
-  if (donacion.rows.length === 0) {
+  if (donaciones.length === 0) {
     throw new ApiError(404, 'La donación no existe');
   }
-  if (donacion.rows[0].estado !== true) {
+  if (Number(donaciones[0].estado) !== 1) {
     throw new ApiError(400, 'La donación ya no está disponible');
   }
 
+  const [solicitantes] = await pool.query<RowDataPacket[]>(
+    'SELECT username FROM usuario WHERE id_usuario = ?',
+    [dto.id_usuario]
+  );
+  if (solicitantes.length === 0) {
+    throw new ApiError(404, 'El usuario que solicita no existe');
+  }
+
   try {
-    const result = await pool.query(
+    const [result] = await pool.query<ResultSetHeader>(
       `INSERT INTO solicitud (id_donacion, id_usuario, estado)
-       VALUES ($1, $2, 'PENDIENTE')
-       RETURNING *`,
+       VALUES (?, ?, 'PENDIENTE')`,
       [dto.id_donacion, dto.id_usuario]
     );
-    return result.rows[0];
+
+    const [rows] = await pool.query<RowDataPacket[]>(
+      'SELECT * FROM solicitud WHERE id_solicitud = ?',
+      [result.insertId]
+    );
+
+    await crearNotificacionInterna(pool, {
+      titulo: 'Nueva solicitud',
+      mensaje: `${solicitantes[0].username} solicitó tu donación "${donaciones[0].titulo}".`,
+      id_usuario: donaciones[0].id_usuario,
+    });
+
+    return rows[0];
   } catch (err: any) {
-    if (err.code === '23505') {
+    if (err.code === 'ER_DUP_ENTRY') {
       throw new ApiError(409, 'Ya existe una solicitud tuya para esta donación');
     }
     throw err;
@@ -54,20 +68,17 @@ export async function obtenerSolicitudes(
     JOIN usuario u ON u.id_usuario = s.id_usuario
   `;
 
-  const where =
-    rol === 'donador'
-      ? 'WHERE d.id_usuario = $1'
-      : 'WHERE s.id_usuario = $1';
+  const where = rol === 'donador' ? 'WHERE d.id_usuario = ?' : 'WHERE s.id_usuario = ?';
 
-  const result = await pool.query(
+  const [rows] = await pool.query<RowDataPacket[]>(
     `${baseSelect} ${where} ORDER BY s.fecha_solicitud DESC`,
     [idUsuario]
   );
-  return result.rows;
+  return rows as SolicitudDetalle[];
 }
 
 export async function obtenerSolicitudPorId(id: number): Promise<SolicitudDetalle> {
-  const result = await pool.query(
+  const [rows] = await pool.query<RowDataPacket[]>(
     `SELECT
        s.id_solicitud, s.fecha_solicitud, s.estado, s.id_donacion, s.id_usuario,
        d.titulo AS titulo_donacion,
@@ -77,89 +88,121 @@ export async function obtenerSolicitudPorId(id: number): Promise<SolicitudDetall
      FROM solicitud s
      JOIN donacion d ON d.id_donacion = s.id_donacion
      JOIN usuario u ON u.id_usuario = s.id_usuario
-     WHERE s.id_solicitud = $1`,
+     WHERE s.id_solicitud = ?`,
     [id]
   );
 
-  if (result.rows.length === 0) {
+  if (rows.length === 0) {
     throw new ApiError(404, 'Solicitud no encontrada');
   }
-  return result.rows[0];
+  return rows[0] as SolicitudDetalle;
 }
 
-/**
- * Acepta una solicitud PENDIENTE y crea automáticamente el chat asociado
- * (solo debe existir chat para solicitudes aceptadas).
- * Se usa una transacción porque son dos escrituras que deben ocurrir juntas:
- * si falla la creación del chat, la solicitud no debe quedar marcada como aceptada.
- */
 export async function aceptarSolicitud(idSolicitud: number) {
-  const client = await pool.connect();
+  const connection = await pool.getConnection();
   try {
-    await client.query('BEGIN');
+    await connection.beginTransaction();
 
-    const update = await client.query(
+    const [updateResult] = await connection.query<ResultSetHeader>(
       `UPDATE solicitud SET estado = 'ACEPTADA'
-       WHERE id_solicitud = $1 AND estado = 'PENDIENTE'
-       RETURNING *`,
+       WHERE id_solicitud = ? AND estado = 'PENDIENTE'`,
       [idSolicitud]
     );
 
-    if (update.rows.length === 0) {
-      // O no existe, o ya no está en PENDIENTE (ya fue aceptada/rechazada antes)
-      const existe = await client.query(
-        'SELECT estado FROM solicitud WHERE id_solicitud = $1',
+    if (updateResult.affectedRows === 0) {
+      const [existentes] = await connection.query<RowDataPacket[]>(
+        'SELECT estado FROM solicitud WHERE id_solicitud = ?',
         [idSolicitud]
       );
-      await client.query('ROLLBACK');
-      if (existe.rows.length === 0) {
+      await connection.rollback();
+
+      if (existentes.length === 0) {
         throw new ApiError(404, 'Solicitud no encontrada');
       }
       throw new ApiError(
         409,
-        `La solicitud ya está en estado ${existe.rows[0].estado}, no se puede aceptar`
+        `La solicitud ya está en estado ${existentes[0].estado}, no se puede aceptar`
       );
     }
 
-    const chat = await client.query(
-      `INSERT INTO chat (id_solicitud) VALUES ($1) RETURNING *`,
+    const [chatInsert] = await connection.query<ResultSetHeader>(
+      `INSERT INTO chat (id_solicitud) VALUES (?)`,
       [idSolicitud]
     );
 
-    await client.query('COMMIT');
-    return { solicitud: update.rows[0], chat: chat.rows[0] };
+    await connection.query<ResultSetHeader>(
+      `INSERT INTO entrega (estado, id_solicitud) VALUES ('PENDIENTE', ?)`,
+      [idSolicitud]
+    );
+
+    const [solicitudRows] = await connection.query<RowDataPacket[]>(
+      'SELECT * FROM solicitud WHERE id_solicitud = ?',
+      [idSolicitud]
+    );
+    const [chatRows] = await connection.query<RowDataPacket[]>(
+      'SELECT * FROM chat WHERE id_chat = ?',
+      [chatInsert.insertId]
+    );
+    const [entregaRows] = await connection.query<RowDataPacket[]>(
+      'SELECT * FROM entrega WHERE id_solicitud = ?',
+      [idSolicitud]
+    );
+
+    const [donacionRows] = await connection.query<RowDataPacket[]>(
+      'SELECT titulo FROM donacion WHERE id_donacion = ?',
+      [solicitudRows[0].id_donacion]
+    );
+    await crearNotificacionInterna(connection, {
+      titulo: 'Solicitud aceptada',
+      mensaje: `Tu solicitud para "${donacionRows[0].titulo}" fue aceptada. Ya puedes coordinar por el chat.`,
+      id_usuario: solicitudRows[0].id_usuario,
+    });
+
+    await connection.commit();
+    return { solicitud: solicitudRows[0], chat: chatRows[0], entrega: entregaRows[0] };
   } catch (err) {
-    await client.query('ROLLBACK');
+    await connection.rollback();
     throw err;
   } finally {
-    client.release();
+    connection.release();
   }
 }
 
-/**
- * Rechaza una solicitud PENDIENTE. No se puede rechazar algo ya aceptado/rechazado.
- */
 export async function rechazarSolicitud(idSolicitud: number) {
-  const result = await pool.query(
+  const [updateResult] = await pool.query<ResultSetHeader>(
     `UPDATE solicitud SET estado = 'RECHAZADA'
-     WHERE id_solicitud = $1 AND estado = 'PENDIENTE'
-     RETURNING *`,
+     WHERE id_solicitud = ? AND estado = 'PENDIENTE'`,
     [idSolicitud]
   );
 
-  if (result.rows.length === 0) {
-    const existe = await pool.query(
-      'SELECT estado FROM solicitud WHERE id_solicitud = $1',
+  if (updateResult.affectedRows === 0) {
+    const [existentes] = await pool.query<RowDataPacket[]>(
+      'SELECT estado FROM solicitud WHERE id_solicitud = ?',
       [idSolicitud]
     );
-    if (existe.rows.length === 0) {
+    if (existentes.length === 0) {
       throw new ApiError(404, 'Solicitud no encontrada');
     }
     throw new ApiError(
       409,
-      `La solicitud ya está en estado ${existe.rows[0].estado}, no se puede rechazar`
+      `La solicitud ya está en estado ${existentes[0].estado}, no se puede rechazar`
     );
   }
 
-  return result.rows[0];
+  const [rows] = await pool.query<RowDataPacket[]>(
+    'SELECT * FROM solicitud WHERE id_solicitud = ?',
+    [idSolicitud]
+  );
+
+  const [donacionRows] = await pool.query<RowDataPacket[]>(
+    'SELECT titulo FROM donacion WHERE id_donacion = ?',
+    [rows[0].id_donacion]
+  );
+  await crearNotificacionInterna(pool, {
+    titulo: 'Solicitud rechazada',
+    mensaje: `Tu solicitud para "${donacionRows[0].titulo}" fue rechazada.`,
+    id_usuario: rows[0].id_usuario,
+  });
+
+  return rows[0];
 }

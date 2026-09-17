@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import * as solicitudesService from '../services/solicitudes.service';
-import { ApiError } from '../services/solicitudes.service';
+import { ApiError } from '../utils/apiError';
 
 function manejarError(err: unknown, res: Response) {
   if (err instanceof ApiError) {

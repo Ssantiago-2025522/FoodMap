@@ -1,6 +1,8 @@
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Solicitudes } from '../../../services/solicitudes.service';
+import { Sesion } from '../../../services/sesion.service';
 
 @Component({
   selector: 'app-lista-solicitudes',
@@ -8,30 +10,30 @@ import { RouterLink } from '@angular/router';
   templateUrl: './lista-solicitudes.html',
   styleUrl: './lista-solicitudes.css',
 })
-export class ListaSolicitudes {
+export class ListaSolicitudes implements OnInit {
+  titulo_solicitud = 'Solicitudes';
+  solicitudes: any[] = [];
+  rol: 'donador' | 'beneficiario' = 'beneficiario';
+  cargando = true;
+  error = '';
 
-  titulo_solicitud = "Solictudes";
+  constructor(
+    private solicitudesService: Solicitudes,
+    private sesion: Sesion
+  ) {}
 
-  solicitudes = [
-  {
-    titulo: 'Frutas y Verduras',
-    descripcion: 'Donación de frutas y verduras frescas.',
-    cantidad: 5,
-    beneficiario: 'María López',
-    ubicacion: 'Zona 7, Guatemala',
-    fecha: '08/09/2026',
-    estado: 'PENDIENTE'
-  },
-  {
-    titulo: 'Pan Integral',
-    cantidad: 2,
-    estado: 'ACEPTADA'  
-  },
-  {
-    titulo: 'Leche',
-    cantidad: 3,
-    estado: 'RECHAZADA'
+  ngOnInit(): void {
+    const idUsuario = this.sesion.obtenerIdUsuarioActual();
+    this.solicitudesService.obtenerSolicitudes(idUsuario, this.rol).subscribe({
+      next: (data) => {
+        this.solicitudes = data;
+        this.cargando = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.error = 'No se pudieron cargar las solicitudes';
+        this.cargando = false;
+      }
+    });
   }
-  ];
-
 }
