@@ -60,12 +60,16 @@ export async function obtenerSolicitudes(
     SELECT
       s.id_solicitud, s.fecha_solicitud, s.estado, s.id_donacion, s.id_usuario,
       d.titulo AS titulo_donacion,
+      d.descripcion AS descripcion_donacion,
+      d.cantidad AS cantidad_donacion,
       d.imagen AS imagen_donacion,
       d.id_usuario AS id_usuario_donador,
-      u.username AS username_solicitante
+      u.username AS username_solicitante,
+      ub.departamento, ub.municipio, ub.direccion
     FROM solicitud s
     JOIN donacion d ON d.id_donacion = s.id_donacion
     JOIN usuario u ON u.id_usuario = s.id_usuario
+    JOIN ubicacion ub ON ub.id_ubicacion = d.id_ubicacion
   `;
 
   const where = rol === 'donador' ? 'WHERE d.id_usuario = ?' : 'WHERE s.id_usuario = ?';
@@ -82,12 +86,16 @@ export async function obtenerSolicitudPorId(id: number): Promise<SolicitudDetall
     `SELECT
        s.id_solicitud, s.fecha_solicitud, s.estado, s.id_donacion, s.id_usuario,
        d.titulo AS titulo_donacion,
+       d.descripcion AS descripcion_donacion,
+       d.cantidad AS cantidad_donacion,
        d.imagen AS imagen_donacion,
        d.id_usuario AS id_usuario_donador,
-       u.username AS username_solicitante
+       u.username AS username_solicitante,
+       ub.departamento, ub.municipio, ub.direccion
      FROM solicitud s
      JOIN donacion d ON d.id_donacion = s.id_donacion
      JOIN usuario u ON u.id_usuario = s.id_usuario
+     JOIN ubicacion ub ON ub.id_ubicacion = d.id_ubicacion
      WHERE s.id_solicitud = ?`,
     [id]
   );

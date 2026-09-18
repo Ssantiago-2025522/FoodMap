@@ -10,7 +10,6 @@ function manejarError(err: unknown, res: Response) {
   return res.status(500).json({ error: 'Error interno del servidor' });
 }
 
-// PATCH /api/solicitudes/:id/confirmar-recepcion
 export async function confirmar(req: Request, res: Response) {
   try {
     const id_solicitud = Number(req.params.id);

@@ -4,6 +4,7 @@ import { ChatResumen } from '../models/chat.types';
 import { EnviarMensajeDTO, Mensaje } from '../models/mensaje.types';
 import { ApiError } from '../utils/apiError';
 
+
 async function obtenerParticipantes(idChat: number) {
   const [rows] = await pool.query<RowDataPacket[]>(
     `SELECT

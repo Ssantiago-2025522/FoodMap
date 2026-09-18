@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import * as historialService from '../services/historial.service';
 
-// GET /api/historial?usuario=<id>&rol=donador|beneficiario
 export async function listar(req: Request, res: Response) {
   try {
     const idUsuario = Number(req.query.usuario);

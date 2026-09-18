@@ -25,6 +25,11 @@ export const routes: Routes = [
     },
 
     {
+        path: 'crear-solicitud/:idDonacion',
+        component: CrearSolicitud
+    },
+
+    {
         path: 'detalle-solicitud',
         component: DetalleSolicitud
     },

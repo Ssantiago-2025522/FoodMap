@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import './config/db';
+import './config/db'; 
 
 import solicitudesRoutes from './routes/solicitudes.routes';
 import notificacionesRoutes from './routes/notificaciones.routes';
@@ -28,5 +28,5 @@ app.get('/api/health', (_req, res) => {
 
 const PORT = process.env.PORT ?? 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 FoodMap backend corriendo en http://localhost:${PORT}`);
+  console.log(`FoodMap backend corriendo en http://localhost:${PORT}`);
 });

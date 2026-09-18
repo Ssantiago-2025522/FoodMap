@@ -10,7 +10,6 @@ function manejarError(err: unknown, res: Response) {
   return res.status(500).json({ error: 'Error interno del servidor' });
 }
 
-// POST /api/donaciones
 export async function crear(req: Request, res: Response) {
   try {
     const { titulo, descripcion, cantidad, fecha_vencimiento, imagen, id_usuario, id_categoria, ubicacion } =

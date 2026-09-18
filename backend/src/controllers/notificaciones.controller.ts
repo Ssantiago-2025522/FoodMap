@@ -10,7 +10,6 @@ function manejarError(err: unknown, res: Response) {
   return res.status(500).json({ error: 'Error interno del servidor' });
 }
 
-// GET /api/notificaciones?usuario=<id>
 export async function listar(req: Request, res: Response) {
   try {
     const idUsuario = Number(req.query.usuario);
@@ -24,7 +23,6 @@ export async function listar(req: Request, res: Response) {
   }
 }
 
-// PATCH /api/notificaciones/:id/leida?usuario=<id>
 export async function marcarLeida(req: Request, res: Response) {
   try {
     const idNotificacion = Number(req.params.id);

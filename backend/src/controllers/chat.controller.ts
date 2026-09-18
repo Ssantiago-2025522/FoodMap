@@ -10,7 +10,6 @@ function manejarError(err: unknown, res: Response) {
   return res.status(500).json({ error: 'Error interno del servidor' });
 }
 
-// GET /api/chats?usuario=<id>
 export async function listar(req: Request, res: Response) {
   try {
     const idUsuario = Number(req.query.usuario);
@@ -24,7 +23,6 @@ export async function listar(req: Request, res: Response) {
   }
 }
 
-// GET /api/chats/:id?usuario=<id>
 export async function obtenerUno(req: Request, res: Response) {
   try {
     const idChat = Number(req.params.id);
@@ -39,7 +37,6 @@ export async function obtenerUno(req: Request, res: Response) {
   }
 }
 
-// POST /api/chats/:id/mensajes
 export async function enviarMensaje(req: Request, res: Response) {
   try {
     const idChat = Number(req.params.id);

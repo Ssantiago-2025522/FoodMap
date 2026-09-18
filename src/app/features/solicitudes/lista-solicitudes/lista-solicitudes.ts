@@ -25,8 +25,17 @@ export class ListaSolicitudes implements OnInit {
   ngOnInit(): void {
     const idUsuario = this.sesion.obtenerIdUsuarioActual();
     this.solicitudesService.obtenerSolicitudes(idUsuario, this.rol).subscribe({
-      next: (data) => {
-        this.solicitudes = data;
+      next: (data: any[]) => {
+        this.solicitudes = data.map(s => ({
+          id_solicitud: s.id_solicitud,
+          titulo: s.titulo_donacion,
+          descripcion: s.descripcion_donacion,
+          cantidad: s.cantidad_donacion,
+          beneficiario: s.username_solicitante,
+          ubicacion: `${s.municipio}, ${s.departamento}`,
+          fecha: s.fecha_solicitud,
+          estado: s.estado
+        }));
         this.cargando = false;
       },
       error: (err) => {
