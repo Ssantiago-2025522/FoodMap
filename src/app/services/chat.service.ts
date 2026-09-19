@@ -1,23 +1,26 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Chat as ChatModel } from '../models/chat';
+import { API_URL } from '../core/api.config';
+import { ChatDetalle, ChatResumen } from '../models/chat';
 import { Mensaje } from '../models/mensaje';
 
-@Injectable({ 
-    providedIn: 'root' 
+@Injectable({
+  providedIn: 'root'
 })
 export class Chat {
-  private baseUrl = 'http://localhost:3000/api/chats';
+  private baseUrl = `${API_URL}/chats`;
 
   constructor(private http: HttpClient) {}
 
-  obtenerChats(idUsuario: number): Observable<ChatModel[]> {
-    return this.http.get<ChatModel[]>(`${this.baseUrl}?usuario=${idUsuario}`);
+  obtenerChats(idUsuario: number): Observable<ChatResumen[]> {
+    const params = new HttpParams().set('usuario', idUsuario);
+    return this.http.get<ChatResumen[]>(this.baseUrl, { params });
   }
 
-  obtenerChatConMensajes(idChat: number, idUsuario: number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/${idChat}?usuario=${idUsuario}`);
+  obtenerChatConMensajes(idChat: number, idUsuario: number): Observable<ChatDetalle> {
+    const params = new HttpParams().set('usuario', idUsuario);
+    return this.http.get<ChatDetalle>(`${this.baseUrl}/${idChat}`, { params });
   }
 
   enviarMensaje(idChat: number, idUsuario: number, contenido: string): Observable<Mensaje> {

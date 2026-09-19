@@ -39,3 +39,7 @@
 .notificacion-card small {
     color: #c5c5c5;
 }
+
+.notificacion-card.no-leida { 
+    border-left: 4px solid var(--verde); 
+}

@@ -108,3 +108,15 @@
 
     color: #aaaaaa;
 }
+
+.chat-card { 
+    text-decoration: none; 
+
+    color: inherit; 
+}
+
+.chat-card:focus-visible { 
+    outline: 3px solid var(--naranja); 
+    
+    outline-offset: 2px; 
+}

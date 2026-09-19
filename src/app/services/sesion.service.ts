@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ 
+  providedIn: 'root' 
+})
 export class Sesion {
-  private idUsuarioDePrueba = 1;
+  private readonly clave = 'idUsuarioPrueba';
 
   obtenerIdUsuarioActual(): number {
-    return this.idUsuarioDePrueba;
+    return Number(localStorage.getItem(this.clave)) || 1;
   }
 }

@@ -270,3 +270,12 @@ VALUES
     ('ADMIN', 'Administrador del sistema'),
     ('MODERADOR', 'Moderador de contenido y usuarios'),
     ('ESTUDIANTE', 'Usuario estudiante que utiliza la plataforma');
+
+-- =====================================================
+-- COLUMNAS NUEVAS EN LA TABLA SOLICITUD
+-- =====================================================
+
+ALTER TABLE solicitud
+    ADD COLUMN cantidad_solicitada INT NOT NULL DEFAULT 1,
+    ADD COLUMN comentario VARCHAR(255) NULL,
+    ADD CONSTRAINT chk_solicitud_cantidad CHECK (cantidad_solicitada > 0);

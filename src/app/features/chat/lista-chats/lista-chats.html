@@ -11,34 +11,47 @@
     </div>
 
     <input
+        #campo
         class="busqueda"
-        type="text"
-        placeholder="Buscar conversación..."
+        type="search"
+        aria-label="Buscar conversación"
+        placeholder="Buscar por nombre o donación..."
+        (input)="busqueda.set(campo.value)"
     >
 
-    <div class="chat-card" 
-    *ngFor="let chat of chats">
+    @if (cargando()) {
+        <p class="mensaje-estado">Cargando chats…</p>
+    } @else if (error()) {
+        <p class="mensaje-error" role="alert">{{ error() }}</p>
+    } @else {
+        @for (chat of visibles(); track chat.id_chat) {
+            <a class="chat-card" [routerLink]="['/chat', chat.id_chat]">
 
-        <div class="avatar">
-            {{ chat.usuario.charAt(0) }}
-        </div>
+                <div class="avatar" aria-hidden="true">
+                    {{ chat.username_contraparte.charAt(0) }}
+                </div>
 
-        <div class="chat-info">
+                <div class="chat-info">
 
-            <h3>
-            {{ chat.usuario }}
-        </h3>
+                    <h3>{{ chat.username_contraparte }}</h3>
 
-            <p>
-            {{ chat.ultimoMensaje }}
+                    <p>{{ chat.titulo_donacion }}</p>
+
+                    <p>{{ chat.ultimo_mensaje ?? 'Aún no hay mensajes' }}</p>
+
+                    @if (chat.fecha_ultimo_mensaje) {
+                        <small>{{ chat.fecha_ultimo_mensaje | date: 'dd/MM/yyyy HH:mm' }}</small>
+                    }
+
+                </div>
+
+            </a>
+        } @empty {
+            <p class="mensaje-estado">
+                {{ busqueda() ? 'Ninguna conversación coincide con tu búsqueda.'
+                              : 'Cuando un donador acepte una solicitud, el chat aparecerá aquí.' }}
             </p>
-
-            <small>
-            {{ chat.fecha }}
-            </small>
-
-        </div>
-
-    </div>
+        }
+    }
 
 </section>

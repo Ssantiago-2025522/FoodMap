@@ -245,3 +245,23 @@
 
     color: #2D3436;
 }
+
+.estado-pendiente { 
+    background: var(--naranja); 
+
+    color: var(--gris-oscuro); 
+}
+
+.estado-aceptada  { 
+    background: var(--verde);  
+    
+    color: #fff; 
+}
+
+.estado-rechazada { 
+    background: #fde4e1; 
+
+    color: var(--rojo-error); 
+
+    border: 1px solid var(--rojo-error); 
+}

@@ -8,49 +8,14 @@ import { CrearSolicitud } from './features/solicitudes/crear-solicitud/crear-sol
 import { DetalleSolicitud } from './features/solicitudes/detalle-solicitud/detalle-solicitud';
 
 export const routes: Routes = [
-    {
-        path: '',
-        redirectTo: 'solicitudes',
-        pathMatch: 'full'
-    },
-
-    {
-        path: 'solicitudes',
-        component: ListaSolicitudes
-    },
-
-    {
-        path: 'crear-solicitud',
-        component: CrearSolicitud
-    },
-
-    {
-        path: 'crear-solicitud/:idDonacion',
-        component: CrearSolicitud
-    },
-
-    {
-        path: 'detalle-solicitud',
-        component: DetalleSolicitud
-    },
-
-    {
-        path: 'notificaciones',
-        component: ListaNotificaciones
-    },
-
-    {
-        path: 'historial',
-        component: HistorialSolicitudes
-    },
-
-    {
-        path: 'chat',
-        component: Chat
-    },
-
-    {
-        path: 'listaChats',
-        component: ListaChats
-    }
+    { path: '', redirectTo: 'solicitudes', pathMatch: 'full' },
+    { path: 'solicitudes', component: ListaSolicitudes },
+    { path: 'crear-solicitud', component: CrearSolicitud },
+    { path: 'crear-solicitud/:idDonacion', component: CrearSolicitud },
+    { path: 'detalle-solicitud/:id', component: DetalleSolicitud },
+    { path: 'notificaciones', component: ListaNotificaciones },
+    { path: 'historial', component: HistorialSolicitudes },
+    { path: 'lista-chats', component: ListaChats },
+    { path: 'chat/:idChat', component: Chat },
+    { path: '**', redirectTo: 'solicitudes' }
 ];

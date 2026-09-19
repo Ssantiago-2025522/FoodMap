@@ -67,6 +67,31 @@
     font-weight: bold;
 }
 
+.solicitudes-barra, .notificaciones-barra {
+    display: flex; 
+
+    flex-wrap: wrap; 
+
+    justify-content: space-between;
+
+    align-items: center; 
+
+    gap: 1rem; 
+
+    margin-bottom: 1.25rem;
+
+}
+
+.estado-pendiente, .estado-aceptada, .estado-rechazada { 
+    display: inline-block; 
+
+    padding: .1rem .6rem; 
+
+    border-radius: 999px; 
+
+    font-weight: 600; 
+}
+
 .estado-aceptada {
     background-color: #2E8B57;
 
@@ -169,3 +194,4 @@
 
     color: #2D3436;
 }
+

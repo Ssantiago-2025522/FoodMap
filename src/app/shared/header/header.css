@@ -40,3 +40,22 @@
     color: #FAF7F2;
     font-weight: 600;
 }
+
+.nav-links a.activo { 
+    font-weight: 700; 
+    border-bottom: 2px solid var(--naranja); 
+}
+
+.nav-links a { 
+    position: relative; 
+}
+
+.badge {
+  display: inline-flex; align-items: center; justify-content: center;
+
+  min-width: 1.15rem; height: 1.15rem; padding: 0 .3rem; margin-left: .3rem;
+
+  border-radius: 999px; background: var(--naranja); color: var(--gris-oscuro);
+  
+  font-size: .7rem; font-weight: 700;
+}

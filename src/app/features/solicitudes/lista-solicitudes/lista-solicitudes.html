@@ -2,55 +2,71 @@
 
     <h1>{{ titulo_solicitud }}</h1>
 
-    <div>
+    <div class="solicitudes-barra">
+        <div class="tabs" role="tablist" aria-label="Tipo de solicitudes">
+            <button type="button" role="tab" class="tab"
+                [class.activa]="rol() === 'beneficiario'"
+                [attr.aria-selected]="rol() === 'beneficiario'"
+                (click)="cambiarRol('beneficiario')">
+                Enviadas
+            </button>
+            <button type="button" role="tab" class="tab"
+                [class.activa]="rol() === 'donador'"
+                [attr.aria-selected]="rol() === 'donador'"
+                (click)="cambiarRol('donador')">
+                Recibidas
+            </button>
+        </div>
+
         <button class="btn-crear" routerLink="/crear-solicitud">
             Crear Solicitud
         </button>
     </div>
 
-    <div class="solicitud-grid">
+    @if (cargando()) {
+        <p class="mensaje-estado">Cargando solicitudes…</p>
+    } @else if (error()) {
+        <p class="mensaje-estado mensaje-error" role="alert">{{ error() }}</p>
+        <button class="btn-detalle" (click)="cargar()">Reintentar</button>
+    } @else {
+        <div class="solicitud-grid">
 
-        <div class="solicitud-card"
-            *ngFor="let solicitud of solicitudes">
+            @for (solicitud of solicitudes(); track solicitud.id_solicitud) {
+                <div class="solicitud-card">
 
-            <h3>{{ solicitud.titulo }}</h3>
+                    <h3>{{ solicitud.titulo_donacion }}</h3>
 
-            <p>
-                Descripcion:
-                {{solicitud.descripcion }}
-            </p>
+                    <p>Descripción: {{ solicitud.descripcion_donacion }}</p>
 
-            <p>
-                Cantidad:
-                {{ solicitud.cantidad }}
-            </p>
+                    <p>Cantidad: {{ solicitud.cantidad_donacion }}</p>
 
-            <p>
-                Beneficiario:
-                {{ solicitud.beneficiario }}
-            </p>
+                    <p>{{ rol() === 'donador' ? 'Beneficiario' : 'Donador' }}: {{ contraparte(solicitud) }}</p>
 
-            <p>
-                Ubicación:
-                {{ solicitud.ubicacion }}
-            </p>
+                    <p>Ubicación: {{ solicitud.municipio }}, {{ solicitud.departamento }}</p>
 
-            <p>
-                Fecha:
-                {{ solicitud.fecha }}
-            </p>
+                    <p>Fecha: {{ solicitud.fecha_solicitud | date: 'dd/MM/yyyy HH:mm' }}</p>
 
-            <p>
-                Estado:
-                {{ solicitud.estado }}
-            </p>
+                    <p>
+                        Estado:
+                        <span class="estado" [class]="'estado ' + solicitud.estado.toLowerCase()">
+                            {{ etiquetaEstado(solicitud.estado) }}
+                        </span>
+                    </p>
 
-            <button class="btn-detalle" routerLink="/detalle-solicitud">
-                Ver Detalle Solicitud
-            </button>
+                    <button class="btn-detalle" [routerLink]="['/detalle-solicitud', solicitud.id_solicitud]">
+                        Ver Detalle Solicitud
+                    </button>
+
+                </div>
+            } @empty {
+                <p class="mensaje-estado">
+                    {{ rol() === 'donador'
+                        ? 'Todavía nadie ha solicitado tus donaciones.'
+                        : 'Aún no has enviado ninguna solicitud.' }}
+                </p>
+            }
 
         </div>
-
-    </div>
+    }
 
 </section>
