@@ -22,6 +22,7 @@ const iconoPersonalizado = L.icon({
       height: 380px;
       border-radius: 16px;
       z-index: 1;
+      background-color: #aad3df;
     }
   `]
 })
@@ -40,10 +41,20 @@ export class DonacionMapaComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.map = L.map('mapa-leaf').setView([14.6349, -90.5069], 10);
+    const limitesMundo = L.latLngBounds(L.latLng(-85, -180), L.latLng(85, 180));
+
+    this.map = L.map('mapa-leaf', {
+      center: [14.6349, -90.5069],
+      zoom: 10,
+      minZoom: 2,
+      maxBounds: limitesMundo,
+      maxBoundsViscosity: 1.0
+    });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
+      noWrap: true,
+      bounds: limitesMundo,
       attribution: '© OpenStreetMap'
     }).addTo(this.map);
 
@@ -81,7 +92,7 @@ export class DonacionMapaComponent implements AfterViewInit {
         this.map.flyTo(puntosCoordenadas[0], 13);
       } else {
         const bounds = L.latLngBounds(puntosCoordenadas);
-        this.map.fitBounds(bounds, { padding: [40, 40] });
+        this.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
       }
     }
   }
