@@ -1,0 +1,84 @@
+<section class="reporte-formulario">
+
+    @if (!modoEdicion) {
+
+        <h1>Nuevo Reporte</h1>
+
+        <form (ngSubmit)="guardar()">
+
+            <label>
+                Motivo
+                <input type="text" name="motivo" [(ngModel)]="data.motivo" required />
+            </label>
+
+            <label>
+                Descripción
+                <textarea name="descripcion" [(ngModel)]="data.descripcion" required></textarea>
+            </label>
+
+            <label>
+                ID Usuario
+                <input type="number" name="id_usuario" [(ngModel)]="data.id_usuario" required />
+            </label>
+
+            <label>
+                ID Donación
+                <input type="number" name="id_donacion" [(ngModel)]="data.id_donacion" required />
+            </label>
+
+            @if (errorMessage) {
+                <p class="reporte-formulario__error">{{ errorMessage }}</p>
+            }
+
+            <button type="submit" [disabled]="isLoading">Guardar</button>
+
+        </form>
+    }
+
+    @if (modoEdicion && reporte) {
+
+        <h1>Detalle del Reporte #{{ reporte.id_reporte }}</h1>
+
+        <dl class="reporte-formulario__detalle">
+            <dt>Motivo</dt>
+            <dd>{{ reporte.motivo }}</dd>
+
+            <dt>Descripción</dt>
+            <dd>{{ reporte.descripcion }}</dd>
+
+            <dt>Fecha</dt>
+            <dd>{{ reporte.fecha }}</dd>
+
+            <dt>Usuario</dt>
+            <dd>{{ reporte.id_usuario }}</dd>
+
+            <dt>Donación</dt>
+            <dd>{{ reporte.id_donacion }}</dd>
+        </dl>
+
+        <label>
+            Estado
+            <select [(ngModel)]="estado" name="estado">
+                <option value="PENDIENTE">Pendiente</option>
+                <option value="EN_REVISION">En revisión</option>
+                <option value="RESUELTO">Resuelto</option>
+            </select>
+        </label>
+
+        <label>
+            Resolución
+            <textarea name="resolucion" [(ngModel)]="resolucion"></textarea>
+        </label>
+
+        @if (errorMessage) {
+            <p class="reporte-formulario__error">{{ errorMessage }}</p>
+        }
+
+        <button type="button" [disabled]="isLoading" (click)="resolver()">Guardar cambios</button>
+    }
+
+    @if (modoEdicion && isLoading && !reporte) {
+        <p>Cargando reporte...</p>
+    }
+
+</section>
