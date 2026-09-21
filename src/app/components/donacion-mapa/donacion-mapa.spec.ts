@@ -1,18 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DonacionMapa } from './donacion-mapa';
+import { DonacionMapaComponent } from './donacion-mapa.component';
 
-describe('DonacionMapa', () => {
-  let component: DonacionMapa;
-  let fixture: ComponentFixture<DonacionMapa>;
+describe('DonacionMapaComponent', () => {
+  let component: DonacionMapaComponent;
+  let fixture: ComponentFixture<DonacionMapaComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DonacionMapa],
-    }).compileComponents();
+      imports: [DonacionMapaComponent]
+    })
+    .compileComponents();
 
-    fixture = TestBed.createComponent(DonacionMapa);
+    fixture = TestBed.createComponent(DonacionMapaComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {

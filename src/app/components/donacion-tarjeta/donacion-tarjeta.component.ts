@@ -6,8 +6,8 @@ import { Donacion, EstadoDonacion } from '../../models/donacion';
   selector: 'app-donacion-tarjeta',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './donacion-tarjeta.html',
-  styleUrl: './donacion-tarjeta.css'
+  templateUrl: './donacion-tarjeta.component.html',
+  styleUrl: './donacion-tarjeta.component.css'
 })
 export class DonacionTarjetaComponent {
   @Input({ required: true }) donacion!: Donacion;

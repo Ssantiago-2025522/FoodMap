@@ -28,6 +28,7 @@ export interface Donacion {
 
 export interface FiltrosDonacion {
   busqueda?: string;
+  pais?: string;
   categoria?: CategoriaDonacion | 'Todas';
   estado?: EstadoDonacion | 'Todos';
 }
