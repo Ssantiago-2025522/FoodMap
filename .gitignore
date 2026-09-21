@@ -46,3 +46,5 @@ Thumbs.db
 # Pruebas
 /backend/db/
 /backend/postman/
+/backend/.env
+/backend/sql

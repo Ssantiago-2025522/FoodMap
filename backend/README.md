@@ -1,70 +1,69 @@
-# FoodMap Backend
+# FoodMap · Backend (FM-004: Solicitudes, Notificaciones y Chat)
 
-Backend para FoodMap. Node.js + TypeScript + MySQL.
+Node.js + Express + MySQL (`mysql2`). Va en la carpeta `backend/` en la raíz del repositorio.
 
-## Requisitos
+## Puesta en marcha
 
-- Node.js 18+
-- MySQL 8+ con la base de datos creada a partir de `foodmapdb_in5bm.sql`
+1. **Base de datos** (MySQL 8.0.16+):
+   1. Crea la base y ejecuta `src/app/db/foodmapdb_in5bm.sql` sobre ella.
+   2. Ejecuta `backend/sql/01-migracion-solicitudes.sql` (agrega `cantidad_solicitada` y `comentario`).
+   3. (Opcional) `backend/sql/02-datos-de-prueba.sql` para tener usuarios y donaciones de ejemplo.
+2. **Configuración**: copia `.env.example` a `.env` y pon tus datos (sobre todo `DB_PASSWORD` y `DB_NAME`).
+3. **Dependencias y arranque** (Node 20+):
+   ```bash
+   cd backend
+   npm install express cors mysql2 dotenv
+   npm run dev
+   ```
+   Debe mostrar `Conectado a MySQL` y `API lista en http://localhost:3000`.
+   Comprueba abriendo http://localhost:3000/api/salud
+4. Levanta el frontend con `ng serve` (http://localhost:4200).
 
-## Instalación
+## Endpoints
+El usuario se envía con `?usuario=ID` o `id_usuario` en el body (temporal, hasta que exista el login).
+Los errores siempre responden `{ "error": "mensaje" }`.
 
-```bash
-npm install
-cp .env.example .env
-# edita .env con tus credenciales reales de MySQL
-npm run dev
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | `/api/solicitudes/donaciones-disponibles` | Donaciones que el usuario puede pedir |
+| POST | `/api/solicitudes` | Crear solicitud `{ id_donacion, id_usuario, cantidad_solicitada, comentario }` |
+| GET | `/api/solicitudes?rol=donador\|beneficiario` | Solicitudes recibidas / enviadas |
+| GET | `/api/solicitudes/historial` | Solicitudes respondidas y sus entregas |
+| GET | `/api/solicitudes/:id` | Detalle (solo participantes) |
+| PATCH | `/api/solicitudes/:id/aceptar` | Solo el donador. Crea chat y entrega, notifica |
+| PATCH | `/api/solicitudes/:id/rechazar` | Solo el donador. Notifica |
+| PATCH | `/api/solicitudes/:id/confirmar-recepcion` | Solo el beneficiario. `{ observaciones? }` |
+| GET | `/api/notificaciones[?leida=false]` | Notificaciones del usuario |
+| PATCH | `/api/notificaciones/:id/leida` | Marcar una como leída |
+| PATCH | `/api/notificaciones/leidas` | Marcar todas como leídas |
+| POST | `/api/notificaciones/cercanos` | `{ id_usuario, latitud, longitud, radio_km }` |
+| GET | `/api/chats` | Chats del usuario |
+| GET | `/api/chats/:id` | `{ chat, mensajes }` (solo participantes) |
+| POST | `/api/chats/:id/mensajes` | `{ id_usuario, contenido }` |
+
+## Reglas de negocio
+- No se puede solicitar la propia donación ni la misma donación dos veces (409).
+- Cantidad pedida ≤ disponible. Disponible = `donacion.cantidad` − suma de solicitudes ACEPTADAS.
+  Al aceptar la última unidad, la donación pasa a `estado = FALSE`.
+- Aceptar: solicitud `ACEPTADA` + fila en `chat` + fila en `entrega` (`PENDIENTE`) + notificación al beneficiario.
+- Confirmar recepción: `entrega.estado = 'ENTREGADA'` con fecha/hora actuales + notificación al donador.
+- Cada acción crea su notificación dentro de la misma transacción (si algo falla, no queda a medias).
+- El correo y teléfono del solicitante solo los recibe el donador.
+- Cercanía: fórmula de Haversine con `ubicacion.latitud/longitud`; radio máximo 50 km; no repite avisos.
+
+## Estructura (para que otros módulos sigan el mismo patrón)
 ```
+src/
+  server.js               # registra las rutas de cada módulo (una línea por módulo)
+  config/db.js            # pool MySQL y conTransaccion()
+  middlewares/            # usuario.js (identifica al usuario), errores.js
+  routes/  controllers/   # un par de archivos por módulo
+  helpers/notificar.js    # crear notificaciones
+  utils/                  # HttpError, validaciones, fragmentos SQL
+```
+Cuando exista el login, solo se cambia `middlewares/usuario.js` para leer el token.
 
-El servidor queda en `http://localhost:3000`. Puedes probar `GET /api/health`.
-
-## Estado actual — Backend completo
-
-- [x] Módulo de **solicitudes** (crear, listar, ver, aceptar, rechazar).
-- [x] Módulo de **notificaciones** (listar por usuario, marcar leída).
-  - Automáticas: nueva solicitud, aceptada, rechazada, entrega confirmada, alimento cercano.
-- [x] Endpoint mínimo de **donaciones** (solo creación) para disparar la notificación de "alimento cercano".
-- [x] Módulo de **entregas** (confirmar recepción). Se crea automáticamente en `PENDIENTE` al aceptar una solicitud.
-- [x] Módulo de **historial** (solicitudes ya resueltas + su entrega).
-- [x] Módulo de **chat y mensajes** (REST, sin Socket.IO por ahora).
-
-## Endpoints de Solicitudes
-
-| Método | Ruta | Descripción |
-|---|---|---|
-| POST | `/api/solicitudes` | Crea una solicitud. Body: `{ id_donacion, id_usuario }` |
-| GET | `/api/solicitudes?usuario=<id>&rol=donador\|beneficiario` | Lista solicitudes según el rol del usuario |
-| GET | `/api/solicitudes/:id` | Detalle de una solicitud |
-| PATCH | `/api/solicitudes/:id/aceptar` | Acepta (crea chat + entrega automáticamente) |
-| PATCH | `/api/solicitudes/:id/rechazar` | Rechaza |
-| PATCH | `/api/solicitudes/:id/confirmar-recepcion` | Confirma la entrega. Body: `{ id_usuario, observaciones? }` |
-
-## Endpoints de Notificaciones
-
-| Método | Ruta | Descripción |
-|---|---|---|
-| GET | `/api/notificaciones?usuario=<id>` | Lista notificaciones de un usuario |
-| PATCH | `/api/notificaciones/:id/leida?usuario=<id>` | Marca como leída (valida que sea dueño) |
-
-## Endpoints de Donaciones
-
-| Método | Ruta | Descripción |
-|---|---|---|
-| POST | `/api/donaciones` | Publica una donación (crea también su ubicación) y notifica a usuarios de la misma zona. Body: `{ titulo, descripcion, cantidad?, fecha_vencimiento?, imagen, id_usuario, id_categoria, ubicacion: { departamento, municipio, direccion, latitud?, longitud?, referencia? } }` |
-
-## Endpoints de Historial
-
-| Método | Ruta | Descripción |
-|---|---|---|
-| GET | `/api/historial?usuario=<id>&rol=donador\|beneficiario` | Solicitudes ya resueltas (no PENDIENTE) + su entrega, si la tuvo |
-
-## Endpoints de Chat
-
-| Método | Ruta | Descripción |
-|---|---|---|
-| GET | `/api/chats?usuario=<id>` | Lista las conversaciones donde participa el usuario, con vista previa del último mensaje |
-| GET | `/api/chats/:id?usuario=<id>` | Trae un chat puntual + todos sus mensajes (valida que sea participante) |
-| POST | `/api/chats/:id/mensajes` | Envía un mensaje. Body: `{ id_usuario, contenido }` |
-
-
-
+## Si algo falla
+- `Unknown column 'cantidad_solicitada'` → falta ejecutar `01-migracion-solicitudes.sql`.
+- `No se pudo conectar a MySQL` → revisa `.env` (usuario, contraseña, nombre de la base).
+- El navegador dice error de CORS → `FRONTEND_ORIGIN` debe ser la URL exacta del frontend.

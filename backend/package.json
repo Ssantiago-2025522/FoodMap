@@ -1,24 +1,17 @@
 {
   "name": "foodmap-backend",
   "version": "1.0.0",
-  "description": "Backend de FoodMap - Node.js + TypeScript + MySQL",
-  "main": "dist/app.js",
+  "private": true,
+  "type": "module",
+  "description": "API de FoodMap (módulo de solicitudes, notificaciones y chat)",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
-    "build": "tsc",
-    "start": "node dist/app.js"
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
   },
   "dependencies": {
-    "express": "^4.19.2",
-    "mysql2": "^3.11.0",
-    "dotenv": "^16.4.5",
-    "cors": "^2.8.5"
-  },
-  "devDependencies": {
-    "typescript": "^5.5.4",
-    "ts-node-dev": "^2.0.0",
-    "@types/express": "^4.17.21",
-    "@types/node": "^20.14.10",
-    "@types/cors": "^2.8.17"
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.2",
+    "express": "^5.2.1",
+    "mysql2": "^3.24.4"
   }
 }
