@@ -3,6 +3,22 @@ const ApiError = require('../utils/ApiError');
 
 const ESTADOS_VALIDOS = ['Disponible', 'Reservada', 'Entregada', 'Expirada'];
 
+// Mapeo entre las cadenas del Frontend y los enteros de la Base de Datos
+const ESTADOS_MAP = {
+  'Disponible': 1,
+  'Reservada': 2,
+  'Entregada': 3,
+  'Expirada': 4
+};
+
+// Mapeo inverso para devolver texto al Frontend en la serialización
+const ESTADOS_REVERSO = {
+  1: 'Disponible',
+  2: 'Reservada',
+  3: 'Entregada',
+  4: 'Expirada'
+};
+
 const SELECT_BASE = `
   SELECT
     d.id_donacion,
@@ -30,7 +46,8 @@ function serializarDonacion(fila) {
     descripcion: fila.descripcion,
     categoria: fila.categoria_nombre,
     cantidad: Number(fila.cantidad),
-    estado: fila.estado,
+    // Convierte el entero de MySQL al string que espera Angular
+    estado: ESTADOS_REVERSO[fila.estado] || fila.estado,
     ubicacion: fila.direccion,
     latitud: fila.latitud !== null ? Number(fila.latitud) : null,
     longitud: fila.longitud !== null ? Number(fila.longitud) : null,
@@ -147,6 +164,10 @@ async function crear(req, res, next) {
 
     const idCategoria = await obtenerOcrearCategoria(conexion, categoria);
 
+    // Convertir el estado en texto a su número entero correspondiente (por defecto 1 = Disponible)
+    const estadoTexto = estado || 'Disponible';
+    const estadoNumerico = ESTADOS_MAP[estadoTexto] || 1;
+
     const [resultadoDonacion] = await conexion.query(
       `INSERT INTO donacion
         (titulo, descripcion, cantidad, fecha_vencimiento, estado, imagen, id_usuario, id_ubicacion, id_categoria)
@@ -156,7 +177,7 @@ async function crear(req, res, next) {
         String(descripcion).trim(),
         Number(cantidad),
         fechaExpiracion,
-        estado || 'Disponible',
+        estadoNumerico,
         imagen ?? null,
         req.usuario.id_usuario,
         resultadoUbicacion.insertId,
@@ -254,7 +275,7 @@ async function actualizar(req, res, next) {
     }
     if (estado !== undefined) {
       camposDonacion.push('estado = ?');
-      valoresDonacion.push(estado);
+      valoresDonacion.push(ESTADOS_MAP[estado] || 1);
     }
     if (categoria !== undefined) {
       const idCategoria = await obtenerOcrearCategoria(conexion, categoria);
