@@ -1,0 +1,4 @@
+USE foodmapdb_in5bm;
+
+ALTER TABLE usuario
+  ADD COLUMN oculto BOOLEAN NOT NULL DEFAULT FALSE AFTER id_rol;

@@ -6,5 +6,6 @@ export interface Usuario {
     contrasena: string;
     fecha_registro: Date;
     foto: string;
-    id_rol: number
+    id_rol: number;
+    oculto: boolean;
 }

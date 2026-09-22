@@ -9,7 +9,8 @@ import { DonacionService } from '../../../../services/donacion.service';
     selector: 'app-reportes-lista',
     standalone: true,
     imports: [CommonModule, FormsModule, RouterLink],
-    templateUrl: './reportes-lista.html'
+    templateUrl: './reportes-lista.html',
+    styleUrl: './reportes-lista.css'
 })
 export class ReportesLista implements OnInit {
     reportes: any[] = [];

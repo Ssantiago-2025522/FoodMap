@@ -9,7 +9,8 @@ import { Role } from '../../../../core/models/role.enum';
     selector: 'app-usuarios-lista',
     standalone: true,
     imports: [CommonModule, FormsModule, RouterLink],
-    templateUrl: './usuarios-lista.html'
+    templateUrl: './usuarios-lista.html',
+    styleUrl: './usuarios-lista.css'
 })
 export class UsuariosLista implements OnInit {
     usuarios: any[] = [];
@@ -75,14 +76,14 @@ export class UsuariosLista implements OnInit {
     }
 
     publicacionesOcultas(usuario: any): boolean {
-        return (usuario.total_publicaciones ?? 0) > 0 &&
-            (usuario.publicaciones_ocultas ?? 0) >= (usuario.total_publicaciones ?? 0);
+     
+        return Boolean(usuario.oculto);
     }
 
     alternarPublicaciones(usuario: any): void {
         const ocultarAhora = !this.publicacionesOcultas(usuario);
         const mensaje = ocultarAhora
-            ? '¿Ocultar todas las publicaciones de este usuario?'
+            ? '¿Ocultar todas las publicaciones de este usuario (incluidas las futuras)?'
             : '¿Volver a mostrar todas las publicaciones de este usuario?';
 
         if (!confirm(mensaje)) return;
@@ -91,6 +92,7 @@ export class UsuariosLista implements OnInit {
         this.usuarioApiService.ocultarPublicaciones(usuario.id_usuario, ocultarAhora).subscribe({
             next: () => {
                 this.isLoading = false;
+                usuario.oculto = ocultarAhora;
                 usuario.publicaciones_ocultas = ocultarAhora ? usuario.total_publicaciones : 0;
                 this.cdr.markForCheck();
             },
