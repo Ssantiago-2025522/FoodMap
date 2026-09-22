@@ -1,7 +1,9 @@
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const { pool } = require('../config/db');
 const { firmarToken } = require('../utils/jwt');
 const ApiError = require('../utils/ApiError');
+const { enviarCorreoRecuperacion } = require('../helpers/correo');
 
 const ROLES = { ADMIN: 1, MODERADOR: 2, BENEFICIARIO: 3, DONADOR: 4 };
 
@@ -9,6 +11,25 @@ const ROLES_AUTOREGISTRO = [ROLES.BENEFICIARIO, ROLES.DONADOR];
 
 const CAMPOS_USUARIO =
   'id_usuario, username, correo, telefono, id_rol, foto, fecha_registro';
+
+// La foto es opcional y se guarda como data URL (base64). Se limita el tamaño
+// para evitar que alguien intente guardar archivos enormes en la base de datos.
+const FOTO_MAX_CARACTERES = 2_000_000; // ~1.5 MB de imagen aproximadamente
+const DURACION_TOKEN_RECUPERACION_MS = 60 * 60 * 1000; // 1 hora
+
+function validarFoto(foto) {
+  if (foto === undefined || foto === null) return;
+  if (typeof foto !== 'string' || !/^data:image\/(png|jpe?g|webp|gif);base64,/.test(foto)) {
+    throw new ApiError(400, 'La foto de perfil debe ser una imagen válida.');
+  }
+  if (foto.length > FOTO_MAX_CARACTERES) {
+    throw new ApiError(400, 'La foto de perfil es demasiado grande.');
+  }
+}
+
+function hashToken(token) {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
 
 function serializarUsuario(fila) {
   return {
@@ -108,4 +129,194 @@ async function login(req, res, next) {
   }
 }
 
-module.exports = { register, login };
+async function perfil(req, res, next) {
+  try {
+    const [filas] = await pool.query(
+      `SELECT ${CAMPOS_USUARIO} FROM usuario WHERE id_usuario = ? LIMIT 1`,
+      [req.usuario.id_usuario]
+    );
+
+    if (filas.length === 0) {
+      throw new ApiError(404, 'El usuario indicado no existe.');
+    }
+
+    res.status(200).json(serializarUsuario(filas[0]));
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function actualizarPerfil(req, res, next) {
+  try {
+    const { username, foto } = req.body;
+
+    const campos = [];
+    const valores = [];
+
+    if (username !== undefined) {
+      if (!username || String(username).trim().length < 3) {
+        throw new ApiError(400, 'El nombre de usuario debe tener al menos 3 caracteres.');
+      }
+      campos.push('username = ?');
+      valores.push(String(username).trim());
+    }
+
+    if (foto !== undefined) {
+      validarFoto(foto);
+      campos.push('foto = ?');
+      valores.push(foto ?? null); // null = quitar la foto (es opcional)
+    }
+
+    if (campos.length === 0) {
+      throw new ApiError(400, 'No se recibió ningún dato para actualizar.');
+    }
+
+    valores.push(req.usuario.id_usuario);
+
+    await pool.query(`UPDATE usuario SET ${campos.join(', ')} WHERE id_usuario = ?`, valores);
+
+    const [filas] = await pool.query(
+      `SELECT ${CAMPOS_USUARIO} FROM usuario WHERE id_usuario = ? LIMIT 1`,
+      [req.usuario.id_usuario]
+    );
+
+    res.status(200).json(serializarUsuario(filas[0]));
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function cambiarContrasena(req, res, next) {
+  try {
+    const { contrasenaActual, contrasenaNueva } = req.body;
+
+    if (!contrasenaActual || !contrasenaNueva) {
+      throw new ApiError(400, 'Debes indicar la contraseña actual y la nueva.');
+    }
+    if (String(contrasenaNueva).length < 8) {
+      throw new ApiError(400, 'La nueva contraseña debe tener al menos 8 caracteres.');
+    }
+
+    const [filas] = await pool.query(
+      'SELECT contrasena FROM usuario WHERE id_usuario = ? LIMIT 1',
+      [req.usuario.id_usuario]
+    );
+
+    if (filas.length === 0) {
+      throw new ApiError(404, 'El usuario indicado no existe.');
+    }
+
+    const coincide = await bcrypt.compare(contrasenaActual, filas[0].contrasena);
+    if (!coincide) {
+      throw new ApiError(401, 'La contraseña actual no es correcta.');
+    }
+
+    const hash = await bcrypt.hash(contrasenaNueva, 10);
+    await pool.query('UPDATE usuario SET contrasena = ? WHERE id_usuario = ?', [
+      hash,
+      req.usuario.id_usuario
+    ]);
+
+    res.status(200).json({ message: 'Contraseña actualizada correctamente.' });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function solicitarRecuperacion(req, res, next) {
+  try {
+    const { correo } = req.body;
+
+    if (!correo) {
+      throw new ApiError(400, 'Debes indicar tu correo.');
+    }
+
+    const mensajeRespuesta = {
+      message: 'Si el correo existe en nuestro sistema, se enviaron las instrucciones para restablecer la contraseña.'
+    };
+
+    const [filas] = await pool.query(
+      'SELECT id_usuario, correo FROM usuario WHERE correo = ? LIMIT 1',
+      [String(correo).trim().toLowerCase()]
+    );
+
+    // No revelamos si el correo existe o no, para no facilitar enumeración de usuarios.
+    if (filas.length === 0) {
+      return res.status(200).json(mensajeRespuesta);
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenHash = hashToken(token);
+    const expira = new Date(Date.now() + DURACION_TOKEN_RECUPERACION_MS);
+
+    await pool.query(
+      'UPDATE usuario SET reset_token = ?, reset_token_expira = ? WHERE id_usuario = ?',
+      [tokenHash, expira, filas[0].id_usuario]
+    );
+
+    const origenFrontend = process.env.FRONTEND_ORIGIN || 'http://localhost:4200';
+    const enlace = `${origenFrontend}/restablecer-contrasena?token=${token}`;
+
+    await enviarCorreoRecuperacion(filas[0].correo, enlace);
+
+    const respuesta = { ...mensajeRespuesta };
+    // Solo en desarrollo, para poder probar el flujo sin tener un correo real
+    // conectado: se devuelve el enlace en la respuesta.
+    if (process.env.NODE_ENV !== 'production') {
+      respuesta.enlaceDesarrollo = enlace;
+    }
+
+    res.status(200).json(respuesta);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function restablecerContrasena(req, res, next) {
+  try {
+    const { token, contrasenaNueva } = req.body;
+
+    if (!token || !contrasenaNueva) {
+      throw new ApiError(400, 'Faltan datos para restablecer la contraseña.');
+    }
+    if (String(contrasenaNueva).length < 8) {
+      throw new ApiError(400, 'La nueva contraseña debe tener al menos 8 caracteres.');
+    }
+
+    const tokenHash = hashToken(String(token));
+
+    const [filas] = await pool.query(
+      `SELECT id_usuario FROM usuario
+       WHERE reset_token = ? AND reset_token_expira > NOW()
+       LIMIT 1`,
+      [tokenHash]
+    );
+
+    if (filas.length === 0) {
+      throw new ApiError(400, 'El enlace de recuperación no es válido o ya expiró.');
+    }
+
+    const hash = await bcrypt.hash(contrasenaNueva, 10);
+
+    await pool.query(
+      `UPDATE usuario
+       SET contrasena = ?, reset_token = NULL, reset_token_expira = NULL
+       WHERE id_usuario = ?`,
+      [hash, filas[0].id_usuario]
+    );
+
+    res.status(200).json({ message: 'Contraseña restablecida correctamente. Ya puedes iniciar sesión.' });
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = {
+  register,
+  login,
+  perfil,
+  actualizarPerfil,
+  cambiarContrasena,
+  solicitarRecuperacion,
+  restablecerContrasena
+};

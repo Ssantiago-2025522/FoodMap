@@ -20,6 +20,18 @@ export const routes: Routes = [
     loadComponent: () => import('@features/auth/register/register').then((m) => m.Register)
   },
   {
+    path: 'olvide-contrasena',
+    title: 'FoodMap | Recuperar contraseña',
+    loadComponent: () =>
+      import('@features/auth/forgot-password/forgot-password').then((m) => m.ForgotPassword)
+  },
+  {
+    path: 'restablecer-contrasena',
+    title: 'FoodMap | Restablecer contraseña',
+    loadComponent: () =>
+      import('@features/auth/reset-password/reset-password').then((m) => m.ResetPassword)
+  },
+  {
     path: '',
     loadComponent: () => import('@layouts/main-layout/main-layout').then((m) => m.MainLayout),
     canActivateChild: [authGuard],

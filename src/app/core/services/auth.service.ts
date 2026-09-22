@@ -1,6 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { AuthResponse, LoginCredentials, RegisterData, User } from '../models/auth.model';
+import {
+  ActualizarPerfilData,
+  AuthResponse,
+  CambiarContrasenaData,
+  LoginCredentials,
+  MensajeRespuesta,
+  RegisterData,
+  RestablecerContrasenaData,
+  User
+} from '../models/auth.model';
 import { AuthApiService } from './auth-api.service';
 import { TokenService } from './token.service';
 import { UserService } from './user.service';
@@ -47,6 +56,24 @@ export class AuthService {
 
   getToken(): string | null {
     return this.tokenService.getToken();
+  }
+
+  actualizarPerfil(data: ActualizarPerfilData): Observable<User> {
+    return this.authApiService
+      .actualizarPerfil(data)
+      .pipe(tap((usuario) => this.userService.setUser(usuario)));
+  }
+
+  cambiarContrasena(data: CambiarContrasenaData): Observable<MensajeRespuesta> {
+    return this.authApiService.cambiarContrasena(data);
+  }
+
+  olvideContrasena(correo: string): Observable<MensajeRespuesta> {
+    return this.authApiService.olvideContrasena(correo);
+  }
+
+  restablecerContrasena(data: RestablecerContrasenaData): Observable<MensajeRespuesta> {
+    return this.authApiService.restablecerContrasena(data);
   }
 
   logout(): void {
