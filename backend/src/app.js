@@ -24,7 +24,9 @@ app.use(
   })
 );
 
-app.use(express.json());
+// Se aumenta el límite por defecto (100kb) porque la foto de perfil se envía
+// como una imagen en base64 dentro del cuerpo JSON.
+app.use(express.json({ limit: '3mb' }));
 
 app.use('/api', (req, res, next) => {
   res.set('Cache-Control', 'no-store');
