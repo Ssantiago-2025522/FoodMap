@@ -54,6 +54,14 @@
 
             <dt>Donación</dt>
             <dd>{{ reporte.id_donacion }}</dd>
+
+            <dt>Visibilidad de la donación</dt>
+            <dd>
+                {{ reporte.donacion_oculta ? 'Oculta' : 'Visible' }}
+                <button type="button" [disabled]="isLoading" (click)="alternarVisibilidadDonacion()">
+                    {{ reporte.donacion_oculta ? 'Mostrar donación' : 'Ocultar donación' }}
+                </button>
+            </dd>
         </dl>
 
         <label>

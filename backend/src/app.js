@@ -9,6 +9,8 @@ const { noEncontrado, errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
 
+app.set('etag', false);
+
 const origenesPermitidos = (process.env.CORS_ORIGIN || 'http://localhost:4200')
   .split(',')
   .map((origen) => origen.trim());
@@ -22,6 +24,11 @@ app.use(
 );
 
 app.use(express.json());
+
+app.use('/api', (req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+});
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
