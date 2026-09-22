@@ -5,6 +5,7 @@ const authRoutes = require('./routes/authRoutes');
 const donacionRoutes = require('./routes/donacionRoutes');
 const reporteRoutes = require('./routes/reporteRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
+const notificacionesRoutes = require('./routes/notificaciones.routes');
 const solicitudesRoutes = require('./routes/solicitudes.routes');
 const { noEncontrado, errorHandler } = require('./middlewares/errorHandler');
 
@@ -40,6 +41,7 @@ app.use('/api/donaciones', donacionRoutes);
 app.use('/api/reportes', reporteRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/solicitudes', solicitudesRoutes);
+app.use('/api/notificaciones', notificacionesRoutes);
 
 app.use(noEncontrado);
 app.use(errorHandler);

@@ -4,21 +4,7 @@ const ApiError = require('../utils/ApiError');
 const ESTADOS_VALIDOS = ['Disponible', 'Reservada', 'Entregada', 'Expirada'];
 const ROL_ADMIN = 1;
 
-// Mapeo entre las cadenas del Frontend y los enteros de la Base de Datos
-const ESTADOS_MAP = {
-  'Disponible': 1,
-  'Reservada': 2,
-  'Entregada': 3,
-  'Expirada': 4
-};
 
-// Mapeo inverso para devolver texto al Frontend en la serialización
-const ESTADOS_REVERSO = {
-  1: 'Disponible',
-  2: 'Reservada',
-  3: 'Entregada',
-  4: 'Expirada'
-};
 
 const SELECT_BASE = `
   SELECT
@@ -34,28 +20,36 @@ const SELECT_BASE = `
     d.id_usuario,
     c.nombre AS categoria_nombre,
     u.direccion,
+    u.municipio,
+    u.departamento,
     u.latitud,
-    u.longitud
+    u.longitud,
+    us.username AS username_donador
   FROM donacion d
   JOIN categoria c ON c.id_categoria = d.id_categoria
   JOIN ubicacion u ON u.id_ubicacion = d.id_ubicacion
+  JOIN usuario us ON us.id_usuario = d.id_usuario
 `;
+
 
 function serializarDonacion(fila) {
   return {
-    id: String(fila.id_donacion),
+    id_donacion: Number(fila.id_donacion),
     titulo: fila.titulo,
     descripcion: fila.descripcion,
     categoria: fila.categoria_nombre,
     cantidad: Number(fila.cantidad),
-    // Convierte el entero de MySQL al string que espera Angular
-    estado: ESTADOS_REVERSO[fila.estado] || fila.estado,
+    estado: fila.estado,
     oculta: Boolean(fila.oculta),
     ubicacion: fila.direccion,
+    municipio: fila.municipio || 'No especificado',
+    departamento: fila.departamento || 'No especificado',
+    username_donador: fila.username_donador || 'Anónimo',
     latitud: fila.latitud !== null ? Number(fila.latitud) : null,
     longitud: fila.longitud !== null ? Number(fila.longitud) : null,
     fechaCreacion: fila.fecha_publicacion,
-    fechaExpiracion: fila.fecha_vencimiento,
+    fecha_vencimiento: fila.fecha_vencimiento,
+    imagen: fila.imagen || '',
     idUsuario: fila.id_usuario
   };
 }
@@ -106,10 +100,12 @@ async function obtenerOcrearCategoria(conexion, nombreCategoria) {
 
 async function listar(req, res, next) {
   try {
- 
     const [filas] = await pool.query(
       `${SELECT_BASE} WHERE d.oculta = FALSE ORDER BY d.fecha_publicacion DESC`
     );
+
+    console.log("FILAS ENCONTRADAS EN MYSQL:", filas);
+
     res.status(200).json(filas.map(serializarDonacion));
   } catch (error) {
     next(error);
@@ -160,8 +156,8 @@ async function crear(req, res, next) {
       `INSERT INTO ubicacion (departamento, municipio, direccion, latitud, longitud)
        VALUES (?, ?, ?, ?, ?)`,
       [
-        'No especificado',
-        'No especificado',
+        'Guatemala',
+        'Guatemala',
         String(ubicacion).trim(),
         latitud ?? null,
         longitud ?? null
@@ -170,9 +166,7 @@ async function crear(req, res, next) {
 
     const idCategoria = await obtenerOcrearCategoria(conexion, categoria);
 
-    // Convertir el estado en texto a su número entero correspondiente (por defecto 1 = Disponible)
     const estadoTexto = estado || 'Disponible';
-    const estadoNumerico = ESTADOS_MAP[estadoTexto] || 1;
 
     const [resultadoDonacion] = await conexion.query(
       `INSERT INTO donacion
@@ -183,7 +177,7 @@ async function crear(req, res, next) {
         String(descripcion).trim(),
         Number(cantidad),
         fechaExpiracion,
-        estadoNumerico,
+        estadoTexto,
         imagen ?? null,
         req.usuario.id_usuario,
         resultadoUbicacion.insertId,
@@ -281,7 +275,7 @@ async function actualizar(req, res, next) {
     }
     if (estado !== undefined) {
       camposDonacion.push('estado = ?');
-      valoresDonacion.push(ESTADOS_MAP[estado] || 1);
+      valoresDonacion.push(estado);
     }
     if (categoria !== undefined) {
       const idCategoria = await obtenerOcrearCategoria(conexion, categoria);
@@ -336,7 +330,7 @@ async function cambiarVisibilidad(req, res, next) {
 
 async function eliminar(req, res, next) {
   try {
-    const { id } = req.params;
+    const { id } = req.params;  
 
     const [resultado] = await pool.query('DELETE FROM donacion WHERE id_donacion = ?', [id]);
 

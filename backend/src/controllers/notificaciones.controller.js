@@ -1,13 +1,13 @@
-import { pool } from '../config/db.js';
-import { HttpError } from '../utils/http-error.js';
-import { entero } from '../utils/validar.js';
-import { DISPONIBLE, VIGENTE } from '../utils/sql.js';
-import { recortar } from '../helpers/notificar.js';
+const { pool } = require('../config/db.js');
+const { HttpError } = require('../utils/http-error.js');
+const { entero } = require('../utils/validar.js');
+const { DISPONIBLE, VIGENTE } = require('../utils/sql.js');
+const { recortar } = require('../helpers/notificar.js');
 
 const TITULO_CERCANO = 'Alimento cercano';
 const RADIO_MAXIMO_KM = 50;
 
-export async function listar(req, res) {
+async function listar(req, res) {
   const soloNoLeidas = req.query.leida === 'false';
   const [filas] = await pool.query(
     `SELECT id_notificacion, titulo, mensaje, fecha, leida, id_usuario
@@ -20,7 +20,7 @@ export async function listar(req, res) {
   res.json(filas);
 }
 
-export async function marcarLeida(req, res) {
+async function marcarLeida(req, res) {
   const id = entero(req.params.id, 'El id de la notificación');
   const [r] = await pool.query(
     'UPDATE notificacion SET leida = TRUE WHERE id_notificacion = ? AND id_usuario = ?',
@@ -36,7 +36,7 @@ export async function marcarLeida(req, res) {
   res.json(fila);
 }
 
-export async function marcarTodasLeidas(req, res) {
+async function marcarTodasLeidas(req, res) {
   const [r] = await pool.query(
     'UPDATE notificacion SET leida = TRUE WHERE id_usuario = ? AND leida = FALSE',
     [req.idUsuario]
@@ -44,7 +44,7 @@ export async function marcarTodasLeidas(req, res) {
   res.json({ actualizadas: r.affectedRows });
 }
 
-export async function generarCercanas(req, res) {
+async function generarCercanas(req, res) {
   const latitud = Number(req.body?.latitud);
   const longitud = Number(req.body?.longitud);
   const radioKm = Number(req.body?.radio_km ?? 5);
@@ -62,8 +62,8 @@ export async function generarCercanas(req, res) {
   const [cercanas] = await pool.query(
     `SELECT d.id_donacion, d.titulo, u.municipio, don.username AS donador,
             (6371 * ACOS(LEAST(1, GREATEST(-1,
-               COS(RADIANS(?)) * COS(RADIANS(u.latitud)) * COS(RADIANS(u.longitud) - RADIANS(?))
-             + SIN(RADIANS(?)) * SIN(RADIANS(u.latitud)))))) AS distancia_km
+                COS(RADIANS(?)) * COS(RADIANS(u.latitud)) * COS(RADIANS(u.longitud) - RADIANS(?))
+              + SIN(RADIANS(?)) * SIN(RADIANS(u.latitud)))))) AS distancia_km
      FROM donacion d
      JOIN ubicacion u ON u.id_ubicacion = d.id_ubicacion
      JOIN usuario don ON don.id_usuario = d.id_usuario
@@ -100,3 +100,10 @@ export async function generarCercanas(req, res) {
   }
   res.json({ generadas: nuevos.length });
 }
+
+module.exports = {
+  listar,
+  marcarLeida,
+  marcarTodasLeidas,
+  generarCercanas
+};
