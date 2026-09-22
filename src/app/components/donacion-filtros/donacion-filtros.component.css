@@ -1,0 +1,54 @@
+.contenedor-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  background-color: #f8fafc;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 1.5rem;
+}
+
+.grupo-filtro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 180px;
+}
+
+.grupo-filtro.busqueda {
+  flex: 2;
+  min-width: 250px;
+}
+
+.grupo-filtro label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.grupo-filtro input,
+.grupo-filtro select {
+  padding: 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background-color: #ffffff;
+}
+
+.btn-limpiar {
+  padding: 0.5rem 1rem;
+  background-color: #64748b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  height: 36px;
+}
+
+.btn-limpiar:hover {
+  background-color: #475569;
+}

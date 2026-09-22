@@ -1,1 +1,21 @@
-<p>profile works!</p>
+<section class="perfil">
+  <h1>Mi perfil</h1>
+
+  @if (user) {
+    <dl class="perfil__datos">
+      <dt>Usuario</dt>
+      <dd>{{ user.username }}</dd>
+
+      <dt>Correo</dt>
+      <dd>{{ user.correo }}</dd>
+
+      <dt>Teléfono</dt>
+      <dd>{{ user.telefono }}</dd>
+
+      <dt>Rol</dt>
+      <dd>{{ rol }}</dd>
+    </dl>
+  }
+
+  <button type="button" class="perfil__salir" (click)="logout()">Cerrar sesión</button>
+</section>

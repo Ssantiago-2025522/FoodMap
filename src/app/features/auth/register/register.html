@@ -1,2 +1,75 @@
-<p>register works!</p>
-    
+<div class="register-page">
+  <div class="register-card">
+    <h1 class="register-title">Crea tu cuenta</h1>
+    <p class="register-subtitle">Únete a FoodMap y ayuda a que ningún alimento se desperdicie.</p>
+
+    @if (errorMessage()) {
+      <div class="error-banner">{{ errorMessage() }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="register()" novalidate>
+      <div class="form-group">
+        <label for="username">Nombre de usuario</label>
+        <input id="username" type="text" formControlName="username" placeholder="tu_usuario" />
+        @if (invalido('username')) {
+          <small class="field-error">Ingresa un nombre de usuario (mínimo 3 caracteres).</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="correo">Correo electrónico</label>
+        <input id="correo" type="email" formControlName="correo" placeholder="tu@correo.com" />
+        @if (invalido('correo')) {
+          <small class="field-error">Ingresa un correo válido.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="telefono">Teléfono</label>
+        <input id="telefono" type="tel" formControlName="telefono" placeholder="12345678" />
+        @if (invalido('telefono')) {
+          <small class="field-error">El teléfono debe tener entre 8 y 10 dígitos.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="id_rol">¿Cómo quieres participar?</label>
+        <select id="id_rol" formControlName="id_rol">
+          @for (rol of roles; track rol.id) {
+            <option [ngValue]="rol.id">{{ rol.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="contrasena">Contraseña</label>
+        <input id="contrasena" type="password" formControlName="contrasena" placeholder="••••••••" />
+        @if (invalido('contrasena')) {
+          <small class="field-error">Mínimo 8 caracteres, con al menos un número y una mayúscula.</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="confirmarContrasena">Confirmar contraseña</label>
+        <input
+          id="confirmarContrasena"
+          type="password"
+          formControlName="confirmarContrasena"
+          placeholder="••••••••"
+        />
+        @if (invalido('confirmarContrasena')) {
+          <small class="field-error">Confirma tu contraseña; ambas deben coincidir.</small>
+        }
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="isLoading()">
+        {{ isLoading() ? 'Creando cuenta...' : 'Registrarme' }}
+      </button>
+    </form>
+
+    <p class="login-footer">
+      ¿Ya tienes cuenta?
+      <a routerLink="/login">Inicia sesión</a>
+    </p>
+  </div>
+</div>

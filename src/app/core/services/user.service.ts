@@ -1,28 +1,41 @@
-// src/app/core/services/user.service.ts
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { User } from '../models/auth.model';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class UserService {
-    private userSubject = new BehaviorSubject<User | null>(null);
-    user$ = this.userSubject.asObservable();
+  private readonly USER_KEY = 'usuario';
 
-    setUser(user: User): void {
-        this.userSubject.next(user);
-    }
+  private userSubject = new BehaviorSubject<User | null>(this.leerUsuarioGuardado());
+  user$ = this.userSubject.asObservable();
 
-    getUser(): User | null {
-        return this.userSubject.value;
-    }
+  setUser(user: User): void {
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    this.userSubject.next(user);
+  }
 
-    hasUser(): boolean {
-        return !!this.userSubject.value;
-    }
+  getUser(): User | null {
+    return this.userSubject.value;
+  }
 
-    removeUser(): void {
-        this.userSubject.next(null);
+  hasUser(): boolean {
+    return !!this.userSubject.value;
+  }
+
+  removeUser(): void {
+    localStorage.removeItem(this.USER_KEY);
+    this.userSubject.next(null);
+  }
+
+  private leerUsuarioGuardado(): User | null {
+    try {
+      const guardado = localStorage.getItem(this.USER_KEY);
+      return guardado ? (JSON.parse(guardado) as User) : null;
+    } catch {
+      localStorage.removeItem(this.USER_KEY);
+      return null;
     }
+  }
 }

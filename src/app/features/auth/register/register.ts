@@ -1,61 +1,73 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { RegisterData } from '../../../core/models/auth.model';
-import { AuthService } from '../../../core/services/auth.service';
-import { Role } from '../../../core/models/role.enum';
+import { Component, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { RegisterData } from '@core/models/auth.model';
+import { Role } from '@core/models/role.enum';
+import { AuthService } from '@core/services/auth.service';
+import { mensajeDeError } from '@core/utils/http-error';
+import { matchPasswordValidator } from '@shared/validators/match-password.validator';
+import { passwordValidator } from '@shared/validators/password.validator';
 
 @Component({
   selector: 'app-register',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './register.html'
+  imports: [ReactiveFormsModule, RouterLink],
+  templateUrl: './register.html',
+  styleUrl: './register.css'
 })
 export class Register {
-  registerData: RegisterData = {
-    username: '',
-    correo: '',
-    telefono: '',
-    contrasena: '',
-    id_rol: Role.USER,
-    foto: null
-  };
+  private fb = inject(FormBuilder);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  isLoading = false;
-  errorMessage = '';
+  readonly roles = [
+    { id: Role.BENEFICIARIO, nombre: 'Quiero recibir alimentos' },
+    { id: Role.DONADOR, nombre: 'Quiero donar alimentos' }
+  ];
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  readonly form = this.fb.nonNullable.group(
+    {
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      correo: ['', [Validators.required, Validators.email]],
+      telefono: ['', [Validators.required, Validators.pattern(/^\d{8,10}$/)]],
+      contrasena: ['', [Validators.required, passwordValidator()]],
+      confirmarContrasena: ['', Validators.required],
+      id_rol: [Role.BENEFICIARIO as number, Validators.required]
+    },
+    { validators: matchPasswordValidator() }
+  );
+
+  isLoading = signal(false);
+  errorMessage = signal('');
 
   register(): void {
-    this.errorMessage = '';
+    this.errorMessage.set('');
 
-    if (
-      !this.registerData.username ||
-      !this.registerData.correo ||
-      !this.registerData.telefono ||
-      !this.registerData.contrasena
-    ) {
-      this.errorMessage = 'Todos los campos obligatorios deben completarse.';
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
 
-    this.isLoading = true;
+    const { confirmarContrasena: _confirmar, ...valores } = this.form.getRawValue();
+    const data: RegisterData = { ...valores, foto: null };
 
-    this.authService
-      .register(this.registerData)
-      .subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.router.navigate(['/inicio']);
-        },
-        error: (error: any) => {
-          this.isLoading = false;
-          console.error('Error de registro:', error);
-          this.errorMessage = error?.error?.message ?? 'No se pudo registrar el usuario.';
-        }
-      });
+    this.isLoading.set(true);
+
+    this.authService.register(data).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.router.navigate(['/inicio']);
+      },
+      error: (error: HttpErrorResponse) => {
+        this.isLoading.set(false);
+        console.error('Error de registro:', error);
+        this.errorMessage.set(mensajeDeError(error, 'No se pudo registrar el usuario.'));
+      }
+    });
+  }
+
+  invalido(campo: string): boolean {
+    const control = this.form.get(campo);
+    return !!control && control.invalid && control.touched;
   }
 }

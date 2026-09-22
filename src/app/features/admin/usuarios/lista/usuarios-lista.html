@@ -1,0 +1,85 @@
+<section class="usuarios">
+
+    <header class="usuarios__header">
+        <h1>Gestión de Usuarios</h1>
+        <a class="boton" routerLink="/admin/usuarios/nuevo">Nuevo usuario</a>
+    </header>
+
+    <div class="usuarios__filtros">
+
+        <label>
+            Buscar
+            <input
+                type="text"
+                [(ngModel)]="busqueda"
+                placeholder="Nombre o correo"
+            />
+        </label>
+
+    </div>
+
+    @if (isLoading) {
+        <p>Cargando usuarios...</p>
+    }
+
+    @if (errorMessage) {
+        <p class="usuarios__error">{{ errorMessage }}</p>
+    }
+
+    @if (!isLoading && usuariosFiltrados.length === 0) {
+        <p>No hay usuarios que coincidan con la búsqueda.</p>
+    }
+
+    @if (!isLoading && usuariosFiltrados.length > 0) {
+
+        <table class="usuarios__tabla">
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Usuario</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th>Registro</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @for (usuario of usuariosFiltrados; track usuario.id_usuario) {
+                    <tr>
+                        <td>{{ usuario.id_usuario }}</td>
+                        <td>{{ usuario.username }}</td>
+                        <td>{{ usuario.correo }}</td>
+                        <td>{{ usuario.telefono }}</td>
+                        <td>{{ usuario.fecha_registro | date: 'short' }}</td>
+                        <td>
+                            <select
+                                [ngModel]="usuario.id_rol"
+                                (ngModelChange)="cambiarRol(usuario, $event)"
+                            >
+                                <option [value]="Role.ADMIN">Admin</option>
+                                <option [value]="Role.MODERADOR">Moderador</option>
+                                <option [value]="Role.BENEFICIARIO">Beneficiario</option>
+                                <option [value]="Role.DONADOR">Donador</option>
+                            </select>
+                        </td>
+                        <td>
+                            <a [routerLink]="['/admin/usuarios', usuario.id_usuario]">Editar</a>
+                            @if (usuario.id_rol !== Role.ADMIN) {
+                                <button type="button" (click)="hacerAdmin(usuario)">Hacer admin</button>
+                            }
+                            <button type="button" (click)="alternarPublicaciones(usuario)">
+                                {{ publicacionesOcultas(usuario) ? 'Mostrar publicaciones' : 'Ocultar publicaciones' }}
+                            </button>
+                            <button type="button" (click)="eliminar(usuario.id_usuario)">Eliminar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    }
+
+</section>

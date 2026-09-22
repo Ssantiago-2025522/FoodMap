@@ -7,6 +7,7 @@ export interface Reporte {
     resolucion?: string | null;
     id_usuario: number;
     id_donacion: number;
+    donacion_oculta?: boolean | number;
 }
 
 export interface ReporteData {

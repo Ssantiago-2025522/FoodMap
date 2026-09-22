@@ -1,0 +1,57 @@
+<section class="chats-container">
+
+    <div class="page-header">
+
+        <h1>Chats</h1>
+
+        <p>
+            Conversaciones activas con donadores y beneficiarios.
+        </p>
+
+    </div>
+
+    <input
+        #campo
+        class="busqueda"
+        type="search"
+        aria-label="Buscar conversación"
+        placeholder="Buscar por nombre o donación..."
+        (input)="busqueda.set(campo.value)"
+    >
+
+    @if (cargando()) {
+        <p class="mensaje-estado">Cargando chats…</p>
+    } @else if (error()) {
+        <p class="mensaje-error" role="alert">{{ error() }}</p>
+    } @else {
+        @for (chat of visibles(); track chat.id_chat) {
+            <a class="chat-card" [routerLink]="['/chat', chat.id_chat]">
+
+                <div class="avatar" aria-hidden="true">
+                    {{ chat.username_contraparte.charAt(0) }}
+                </div>
+
+                <div class="chat-info">
+
+                    <h3>{{ chat.username_contraparte }}</h3>
+
+                    <p>{{ chat.titulo_donacion }}</p>
+
+                    <p>{{ chat.ultimo_mensaje ?? 'Aún no hay mensajes' }}</p>
+
+                    @if (chat.fecha_ultimo_mensaje) {
+                        <small>{{ chat.fecha_ultimo_mensaje | date: 'dd/MM/yyyy HH:mm' }}</small>
+                    }
+
+                </div>
+
+            </a>
+        } @empty {
+            <p class="mensaje-estado">
+                {{ busqueda() ? 'Ninguna conversación coincide con tu búsqueda.'
+                              : 'Cuando un donador acepte una solicitud, el chat aparecerá aquí.' }}
+            </p>
+        }
+    }
+
+</section>

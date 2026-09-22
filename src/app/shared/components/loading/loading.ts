@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
-  imports: [],
   selector: 'app-loading',
-  styleUrl: './loading.css',
   templateUrl: './loading.html',
+  styleUrl: './loading.css'
 })
 export class Loading {
+  readonly mensaje = input('Cargando...');
 }

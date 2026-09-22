@@ -1,1 +1,60 @@
-<p>admin works!</p>
+<section class="admin-panel">
+  <header class="admin-panel__header">
+    <div>
+      <span class="badge-sostenible">FoodMap Admin</span>
+      <h1>Panel de administración</h1>
+      <p class="admin-panel__subtitulo">
+        Hola{{ usuario ? ', ' + usuario!.username : '' }}, gestiona donaciones y reportes desde aquí.
+      </p>
+    </div>
+  </header>
+
+  <div class="admin-panel__grid">
+    <a class="admin-tarjeta admin-tarjeta--destacada" routerLink="/donaciones" [queryParams]="{ crear: '1' }">
+      <span class="admin-tarjeta__icono"></span>
+      <div class="admin-tarjeta__texto">
+        <h2>Crear donación</h2>
+        <p>Publica una nueva donación de alimentos directamente en el mapa y el listado.</p>
+      </div>
+      <span class="admin-tarjeta__flecha">→</span>
+    </a>
+
+    <a class="admin-tarjeta" routerLink="/donaciones">
+      <span class="admin-tarjeta__icono"></span>
+      <div class="admin-tarjeta__texto">
+        <h2>Gestionar donaciones</h2>
+        <p>Consulta, edita o cambia el estado de las donaciones publicadas.</p>
+      </div>
+      <span class="admin-tarjeta__flecha">→</span>
+    </a>
+
+    <a class="admin-tarjeta" routerLink="/admin/usuarios">
+      <span class="admin-tarjeta__icono"></span>
+      <div class="admin-tarjeta__texto">
+        <h2>Gestionar usuarios</h2>
+        <p>Busca, edita, elimina o asciende usuarios a administrador.</p>
+      </div>
+      <span class="admin-tarjeta__flecha">→</span>
+    </a>
+
+    <a class="admin-tarjeta" routerLink="/admin/reportes">
+      <span class="admin-tarjeta__icono"></span>
+      <div class="admin-tarjeta__texto">
+        <h2>Reportes</h2>
+        <p>Revisa y da seguimiento a los reportes de donaciones y usuarios.</p>
+      </div>
+      <span class="admin-tarjeta__flecha">→</span>
+    </a>
+
+    <a class="admin-tarjeta" routerLink="/admin/reportes/nuevo">
+      <span class="admin-tarjeta__icono"></span>
+      <div class="admin-tarjeta__texto">
+        <h2>Nuevo reporte</h2>
+        <p>Registra manualmente un nuevo reporte en el sistema.</p>
+      </div>
+      <span class="admin-tarjeta__flecha">→</span>
+    </a>
+  </div>
+
+  <button type="button" class="admin-panel__volver" (click)="volverseInicio()">← Volver al inicio</button>
+</section>

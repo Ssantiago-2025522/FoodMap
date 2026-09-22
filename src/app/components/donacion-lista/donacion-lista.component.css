@@ -1,0 +1,17 @@
+.contenedor-lista {
+  width: 100%;
+}
+
+.grid-donaciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.lista-vacia {
+  text-align: center;
+  padding: 3rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  color: #64748b;
+}

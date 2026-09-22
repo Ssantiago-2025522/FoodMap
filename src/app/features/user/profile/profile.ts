@@ -1,25 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { User } from '../../../core/models/auth.model';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService } from '@core/services/auth.service';
+import { Role } from '@core/models/role.enum';
 
 @Component({
   selector: 'app-profile',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './profile.html'
+  templateUrl: './profile.html',
+  styleUrl: './profile.css'
 })
-export class Profile implements OnInit {
-  user: User | null = null;
+export class Profile {
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  readonly user = this.authService.getUsuario();
 
-  ngOnInit(): void {
-    this.user = this.authService.getUsuario();
+  get rol(): string {
+    return this.user ? (Role[this.user.id_rol] ?? 'DESCONOCIDO') : '';
   }
 
   logout(): void {
