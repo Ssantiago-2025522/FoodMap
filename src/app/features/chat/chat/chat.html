@@ -1,0 +1,57 @@
+<section class="chat-container">
+
+    @if (cargando()) {
+        <p class="mensaje-estado">Cargando chat…</p>
+    } @else if (detalle(); as d) {
+
+        <div class="chat-header">
+
+            <h2>Chat con {{ d.chat.username_contraparte }}</h2>
+
+            <p>Solicitud: {{ d.chat.titulo_donacion }}</p>
+
+            <a routerLink="/lista-chats">Volver a chats</a>
+
+        </div>
+
+        <div class="mensajes" #contenedor aria-live="polite">
+
+            @for (m of d.mensajes; track m.id_mensaje) {
+                <div [class]="esMio(m) ? 'mensaje-enviado' : 'mensaje-recibido'">
+                    {{ m.contenido }}
+                    <small>{{ m.fecha_envio | date: 'shortTime' }}</small>
+                </div>
+            } @empty {
+                <p class="mensaje-estado">Escribe el primer mensaje para coordinar la entrega.</p>
+            }
+
+        </div>
+
+        @if (error()) {
+            <p class="mensaje-error" role="alert">{{ error() }}</p>
+        }
+
+        <form class="chat-input" (ngSubmit)="enviar()">
+
+            <input
+                type="text"
+                name="texto"
+                maxlength="255"
+                autocomplete="off"
+                aria-label="Mensaje"
+                placeholder="Escribe un mensaje..."
+                [(ngModel)]="texto"
+            />
+
+            <button type="submit" [disabled]="enviando() || !texto().trim()">
+                Enviar
+            </button>
+
+        </form>
+
+    } @else {
+        <p class="mensaje-error" role="alert">{{ error() || 'No se encontró el chat.' }}</p>
+        <a routerLink="/lista-chats">Volver a chats</a>
+    }
+
+</section>

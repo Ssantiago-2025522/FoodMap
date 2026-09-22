@@ -1,0 +1,135 @@
+<section class="detalle-container">
+
+    <div class="page-header">
+
+        <h1>Detalle de Solicitud</h1>
+
+        <p>
+            {{ puedeResponder() ? 'Revisa la información antes de aceptar o rechazar.' : 'Información de la solicitud.' }}
+        </p>
+
+        <button class="btn-regresar" routerLink="/solicitudes">
+            Regresar
+        </button>
+
+    </div>
+
+    @if (cargando()) {
+        <p class="mensaje-estado">Cargando solicitud…</p>
+    } @else if (solicitud(); as s) {
+
+        <div class="detalle-info">
+
+            <div class="detalle-card">
+
+                <h2>{{ s.titulo_donacion }}</h2>
+
+                <div class="info-item">
+                    <strong>Donador:</strong>
+                    {{ s.username_donador }}
+                </div>
+
+                <div class="info-item">
+                    <strong>Solicitante:</strong>
+                    {{ s.username_solicitante }}
+                </div>
+
+                @if (s.correo_solicitante) {
+                    <div class="info-item">
+                        <strong>Correo:</strong>
+                        {{ s.correo_solicitante }}
+                    </div>
+                }
+
+                @if (s.telefono_solicitante) {
+                    <div class="info-item">
+                        <strong>Teléfono:</strong>
+                        {{ s.telefono_solicitante }}
+                    </div>
+                }
+
+                <div class="info-item">
+                    <strong>Cantidad solicitada:</strong>
+                    {{ s.cantidad_solicitada }} de {{ s.cantidad_donacion }}
+                </div>
+
+                <div class="info-item">
+                    <strong>Ubicación:</strong>
+                    {{ s.municipio }}, {{ s.departamento }}
+                </div>
+
+                <div class="info-item">
+                    <strong>Fecha:</strong>
+                    {{ s.fecha_solicitud | date: 'dd/MM/yyyy HH:mm' }}
+                </div>
+
+                <div class="info-item">
+                    <strong>Estado:</strong>
+                    <span [class]="'estado-' + s.estado.toLowerCase()">
+                        {{ s.estado.charAt(0) + s.estado.slice(1).toLowerCase() }}
+                    </span>
+                </div>
+
+                @if (s.estado === 'ACEPTADA') {
+                    <div class="info-item">
+                        <strong>Entrega:</strong>
+                        {{ s.estado_entrega === 'ENTREGADA' ? 'Recibida' : 'Pendiente de recepción' }}
+                    </div>
+                }
+
+                @if (s.comentario) {
+                    <div class="comentario">
+                        <h3>Comentario</h3>
+                        <p>{{ s.comentario }}</p>
+                    </div>
+                }
+
+                @if (error()) {
+                    <p class="mensaje-error" role="alert">{{ error() }}</p>
+                }
+
+                <div class="acciones">
+
+                    @if (puedeResponder()) {
+                        @if (confirmandoRechazo()) {
+                            <p>¿Seguro que quieres rechazar esta solicitud?</p>
+                            <button class="btn-rechazar" (click)="rechazarSolicitud()" [disabled]="procesando()">
+                                Sí, rechazar
+                            </button>
+                            <button (click)="confirmandoRechazo.set(false)">Cancelar</button>
+                        } @else {
+                            <button class="btn-aceptar" (click)="aceptarSolicitud()" [disabled]="procesando()">
+                                Aceptar
+                            </button>
+                            <button class="btn-rechazar" (click)="confirmandoRechazo.set(true)" [disabled]="procesando()">
+                                Rechazar
+                            </button>
+                        }
+                    }
+
+                    @if (puedeConfirmar()) {
+                        <div class="form-group">
+                            <label for="observaciones">Observaciones de la entrega (opcional)</label>
+                            <textarea id="observaciones" rows="3" maxlength="255"
+                                [(ngModel)]="observaciones" name="observaciones"></textarea>
+                        </div>
+                        <button class="btn-aceptar" (click)="confirmarRecepcion()" [disabled]="procesando()">
+                            Confirmar recepción
+                        </button>
+                    }
+
+                    @if (s.estado === 'ACEPTADA' && s.id_chat) {
+                        <button [routerLink]="['/chat', s.id_chat]">Abrir chat</button>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    } @else {
+        <p class="mensaje-error" role="alert">{{ error() || 'No se encontró la solicitud.' }}</p>
+    }
+
+</section>

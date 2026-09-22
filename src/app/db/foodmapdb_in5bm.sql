@@ -223,6 +223,10 @@ CREATE TABLE mensaje (
         ON UPDATE CASCADE
 );
 
+-- =====================================================
+-- ÍNDICES
+-- =====================================================
+
 CREATE INDEX idx_usuario_rol
     ON usuario(id_rol);
 
@@ -262,9 +266,23 @@ CREATE INDEX idx_notificacion_usuario
 CREATE INDEX idx_notificacion_leida
     ON notificacion(leida);
 
+-- =====================================================
+-- DATOS INICIALES
+-- =====================================================
+
 INSERT INTO rol (nombre, descripcion)
 VALUES
     ('ADMIN', 'Administrador del sistema'),
     ('MODERADOR', 'Moderador de contenido y usuarios'),
     ('BENEFICIARIO', 'Usuario que recibe donaciones'),
-    ('DONADOR', 'Usuario que realiza donaciones');
+    ('DONADOR', 'Usuario que realiza donaciones'),
+    ('ESTUDIANTE', 'Usuario estudiante que utiliza la plataforma');
+
+-- =====================================================
+-- COLUMNAS NUEVAS EN LA TABLA SOLICITUD
+-- =====================================================
+
+ALTER TABLE solicitud
+    ADD COLUMN cantidad_solicitada INT NOT NULL DEFAULT 1,
+    ADD COLUMN comentario VARCHAR(255) NULL,
+    ADD CONSTRAINT chk_solicitud_cantidad CHECK (cantidad_solicitada > 0);

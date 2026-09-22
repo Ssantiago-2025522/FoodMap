@@ -45,6 +45,54 @@ export const routes: Routes = [
           import('./paginas/donaciones/donaciones.component').then((m) => m.DonacionesComponent)
       },
       {
+        path: 'solicitudes',
+        title: 'FoodMap | Solicitudes',
+        loadComponent: () =>
+          import('./features/solicitudes/lista-solicitudes/lista-solicitudes').then((m) => m.ListaSolicitudes)
+      },
+      {
+        path: 'crear-solicitud',
+        title: 'FoodMap | Crear Solicitud',
+        loadComponent: () =>
+          import('./features/solicitudes/crear-solicitud/crear-solicitud').then((m) => m.CrearSolicitud)
+      },
+      {
+        path: 'crear-solicitud/:idDonacion',
+        title: 'FoodMap | Crear Solicitud',
+        loadComponent: () =>
+          import('./features/solicitudes/crear-solicitud/crear-solicitud').then((m) => m.CrearSolicitud)
+      },
+      {
+        path: 'detalle-solicitud/:id',
+        title: 'FoodMap | Detalle de Solicitud',
+        loadComponent: () =>
+          import('./features/solicitudes/detalle-solicitud/detalle-solicitud').then((m) => m.DetalleSolicitud)
+      },
+      {
+        path: 'notificaciones',
+        title: 'FoodMap | Notificaciones',
+        loadComponent: () =>
+          import('./features/notificaciones/lista-notificaciones/lista-notificaciones').then((m) => m.ListaNotificaciones)
+      },
+      {
+        path: 'historial',
+        title: 'FoodMap | Historial de Solicitudes',
+        loadComponent: () =>
+          import('./features/historial/historial-solicitudes/historial-solicitudes').then((m) => m.HistorialSolicitudes)
+      },
+      {
+        path: 'lista-chats',
+        title: 'FoodMap | Mensajes',
+        loadComponent: () =>
+          import('./features/chat/lista-chats/lista-chats').then((m) => m.ListaChats)
+      },
+      {
+        path: 'chat/:idChat',
+        title: 'FoodMap | Chat',
+        loadComponent: () =>
+          import('./features/chat/chat/chat').then((m) => m.Chat)
+      },
+      {
         path: 'admin',
         title: 'FoodMap | Administración',
         canActivate: [roleGuard],

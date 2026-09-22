@@ -1,0 +1,70 @@
+<section class="crear-solicitud-container">
+
+    <div class="page-header">
+        <h1>Solicitar Donación</h1>
+        <p>Elige una donación disponible y completa la información para enviar tu solicitud.</p>
+    </div>
+
+    <form class="solicitud-form" (ngSubmit)="confirmarSolicitud()">
+
+        <fieldset class="form-group donaciones-lista">
+            <legend>Donaciones disponibles</legend>
+
+            @if (cargando()) {
+                <p class="mensaje-estado">Cargando donaciones…</p>
+            } @else {
+                @for (d of donaciones(); track d.id_donacion) {
+                    <label class="donacion-opcion" [class.seleccionada]="idDonacion() === d.id_donacion">
+                        <input type="radio" name="donacion"
+                            [value]="d.id_donacion"
+                            [checked]="idDonacion() === d.id_donacion"
+                            (change)="seleccionar(d)">
+                        <span class="donacion-titulo">{{ d.titulo }}</span>
+                        <span class="donacion-detalle">{{ d.descripcion }}</span>
+                        <span class="donacion-detalle">Disponible: {{ d.cantidad }}</span>
+                        <span class="donacion-detalle">{{ d.municipio }}, {{ d.departamento }}</span>
+                        <span class="donacion-detalle">Donador: {{ d.username_donador }}</span>
+                        @if (d.fecha_vencimiento) {
+                            <span class="donacion-detalle">Vence: {{ d.fecha_vencimiento | date: 'dd/MM/yyyy' }}</span>
+                        }
+                    </label>
+                } @empty {
+                    <p class="mensaje-estado">No hay donaciones disponibles por ahora.</p>
+                }
+            }
+        </fieldset>
+
+        <div class="form-group">
+            <label for="cantidad">Cantidad solicitada</label>
+            <input id="cantidad" type="number" min="1"
+                [max]="donacionSeleccionada()?.cantidad ?? null"
+                placeholder="Ingrese la cantidad"
+                [(ngModel)]="cantidadSolicitada"
+                name="cantidadSolicitada">
+        </div>
+
+        <div class="form-group">
+            <label for="comentario">Comentario</label>
+            <textarea id="comentario" rows="4" maxlength="255"
+                placeholder="Cuéntale al donador por qué necesitas esta donación"
+                [(ngModel)]="comentario"
+                name="comentario"></textarea>
+        </div>
+
+        @if (error()) {
+            <p class="mensaje-error" role="alert">{{ error() }}</p>
+        }
+
+        <div class="acciones">
+            <button type="submit" [disabled]="enviando() || cargando()">
+                {{ enviando() ? 'Enviando...' : 'Enviar Solicitud' }}
+            </button>
+        </div>
+
+    </form>
+
+    <div>
+        <button type="button" routerLink="/solicitudes">Regresar</button>
+    </div>
+
+</section>

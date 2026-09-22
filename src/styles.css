@@ -8,6 +8,14 @@
   --color-gris-oscuro: #2D3436;
   --color-blanco: #FFFFFF;
   --color-borde: #EAE5DC;
+  --color-rojo-error: #B42318;
+
+  /* Aliases para compatibilidad */
+  --verde: var(--color-verde);
+  --naranja: var(--color-naranja);
+  --crema: var(--color-crema);
+  --gris-oscuro: var(--color-gris-oscuro);
+  --rojo-error: var(--color-rojo-error);
 
   --fuente-titulos: 'Playfair Display', serif;
   --fuente-cuerpo: 'Plus Jakarta Sans', sans-serif;
@@ -94,7 +102,6 @@ h1 {
   margin-bottom: 20px;
 }
 
-
 .leaflet-container {
   width: 100% !important;
   height: 380px !important;
@@ -124,3 +131,23 @@ h1 {
   font-weight: 600;
   cursor: pointer;
 }
+
+/* Mensajes y estados */
+.mensaje-estado { color: var(--color-gris-oscuro); padding: 1.25rem 0; }
+.mensaje-error  { color: var(--color-rojo-error); padding: .5rem 0; }
+
+/* Tabs de navegación */
+.tabs { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+.tab {
+  font: inherit; padding: .5rem 1rem; border-radius: 999px; cursor: pointer;
+  border: 1.5px solid var(--color-verde); background: transparent; color: var(--color-verde);
+}
+.tab.activa { background: var(--color-verde); color: #fff; font-weight: 600; }
+.tab:disabled { opacity: .5; cursor: not-allowed; }
+.tab:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--color-naranja); outline-offset: 2px; }
+
+/* Badges de estado */
+.estado { display: inline-block; padding: .1rem .6rem; border-radius: 999px; font-size: .85rem; font-weight: 600; }
+.estado.pendiente { background: var(--color-naranja); color: var(--color-gris-oscuro); }
+.estado.aceptada  { background: var(--color-verde);   color: #fff; }
+.estado.rechazada { background: #fde4e1; color: var(--color-rojo-error); border: 1px solid var(--color-rojo-error); }

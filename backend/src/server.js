@@ -15,7 +15,7 @@ async function iniciar() {
     if (error.code === 'ER_BAD_DB_ERROR') {
       console.error('La base de datos no existe. Créala con: npm run db:init');
     } else {
-      console.error('Revisa DB_HOST, DB_USER, DB_PASSWORD y DB_NAME en backend/.env');
+      console.error('Revisa DB_HOST, DB_USER, DB_PASSWORD y DB_NAME en .env');
     }
     process.exit(1);
   }

@@ -9,7 +9,14 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  dateStrings: true
+  dateStrings: true,
+  typeCast(field, next) {
+    if (field.type === 'TINY' && field.length === 1) {
+      const valor = field.string();
+      return valor === null ? null : valor === '1';
+    }
+    return next();
+  },
 });
 
 async function verificarConexion() {
@@ -21,4 +28,23 @@ async function verificarConexion() {
   }
 }
 
-module.exports = { pool, verificarConexion };
+async function conTransaccion(fn) {
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+    const resultado = await fn(conn);
+    await conn.commit();
+    return resultado;
+  } catch (error) {
+    await conn.rollback();
+    throw error;
+  } finally {
+    conn.release();
+  }
+}
+
+module.exports = {
+  pool,
+  verificarConexion,
+  conTransaccion,
+};
