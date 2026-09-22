@@ -1,92 +1,57 @@
 <section class="reporte-formulario">
+    <h1>{{ modoEdicion ? 'Detalle del Reporte #' + (data.id_reporte || data.id || '') : 'Nuevo Reporte' }}</h1>
 
-    @if (!modoEdicion) {
+    <form (ngSubmit)="guardar()">
+        @if (!modoEdicion) {
+            <div class="campo">
+                <label>Motivo</label>
+                <input type="text" [(ngModel)]="data.motivo" name="motivo" required />
+            </div>
 
-        <h1>Nuevo Reporte</h1>
+            <div class="campo">
+                <label>Descripción</label>
+                <textarea [(ngModel)]="data.descripcion" name="descripcion" required></textarea>
+            </div>
 
-        <form (ngSubmit)="guardar()">
+            <div class="campo">
+                <label>ID Usuario</label>
+                <input type="number" [(ngModel)]="data.id_usuario" name="id_usuario" required />
+            </div>
 
-            <label>
-                Motivo
-                <input type="text" name="motivo" [(ngModel)]="data.motivo" required />
-            </label>
+            <div class="campo">
+                <label>ID Donación</label>
+                <input type="number" [(ngModel)]="data.id_donacion" name="id_donacion" required />
+            </div>
+        } @else {
+            <div class="campo">
+                <label>Motivo</label>
+                <input type="text" [value]="data.motivo" readonly />
+            </div>
 
-            <label>
-                Descripción
-                <textarea name="descripcion" [(ngModel)]="data.descripcion" required></textarea>
-            </label>
+            <div class="campo">
+                <label>Descripción</label>
+                <textarea readonly>{{ data.descripcion }}</textarea>
+            </div>
 
-            <label>
-                ID Usuario
-                <input type="number" name="id_usuario" [(ngModel)]="data.id_usuario" required />
-            </label>
+            <div class="campo">
+                <label>Fecha</label>
+                <input type="text" [value]="data.fecha" readonly />
+            </div>
 
-            <label>
-                ID Donación
-                <input type="number" name="id_donacion" [(ngModel)]="data.id_donacion" required />
-            </label>
+            <div class="campo">
+                <label>Estado</label>
+                <select [(ngModel)]="data.estado" name="estado">
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Resuelto">Resuelto</option>
+                </select>
+            </div>
 
-            @if (errorMessage) {
-                <p class="reporte-formulario__error">{{ errorMessage }}</p>
-            }
-
-            <button type="submit" [disabled]="isLoading">Guardar</button>
-
-        </form>
-    }
-
-    @if (modoEdicion && reporte) {
-
-        <h1>Detalle del Reporte #{{ reporte.id_reporte }}</h1>
-
-        <dl class="reporte-formulario__detalle">
-            <dt>Motivo</dt>
-            <dd>{{ reporte.motivo }}</dd>
-
-            <dt>Descripción</dt>
-            <dd>{{ reporte.descripcion }}</dd>
-
-            <dt>Fecha</dt>
-            <dd>{{ reporte.fecha }}</dd>
-
-            <dt>Usuario</dt>
-            <dd>{{ reporte.id_usuario }}</dd>
-
-            <dt>Donación</dt>
-            <dd>{{ reporte.id_donacion }}</dd>
-
-            <dt>Visibilidad de la donación</dt>
-            <dd>
-                {{ reporte.donacion_oculta ? 'Oculta' : 'Visible' }}
-                <button type="button" [disabled]="isLoading" (click)="alternarVisibilidadDonacion()">
-                    {{ reporte.donacion_oculta ? 'Mostrar donación' : 'Ocultar donación' }}
-                </button>
-            </dd>
-        </dl>
-
-        <label>
-            Estado
-            <select [(ngModel)]="estado" name="estado">
-                <option value="PENDIENTE">Pendiente</option>
-                <option value="EN_REVISION">En revisión</option>
-                <option value="RESUELTO">Resuelto</option>
-            </select>
-        </label>
-
-        <label>
-            Resolución
-            <textarea name="resolucion" [(ngModel)]="resolucion"></textarea>
-        </label>
-
-        @if (errorMessage) {
-            <p class="reporte-formulario__error">{{ errorMessage }}</p>
+            <div class="campo">
+                <label>Resolución</label>
+                <textarea [(ngModel)]="data.resolucion" name="resolucion"></textarea>
+            </div>
         }
 
-        <button type="button" [disabled]="isLoading" (click)="resolver()">Guardar cambios</button>
-    }
-
-    @if (modoEdicion && isLoading && !reporte) {
-        <p>Cargando reporte...</p>
-    }
-
+        <button type="submit">{{ modoEdicion ? 'Guardar cambios' : 'Guardar' }}</button>
+    </form>
 </section>
