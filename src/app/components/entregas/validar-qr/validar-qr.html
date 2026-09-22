@@ -1,0 +1,34 @@
+<div class="contenedor-validar-qr">
+  <h2>Validar código QR y confirmar entrega</h2>
+
+  <div class="campo">
+    <label for="codigoIngresado">Código QR</label>
+    <input
+      type="text"
+      id="codigoIngresado"
+      name="codigoIngresado"
+      [(ngModel)]="codigoIngresado"
+    />
+  </div>
+
+  <div class="acciones">
+    <button type="button" (click)="confirmarPorQr()">Validar y confirmar</button>
+    <button type="button" (click)="limpiar()">Limpiar</button>
+  </div>
+
+  <p class="mensaje-error" *ngIf="mensajeError">{{ mensajeError }}</p>
+  <p class="mensaje-exito" *ngIf="mensajeExito">{{ mensajeExito }}</p>
+
+  <div class="detalle-entrega" *ngIf="entregaValidada">
+    <h3>Datos de la entrega</h3>
+    <p><strong>ID:</strong> {{ entregaValidada.id }}</p>
+    <p><strong>Donador:</strong> {{ entregaValidada.donadorId }}</p>
+    <p><strong>Beneficiario:</strong> {{ entregaValidada.beneficiarioId }}</p>
+    <p><strong>Descripción:</strong> {{ entregaValidada.descripcion }}</p>
+    <p><strong>Estado:</strong> {{ entregaValidada.estado }}</p>
+    <p><strong>Código QR:</strong> {{ entregaValidada.codigoQr }}</p>
+    <p *ngIf="entregaValidada.fechaConfirmacion">
+      <strong>Fecha de confirmación:</strong> {{ entregaValidada.fechaConfirmacion }}
+    </p>
+  </div>
+</div>

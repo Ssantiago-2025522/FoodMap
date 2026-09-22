@@ -1,0 +1,52 @@
+.contenedor-historial-reputacion {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.campo {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  max-width: 300px;
+}
+
+.campo label {
+  margin-bottom: 4px;
+  font-weight: bold;
+}
+
+.campo input {
+  padding: 8px;
+}
+
+.acciones {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.mensaje-error {
+  color: red;
+}
+
+.resultado-historial {
+  margin-top: 16px;
+}
+
+.tabla-historial {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+.tabla-historial th,
+.tabla-historial td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+.tabla-historial th {
+  background-color: #f2f2f2;
+}

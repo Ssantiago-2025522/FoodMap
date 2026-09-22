@@ -1,1 +1,211 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600;700;800&display=swap');
+
+:root {
+  --verde-principal: #2E8B57;
+  --verde-oscuro: #1e6b3d;
+  --crema: #FAF7F2;
+  --gris-oscuro: #2D3436;
+  --blanco: #ffffff;
+  --gris-suave: #eef2f0;
+  --gris-borde: rgba(45, 52, 54, 0.14);
+  --sombras: rgba(45, 52, 54, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--crema);
+  color: var(--gris-oscuro);
+}
+
+body {
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+  margin: 0 0 12px;
+  color: var(--gris-oscuro);
+  letter-spacing: -0.02em;
+}
+
+p, label, input, textarea, button, a, th, td {
+  font-family: 'DM Sans', sans-serif;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid var(--gris-borde);
+  background: var(--blanco);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: var(--gris-oscuro);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: rgba(46, 139, 87, 0.62);
+  box-shadow: 0 0 0 4px rgba(46, 139, 87, 0.1);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.campo label {
+  font-weight: 600;
+  color: var(--gris-oscuro);
+}
+
+.acciones {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+button[type='submit'],
+button[type='button'] {
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--verde-principal), var(--verde-oscuro));
+  color: var(--blanco);
+  padding: 12px 18px;
+  font-weight: 700;
+  box-shadow: 0 10px 18px rgba(46, 139, 87, 0.22);
+  cursor: pointer;
+}
+
+button[type='button'] {
+  background: var(--gris-suave);
+  color: var(--gris-oscuro);
+  border: 1px solid rgba(45, 52, 54, 0.08);
+  box-shadow: none;
+}
+
+button[type='button']:hover {
+  background: rgba(46, 139, 87, 0.08);
+}
+
+.mensaje-error {
+  color: #b42318;
+  background: rgba(180, 35, 24, 0.06);
+  border: 1px solid rgba(180, 35, 24, 0.12);
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin-top: 12px;
+}
+
+.mensaje-exito {
+  color: #1b7a3d;
+  background: rgba(46, 139, 87, 0.08);
+  border: 1px solid rgba(46, 139, 87, 0.12);
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin-top: 12px;
+}
+
+.mensaje-info {
+  color: var(--gris-oscuro);
+  background: rgba(46, 139, 87, 0.06);
+  border: 1px solid rgba(46, 139, 87, 0.12);
+  padding: 10px 12px;
+  border-radius: 12px;
+  margin-top: 12px;
+}
+
+.contenedor-crear-entrega,
+.contenedor-detalle-entrega,
+.contenedor-generar-qr,
+.contenedor-validar-qr,
+.contenedor-crear-calificacion,
+.contenedor-lista-calificaciones,
+.contenedor-historial-reputacion,
+.contenedor-promedio-calificaciones {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--gris-borde);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 18px 38px var(--sombras);
+  max-width: 760px;
+  margin: 0 auto;
+  backdrop-filter: blur(2px);
+  animation: fadeInUp 0.35s ease both;
+}
+
+.detalle-entrega,
+.detalle-qr,
+.detalle-calificacion,
+.tarjeta-estadistica,
+.historial-item {
+  margin-top: 20px;
+  background: linear-gradient(180deg, rgba(46, 139, 87, 0.04), rgba(46, 139, 87, 0.01));
+  border: 1px solid rgba(46, 139, 87, 0.12);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.tabla-calificaciones {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--blanco);
+  border: 1px solid rgba(45, 52, 54, 0.08);
+}
+
+.tabla-calificaciones th,
+.tabla-calificaciones td {
+  border-bottom: 1px solid rgba(45, 52, 54, 0.08);
+  padding: 12px 10px;
+  text-align: left;
+}
+
+.tabla-calificaciones th {
+  background: rgba(46, 139, 87, 0.08);
+  color: var(--gris-oscuro);
+  font-weight: 700;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
