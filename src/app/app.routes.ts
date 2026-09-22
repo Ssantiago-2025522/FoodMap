@@ -6,8 +6,9 @@ import { Role } from '@core/models/role.enum';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
-    pathMatch: 'full'
+    title: 'FoodMap | La comida que sobra llega a quien la necesita',
+    pathMatch: 'full',
+    loadComponent: () => import('@features/landing/landing').then((m) => m.Landing)
   },
   {
     path: 'login',
