@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReporteApiService } from '../../../../core/services/reporte-api.service';
+import { DonacionService } from '../../../../services/donacion.service';
 
 @Component({
     selector: 'app-reporte-formulario',
@@ -30,7 +31,9 @@ export class ReporteFormulario implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        private reporteApiService: ReporteApiService
+        private reporteApiService: ReporteApiService,
+        private donacionService: DonacionService,
+        private cdr: ChangeDetectorRef
     ) {}
 
     ngOnInit(): void {
@@ -50,11 +53,13 @@ export class ReporteFormulario implements OnInit {
                 this.data = { ...response };
                 this.estado = response?.estado ?? '';
                 this.resolucion = response?.resolucion ?? '';
+                this.cdr.markForCheck();
             },
             error: (error: any) => {
                 this.isLoading = false;
                 this.errorMessage = 'Error al cargar el reporte.';
                 console.error(error);
+                this.cdr.markForCheck();
             }
         });
     }
@@ -71,6 +76,7 @@ export class ReporteFormulario implements OnInit {
                     this.isLoading = false;
                     this.errorMessage = 'Error al actualizar.';
                     console.error(error);
+                    this.cdr.markForCheck();
                 }
             });
         } else {
@@ -83,9 +89,30 @@ export class ReporteFormulario implements OnInit {
                     this.isLoading = false;
                     this.errorMessage = 'Error al crear.';
                     console.error(error);
+                    this.cdr.markForCheck();
                 }
             });
         }
+    }
+
+    alternarVisibilidadDonacion(): void {
+        if (!this.reporte) return;
+        const nuevoValor = !this.reporte.donacion_oculta;
+
+        this.isLoading = true;
+        this.donacionService
+            .cambiarVisibilidad(String(this.reporte.id_donacion), nuevoValor)
+            .then(() => {
+                this.isLoading = false;
+                this.reporte.donacion_oculta = nuevoValor;
+                this.cdr.markForCheck();
+            })
+            .catch((error: any) => {
+                this.isLoading = false;
+                this.errorMessage = 'Error al cambiar la visibilidad de la donación.';
+                console.error(error);
+                this.cdr.markForCheck();
+            });
     }
 
     resolver(): void {
@@ -104,6 +131,7 @@ export class ReporteFormulario implements OnInit {
                 this.isLoading = false;
                 this.errorMessage = 'Error al resolver reporte.';
                 console.error(error);
+                this.cdr.markForCheck();
             }
         });
     }

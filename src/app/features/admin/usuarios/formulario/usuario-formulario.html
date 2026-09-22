@@ -1,0 +1,47 @@
+<section class="usuario-formulario">
+
+    <h1>{{ modoEdicion ? 'Editar usuario' : 'Nuevo usuario' }}</h1>
+
+    @if (isLoading) {
+        <p>Cargando...</p>
+    }
+
+    @if (errorMessage) {
+        <p class="usuario-formulario__error">{{ errorMessage }}</p>
+    }
+
+    <form (ngSubmit)="guardar()">
+        <label>
+            Usuario
+            <input type="text" [(ngModel)]="data.username" name="username" required />
+        </label>
+
+        <label>
+            Correo
+            <input type="email" [(ngModel)]="data.correo" name="correo" required />
+        </label>
+
+        <label>
+            Teléfono
+            <input type="text" [(ngModel)]="data.telefono" name="telefono" />
+        </label>
+
+        <label>
+            Contraseña {{ modoEdicion ? '(dejar vacío para no cambiar)' : '' }}
+            <input type="password" [(ngModel)]="data.contrasena" name="contrasena" [required]="!modoEdicion" />
+        </label>
+
+        <label>
+            Rol
+            <select [(ngModel)]="data.id_rol" name="id_rol">
+                <option [value]="1">Admin</option>
+                <option [value]="2">Moderador</option>
+                <option [value]="3">Beneficiario</option>
+                <option [value]="4">Donador</option>
+            </select>
+        </label>
+
+        <button type="submit">Guardar</button>
+    </form>
+
+</section>

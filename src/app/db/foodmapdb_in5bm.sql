@@ -1,6 +1,10 @@
-DROP DATABASE IF EXISTS foodmap_db_in5bm;
+DROP DATABASE IF EXISTS foodmapdb_in5bm;
 CREATE DATABASE IF NOT EXISTS foodmapdb_in5bm;
 USE foodmapdb_in5bm;
+
+-- =====================================================
+-- TABLAS PRINCIPALES
+-- =====================================================
 
 CREATE TABLE rol (
     id_rol BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -54,8 +58,9 @@ CREATE TABLE donacion (
     cantidad INT NOT NULL DEFAULT 1,
     fecha_publicacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_vencimiento DATETIME,
-    estado BOOLEAN NOT NULL DEFAULT TRUE,
-    imagen VARCHAR(225) NOT NULL,
+    imagen VARCHAR(225),
+    estado VARCHAR(20) NOT NULL DEFAULT 'Disponible',
+    oculta BOOLEAN NOT NULL DEFAULT FALSE,
     id_usuario BIGINT NOT NULL,
     id_ubicacion BIGINT NOT NULL,
     id_categoria BIGINT NOT NULL,
@@ -69,7 +74,7 @@ CREATE TABLE donacion (
     CONSTRAINT fk_donacion_ubicacion
         FOREIGN KEY (id_ubicacion)
         REFERENCES ubicacion(id_ubicacion)
-        ON DELETE CASCADE
+        ON DELETE RESTRICT
         ON UPDATE CASCADE,
 
     CONSTRAINT fk_donacion_categoria
@@ -77,9 +82,6 @@ CREATE TABLE donacion (
         REFERENCES categoria(id_categoria)
         ON DELETE RESTRICT
         ON UPDATE CASCADE,
-
-    CONSTRAINT chk_donacion_cantidad
-        CHECK (cantidad > 0),
 
     CONSTRAINT chk_donacion_fechas
         CHECK (
@@ -92,6 +94,8 @@ CREATE TABLE solicitud (
     id_solicitud BIGINT AUTO_INCREMENT PRIMARY KEY,
     fecha_solicitud DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
+    cantidad_solicitada INT NOT NULL DEFAULT 1,
+    comentario VARCHAR(255) NULL,
     id_donacion BIGINT NOT NULL,
     id_usuario BIGINT NOT NULL,
 
@@ -108,7 +112,10 @@ CREATE TABLE solicitud (
         ON UPDATE CASCADE,
 
     CONSTRAINT uq_solicitud_donacion_usuario
-        UNIQUE (id_donacion, id_usuario)
+        UNIQUE (id_donacion, id_usuario),
+
+    CONSTRAINT chk_solicitud_cantidad 
+        CHECK (cantidad_solicitada > 0)
 );
 
 CREATE TABLE entrega (
@@ -227,62 +234,27 @@ CREATE TABLE mensaje (
 -- ÍNDICES
 -- =====================================================
 
-CREATE INDEX idx_usuario_rol
-    ON usuario(id_rol);
-
-CREATE INDEX idx_donacion_usuario
-    ON donacion(id_usuario);
-
-CREATE INDEX idx_donacion_ubicacion
-    ON donacion(id_ubicacion);
-
-CREATE INDEX idx_donacion_categoria
-    ON donacion(id_categoria);
-
-CREATE INDEX idx_donacion_estado
-    ON donacion(estado);
-
-CREATE INDEX idx_donacion_fecha_publicacion
-    ON donacion(fecha_publicacion);
-
-CREATE INDEX idx_solicitud_donacion
-    ON solicitud(id_donacion);
-
-CREATE INDEX idx_solicitud_usuario
-    ON solicitud(id_usuario);
-
-CREATE INDEX idx_solicitud_estado
-    ON solicitud(estado);
-
-CREATE INDEX idx_reporte_usuario
-    ON reporte(id_usuario);
-
-CREATE INDEX idx_reporte_donacion
-    ON reporte(id_donacion);
-
-CREATE INDEX idx_notificacion_usuario
-    ON notificacion(id_usuario);
-
-CREATE INDEX idx_notificacion_leida
-    ON notificacion(leida);
+CREATE INDEX idx_usuario_rol ON usuario(id_rol);
+CREATE INDEX idx_donacion_usuario ON donacion(id_usuario);
+CREATE INDEX idx_donacion_ubicacion ON donacion(id_ubicacion);
+CREATE INDEX idx_donacion_categoria ON donacion(id_categoria);
+CREATE INDEX idx_donacion_estado ON donacion(estado);
+CREATE INDEX idx_donacion_fecha_publicacion ON donacion(fecha_publicacion);
+CREATE INDEX idx_solicitud_donacion ON solicitud(id_donacion);
+CREATE INDEX idx_solicitud_usuario ON solicitud(id_usuario);
+CREATE INDEX idx_solicitud_estado ON solicitud(estado);
+CREATE INDEX idx_reporte_usuario ON reporte(id_usuario);
+CREATE INDEX idx_reporte_donacion ON reporte(id_donacion);
+CREATE INDEX idx_notificacion_usuario ON notificacion(id_usuario);
+CREATE INDEX idx_notificacion_leida ON notificacion(leida);
 
 -- =====================================================
--- DATOS INICIALES
+-- DATOS INICIALES (¡MUY IMPORTANTE!)
 -- =====================================================
 
-INSERT INTO rol (nombre, descripcion)
-VALUES
+INSERT INTO rol (nombre, descripcion) VALUES
     ('ADMIN', 'Administrador del sistema'),
     ('MODERADOR', 'Moderador de contenido y usuarios'),
     ('BENEFICIARIO', 'Usuario que recibe donaciones'),
     ('DONADOR', 'Usuario que realiza donaciones'),
     ('ESTUDIANTE', 'Usuario estudiante que utiliza la plataforma');
-
--- =====================================================
--- COLUMNAS NUEVAS EN LA TABLA SOLICITUD
--- =====================================================
-
-ALTER TABLE solicitud
-    ADD COLUMN cantidad_solicitada INT NOT NULL DEFAULT 1,
-    ADD COLUMN comentario VARCHAR(255) NULL,
-    ADD CONSTRAINT chk_solicitud_cantidad CHECK (cantidad_solicitada > 0);

@@ -128,6 +128,30 @@ export const routes: Routes = [
           )
       },
       {
+        path: 'admin/usuarios',
+        title: 'FoodMap | Usuarios',
+        canActivate: [roleGuard],
+        data: { roles: [Role.ADMIN] },
+        loadComponent: () =>
+          import('@features/admin/usuarios/lista/usuarios-lista').then((m) => m.UsuariosLista)
+      },
+      {
+        path: 'admin/usuarios/nuevo',
+        title: 'FoodMap | Nuevo usuario',
+        canActivate: [roleGuard],
+        data: { roles: [Role.ADMIN] },
+        loadComponent: () =>
+          import('@features/admin/usuarios/formulario/usuario-formulario').then((m) => m.UsuarioFormulario)
+      },
+      {
+        path: 'admin/usuarios/:id',
+        title: 'FoodMap | Editar usuario',
+        canActivate: [roleGuard],
+        data: { roles: [Role.ADMIN] },
+        loadComponent: () =>
+          import('@features/admin/usuarios/formulario/usuario-formulario').then((m) => m.UsuarioFormulario)
+      },
+      {
         path: 'acceso-denegado',
         title: 'FoodMap | Acceso denegado',
         loadComponent: () =>

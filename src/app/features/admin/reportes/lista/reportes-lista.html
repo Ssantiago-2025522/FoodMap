@@ -53,6 +53,7 @@
                     <th>Fecha</th>
                     <th>Usuario</th>
                     <th>Donación</th>
+                    <th>Visibilidad</th>
                     <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
@@ -67,6 +68,15 @@
                         <td>{{ reporte.fecha | date: 'short' }}</td>
                         <td>{{ reporte.id_usuario }}</td>
                         <td>{{ reporte.id_donacion }}</td>
+                        <td>
+                            <span>{{ reporte.donacion_oculta ? 'Oculta' : 'Visible' }}</span>
+                            <button
+                                type="button"
+                                (click)="alternarVisibilidadDonacion(reporte)"
+                            >
+                                {{ reporte.donacion_oculta ? 'Mostrar' : 'Ocultar' }}
+                            </button>
+                        </td>
                         <td>
                             <select
                                 [ngModel]="reporte.estado"
