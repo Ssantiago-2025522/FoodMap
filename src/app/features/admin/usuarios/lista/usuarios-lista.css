@@ -1,21 +1,21 @@
-.reportes {
+.usuarios {
     padding: 24px 32px;
 }
 
-.reportes__header {
+.usuarios__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
 }
 
-.reportes__header h1 {
+.usuarios__header h1 {
     margin: 0;
     color: var(--color-gris-oscuro);
     font-size: 1.7rem;
 }
 
-.reportes__filtros {
+.usuarios__filtros {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
@@ -27,7 +27,7 @@
     border-radius: 10px;
 }
 
-.reportes__filtros label {
+.usuarios__filtros label {
     display: flex;
     flex-direction: column;
     font-size: 0.85rem;
@@ -36,16 +36,17 @@
     gap: 4px;
 }
 
-.reportes__filtros select {
+.usuarios__filtros input {
     padding: 7px 10px;
     font-size: 0.9rem;
     border: 1px solid var(--color-borde);
     border-radius: 6px;
     background: var(--color-crema);
     color: var(--color-gris-oscuro);
+    min-width: 220px;
 }
 
-.reportes__error {
+.usuarios__error {
     color: var(--color-rojo-error);
     background: #fde4e1;
     border: 1px solid var(--color-rojo-error);
@@ -53,7 +54,7 @@
     border-radius: 6px;
 }
 
-.reportes__tabla {
+.usuarios__tabla {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
@@ -64,20 +65,20 @@
     font-size: 0.9rem;
 }
 
-.reportes__tabla th,
-.reportes__tabla td {
+.usuarios__tabla th,
+.usuarios__tabla td {
     padding: 12px 14px;
     text-align: left;
     vertical-align: middle;
     border-bottom: 1px solid var(--color-borde);
 }
 
-.reportes__tabla thead {
+.usuarios__tabla thead {
     background-color: var(--color-verde-oscuro);
     color: var(--color-blanco);
 }
 
-.reportes__tabla thead th {
+.usuarios__tabla thead th {
     font-weight: 600;
     font-size: 0.82rem;
     text-transform: uppercase;
@@ -86,47 +87,20 @@
     white-space: nowrap;
 }
 
-.reportes__tabla tbody tr:last-child td {
+.usuarios__tabla tbody tr:last-child td {
     border-bottom: none;
 }
 
-.reportes__tabla tbody tr:hover {
+.usuarios__tabla tbody tr:hover {
     background-color: rgba(46, 139, 87, 0.06);
 }
 
-.celda-descripcion {
-    max-width: 260px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.celda-visibilidad {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-size: 0.78rem;
+.celda-usuario {
     font-weight: 600;
+    color: var(--color-gris-oscuro);
 }
 
-.badge--visible {
-    background: rgba(46, 139, 87, 0.15);
-    color: var(--color-verde-oscuro);
-}
-
-.badge--oculta {
-    background: #fde4e1;
-    color: var(--color-rojo-error);
-}
-
-.select-estado {
+.select-rol {
     padding: 6px 10px;
     font-size: 0.85rem;
     font-weight: 600;
@@ -136,22 +110,27 @@
     color: var(--color-gris-oscuro);
 }
 
-.select-estado--pendiente {
-    background: rgba(244, 162, 97, 0.18);
+.select-rol--admin {
+    background: rgba(244, 162, 97, 0.2);
     border-color: var(--color-naranja);
     color: #8a5218;
 }
 
-.select-estado--revision {
-    background: rgba(46, 139, 87, 0.10);
-    border-color: var(--color-verde);
-    color: var(--color-verde-oscuro);
+.celda-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
 }
 
-.select-estado--resuelto {
-    background: rgba(46, 139, 87, 0.20);
-    border-color: var(--color-verde-oscuro);
+.enlace-editar {
     color: var(--color-verde-oscuro);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.enlace-editar:hover {
+    text-decoration: underline;
 }
 
 .boton-tabla {
@@ -162,20 +141,20 @@
     background: var(--color-blanco);
     color: var(--color-gris-oscuro);
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .boton-tabla:hover {
     background: var(--color-crema);
 }
 
-.enlace-ver {
-    color: var(--color-verde-oscuro);
-    font-weight: 600;
-    text-decoration: none;
+.boton-tabla--peligro {
+    border-color: var(--color-rojo-error);
+    color: var(--color-rojo-error);
 }
 
-.enlace-ver:hover {
-    text-decoration: underline;
+.boton-tabla--peligro:hover {
+    background: #fde4e1;
 }
 
 .boton {

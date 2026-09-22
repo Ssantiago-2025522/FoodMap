@@ -6,7 +6,7 @@ const ROLES_VALIDOS = [1, 2, 3, 4];
 
 const SELECT_USUARIO = `
   SELECT
-    id_usuario, username, correo, telefono, fecha_registro, foto, id_rol,
+    id_usuario, username, correo, telefono, fecha_registro, foto, id_rol, oculto,
     (SELECT COUNT(*) FROM donacion d WHERE d.id_usuario = usuario.id_usuario) AS total_publicaciones,
     (SELECT COUNT(*) FROM donacion d WHERE d.id_usuario = usuario.id_usuario AND d.oculta = TRUE) AS publicaciones_ocultas
   FROM usuario
@@ -142,25 +142,40 @@ async function actualizar(req, res, next) {
 }
 
 async function ocultarPublicaciones(req, res, next) {
+  const conexion = await pool.getConnection();
+
   try {
     const { id } = req.params;
     const { oculta } = req.body;
 
     const nuevoValor = oculta === undefined ? true : Boolean(oculta);
 
-    const [usuarios] = await pool.query('SELECT id_usuario FROM usuario WHERE id_usuario = ? LIMIT 1', [id]);
+    const [usuarios] = await conexion.query('SELECT id_usuario FROM usuario WHERE id_usuario = ? LIMIT 1', [id]);
     if (usuarios.length === 0) {
       throw new ApiError(404, 'El usuario indicado no existe.');
     }
 
-    const [resultado] = await pool.query('UPDATE donacion SET oculta = ? WHERE id_usuario = ?', [nuevoValor, id]);
+    await conexion.beginTransaction();
+
+
+    await conexion.query('UPDATE usuario SET oculto = ? WHERE id_usuario = ?', [nuevoValor, id]);
+
+    const [resultado] = await conexion.query(
+      'UPDATE donacion SET oculta = ? WHERE id_usuario = ?',
+      [nuevoValor, id]
+    );
+
+    await conexion.commit();
 
     res.status(200).json({
       oculta: nuevoValor,
       actualizadas: resultado.affectedRows
     });
   } catch (error) {
+    await conexion.rollback();
     next(error);
+  } finally {
+    conexion.release();
   }
 }
 
