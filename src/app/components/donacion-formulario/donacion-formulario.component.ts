@@ -47,6 +47,7 @@ export class DonacionFormularioComponent implements OnInit {
     this.form = this.fb.group({
       titulo: [this.donacionEditar?.titulo || '', Validators.required],
       descripcion: [this.donacionEditar?.descripcion || '', Validators.required],
+      imagenUrl: [this.donacionEditar?.imagenUrl || ''],
       categoria: [this.donacionEditar?.categoria || 'Comida preparada', Validators.required],
       cantidad: [this.donacionEditar?.cantidad || 1, [Validators.required, Validators.min(1)]],
       codigoPais: ['gt', Validators.required],
@@ -66,28 +67,39 @@ export class DonacionFormularioComponent implements OnInit {
     this.errorGuardado = '';
     const datos = this.form.value;
 
+    let latitud = 14.6349;
+    let longitud = -90.5069;
+
     try {
       const coords = await this.geocodingService.obtenerCoordenadas(
         datos.ubicacion, 
         datos.codigoPais
       );
+      if (coords && coords.latitud && coords.longitud) {
+        latitud = coords.latitud;
+        longitud = coords.longitud;
+      }
+    } catch (e) {
+      console.warn('No se pudo geocodificar la ubicación, usando coordenadas por defecto.', e);
+    }
 
-      const payloadDonacion: any = {
-        titulo: datos.titulo,
-        descripcion: datos.descripcion,
-        categoria: datos.categoria,
-        cantidad: datos.cantidad,
-        ubicacion: datos.ubicacion,
-        fechaExpiracion: datos.fechaExpiracion,
-        estado: datos.estado,
-        latitud: coords.latitud,
-        longitud: coords.longitud
-      };
+    const payloadDonacion: any = {
+      titulo: datos.titulo,
+      descripcion: datos.descripcion,
+      imagenUrl: datos.imagenUrl || null,
+      categoria: datos.categoria,
+      cantidad: datos.cantidad,
+      ubicacion: datos.ubicacion,
+      fechaExpiracion: datos.fechaExpiracion,
+      estado: datos.estado,
+      latitud: latitud,
+      longitud: longitud
+    };
 
+    try {
       if (this.modoEdicion && this.donacionEditar) {
         await this.donacionService.actualizarDonacion(this.donacionEditar.id, payloadDonacion);
       } else {
-        // Uso de crearDonacion en lugar de agregarDonacion
         await this.donacionService.crearDonacion(payloadDonacion);
       }
 

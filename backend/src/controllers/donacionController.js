@@ -60,6 +60,15 @@ function serializarDonacion(fila) {
   };
 }
 
+function formatearFechaVencimiento(fecha) {
+  if (!fecha) return null;
+  const fechaStr = String(fecha).trim();
+  // Si no trae hora especificada (formato YYYY-MM-DD), fijar la hora al final del día
+  return fechaStr.includes('T') || fechaStr.includes(' ')
+    ? fechaStr
+    : `${fechaStr} 23:59:59`;
+}
+
 function validarDatos({ titulo, descripcion, categoria, cantidad, ubicacion, fechaExpiracion, estado }) {
   if (!titulo || !String(titulo).trim()) {
     throw new ApiError(400, 'El título es obligatorio.');
@@ -106,7 +115,6 @@ async function obtenerOcrearCategoria(conexion, nombreCategoria) {
 
 async function listar(req, res, next) {
   try {
- 
     const [filas] = await pool.query(
       `${SELECT_BASE} WHERE d.oculta = FALSE ORDER BY d.fecha_publicacion DESC`
     );
@@ -170,9 +178,9 @@ async function crear(req, res, next) {
 
     const idCategoria = await obtenerOcrearCategoria(conexion, categoria);
 
-    // Convertir el estado en texto a su número entero correspondiente (por defecto 1 = Disponible)
     const estadoTexto = estado || 'Disponible';
     const estadoNumerico = ESTADOS_MAP[estadoTexto] || 1;
+    const fechaVencimientoFormateada = formatearFechaVencimiento(fechaExpiracion);
 
     const [resultadoDonacion] = await conexion.query(
       `INSERT INTO donacion
@@ -182,7 +190,7 @@ async function crear(req, res, next) {
         String(titulo).trim(),
         String(descripcion).trim(),
         Number(cantidad),
-        fechaExpiracion,
+        fechaVencimientoFormateada,
         estadoNumerico,
         imagen ?? null,
         req.usuario.id_usuario,
@@ -277,7 +285,7 @@ async function actualizar(req, res, next) {
     }
     if (fechaExpiracion !== undefined) {
       camposDonacion.push('fecha_vencimiento = ?');
-      valoresDonacion.push(fechaExpiracion);
+      valoresDonacion.push(formatearFechaVencimiento(fechaExpiracion));
     }
     if (estado !== undefined) {
       camposDonacion.push('estado = ?');

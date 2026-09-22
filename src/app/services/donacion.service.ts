@@ -1,5 +1,5 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '@env/environment';
 import { Donacion, CategoriaDonacion, EstadoDonacion, FiltrosDonacion } from '../models/donacion';
@@ -9,7 +9,6 @@ import { Donacion, CategoriaDonacion, EstadoDonacion, FiltrosDonacion } from '..
 })
 export class DonacionService {
   private readonly API_URL = `${environment.apiUrl}/donaciones`;
-
   private http = inject(HttpClient);
 
   private donacionesSignal = signal<Donacion[]>([]);
@@ -52,13 +51,25 @@ export class DonacionService {
     this.cargarDonaciones();
   }
 
+  private obtenerOptions() {
+    const token = localStorage.getItem('token');
+    if (!token) return {};
+    return {
+      headers: new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      })
+    };
+  }
+
   async cargarDonaciones(): Promise<void> {
     this.cargandoSignal.set(true);
     this.errorSignal.set(null);
 
     try {
-      const donaciones = await firstValueFrom(this.http.get<Donacion[]>(this.API_URL));
-      this.donacionesSignal.set(donaciones);
+      const donaciones = await firstValueFrom(
+        this.http.get<Donacion[]>(this.API_URL, this.obtenerOptions())
+      );
+      this.donacionesSignal.set(donaciones || []);
     } catch (error) {
       console.error('Error al cargar donaciones:', error);
       this.errorSignal.set('No se pudieron cargar las donaciones desde el servidor.');
@@ -76,26 +87,30 @@ export class DonacionService {
   }
 
   async crearDonacion(datos: Omit<Donacion, 'id' | 'fechaCreacion' | 'estado'>): Promise<Donacion> {
-    const nuevaDonacion = await firstValueFrom(this.http.post<Donacion>(this.API_URL, datos));
+    const nuevaDonacion = await firstValueFrom(
+      this.http.post<Donacion>(this.API_URL, datos, this.obtenerOptions())
+    );
     this.donacionesSignal.update(lista => [nuevaDonacion, ...lista]);
     return nuevaDonacion;
   }
 
   async actualizarDonacion(id: string, campos: Partial<Donacion>): Promise<void> {
     const actualizada = await firstValueFrom(
-      this.http.put<Donacion>(`${this.API_URL}/${id}`, campos)
+      this.http.put<Donacion>(`${this.API_URL}/${id}`, campos, this.obtenerOptions())
     );
     this.donacionesSignal.update(lista => lista.map(d => (d.id === id ? actualizada : d)));
   }
 
   async eliminarDonacion(id: string): Promise<void> {
-    await firstValueFrom(this.http.delete<void>(`${this.API_URL}/${id}`));
+    await firstValueFrom(
+      this.http.delete<void>(`${this.API_URL}/${id}`, this.obtenerOptions())
+    );
     this.donacionesSignal.update(lista => lista.filter(d => d.id !== id));
   }
 
   async cambiarVisibilidad(id: string, oculta: boolean): Promise<Donacion> {
     const actualizada = await firstValueFrom(
-      this.http.patch<Donacion>(`${this.API_URL}/${id}/visibilidad`, { oculta })
+      this.http.patch<Donacion>(`${this.API_URL}/${id}/visibilidad`, { oculta }, this.obtenerOptions())
     );
     this.donacionesSignal.update(lista => lista.map(d => (d.id === id ? actualizada : d)));
     return actualizada;

@@ -34,6 +34,11 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+// Ruta para corregir el 404 del Navbar
+app.get('/api/notificaciones', (req, res) => {
+  res.json([]);
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/donaciones', donacionRoutes);
 app.use('/api/reportes', reporteRoutes);

@@ -24,6 +24,7 @@ export interface Donacion {
   longitud: number;
   fechaCreacion: string;
   fechaExpiracion: string;
+  imagenUrl?: string;
 }
 
 export interface FiltrosDonacion {
