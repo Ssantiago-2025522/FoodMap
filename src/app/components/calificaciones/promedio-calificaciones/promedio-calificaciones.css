@@ -1,4 +1,4 @@
-.contenedor-detalle-entrega {
+.contenedor-promedio-calificaciones {
   max-width: 500px;
   margin: 0 auto;
   padding: 16px;
@@ -29,7 +29,7 @@
   color: red;
 }
 
-.detalle-entrega {
+.resultado-promedio {
   margin-top: 16px;
   padding: 12px;
   border: 1px solid #ccc;

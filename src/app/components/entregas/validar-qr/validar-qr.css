@@ -1,4 +1,4 @@
-.contenedor-detalle-entrega {
+.contenedor-validar-qr {
   max-width: 500px;
   margin: 0 auto;
   padding: 16px;
@@ -27,6 +27,10 @@
 
 .mensaje-error {
   color: red;
+}
+
+.mensaje-exito {
+  color: green;
 }
 
 .detalle-entrega {

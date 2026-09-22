@@ -1,4 +1,4 @@
-.contenedor-detalle-entrega {
+.contenedor-generar-qr {
   max-width: 500px;
   margin: 0 auto;
   padding: 16px;
@@ -29,8 +29,19 @@
   color: red;
 }
 
-.detalle-entrega {
+.detalle-qr {
   margin-top: 16px;
   padding: 12px;
   border: 1px solid #ccc;
+}
+
+.imagen-qr {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.imagen-qr img {
+  width: 200px;
+  height: 200px;
 }

@@ -1,0 +1,36 @@
+<div class="contenedor-detalle-entrega">
+  <h2>Consultar entrega</h2>
+
+  <div class="campo">
+    <label for="idBuscado">ID de la entrega</label>
+    <input
+      type="text"
+      id="idBuscado"
+      name="idBuscado"
+      [(ngModel)]="idBuscado"
+    />
+  </div>
+
+  <div class="acciones">
+    <button type="button" (click)="buscarEntrega()">Buscar</button>
+    <button type="button" (click)="limpiarBusqueda()">Limpiar</button>
+  </div>
+
+  <p class="mensaje-error" *ngIf="mensajeError">{{ mensajeError }}</p>
+
+  <div class="detalle-entrega" *ngIf="entregaEncontrada">
+    <h3>Datos de la entrega</h3>
+    <p><strong>ID:</strong> {{ entregaEncontrada.id }}</p>
+    <p><strong>Donador:</strong> {{ entregaEncontrada.donadorId }}</p>
+    <p><strong>Beneficiario:</strong> {{ entregaEncontrada.beneficiarioId }}</p>
+    <p><strong>Descripción:</strong> {{ entregaEncontrada.descripcion }}</p>
+    <p><strong>Estado:</strong> {{ entregaEncontrada.estado }}</p>
+    <p *ngIf="entregaEncontrada.codigoQr">
+      <strong>Código QR:</strong> {{ entregaEncontrada.codigoQr }}
+    </p>
+    <p><strong>Fecha de creación:</strong> {{ entregaEncontrada.fechaCreacion }}</p>
+    <p *ngIf="entregaEncontrada.fechaConfirmacion">
+      <strong>Fecha de confirmación:</strong> {{ entregaEncontrada.fechaConfirmacion }}
+    </p>
+  </div>
+</div>

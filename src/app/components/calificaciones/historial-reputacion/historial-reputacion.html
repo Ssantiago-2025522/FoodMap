@@ -1,0 +1,48 @@
+<div class="contenedor-historial-reputacion">
+  <h2>Historial de reputación</h2>
+
+  <div class="campo">
+    <label for="calificadoId">ID del usuario calificado</label>
+    <input
+      type="text"
+      id="calificadoId"
+      name="calificadoId"
+      [(ngModel)]="calificadoId"
+    />
+  </div>
+
+  <div class="acciones">
+    <button type="button" (click)="consultarHistorial()">Consultar historial</button>
+    <button type="button" (click)="limpiar()">Limpiar</button>
+  </div>
+
+  <p class="mensaje-error" *ngIf="mensajeError">{{ mensajeError }}</p>
+
+  <div class="resultado-historial" *ngIf="consultaRealizada">
+    <p><strong>Usuario:</strong> {{ calificadoId }}</p>
+    <p><strong>Total de calificaciones:</strong> {{ historial.length }}</p>
+
+    <table class="tabla-historial">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Entrega</th>
+          <th>Calificador</th>
+          <th>Puntuación</th>
+          <th>Comentario</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let calificacion of historial">
+          <td>{{ calificacion.id }}</td>
+          <td>{{ calificacion.entregaId }}</td>
+          <td>{{ calificacion.calificadorId }}</td>
+          <td>{{ calificacion.puntuacion }}</td>
+          <td>{{ calificacion.comentario ? calificacion.comentario : '-' }}</td>
+          <td>{{ calificacion.fecha }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-.contenedor-detalle-entrega {
+.contenedor-crear-calificacion {
   max-width: 500px;
   margin: 0 auto;
   padding: 16px;
@@ -15,7 +15,8 @@
   font-weight: bold;
 }
 
-.campo input {
+.campo input,
+.campo textarea {
   padding: 8px;
 }
 
@@ -29,7 +30,11 @@
   color: red;
 }
 
-.detalle-entrega {
+.mensaje-exito {
+  color: green;
+}
+
+.detalle-calificacion {
   margin-top: 16px;
   padding: 12px;
   border: 1px solid #ccc;
