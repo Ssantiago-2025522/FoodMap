@@ -1,59 +1,82 @@
 # FoodMap
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.5.
+Plataforma que conecta excedentes de alimentos con las personas y organizaciones que los necesitan.
+Frontend en Angular 22 (standalone components, señales y carga perezosa de rutas) y backend en
+Node.js + Express + MySQL dentro de la carpeta `backend/`.
 
-## Development server
+## Requisitos
 
-To start a local development server, run:
+- Node.js 22.22.3+ (o 24.15+)
+- MySQL 8+ o MariaDB 10.5+ corriendo en local
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Puesta en marcha
 
 ```bash
-ng generate component component-name
+npm install        # instala frontend y backend, y crea backend/.env con un JWT_SECRET aleatorio
+npm run db:init    # crea la base de datos foodmapdb_in5bm (solo la primera vez)
+npm start          # levanta frontend y backend al mismo tiempo
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+- Frontend: http://localhost:4200 (abre en `/login`)
+- Backend: http://localhost:8080/api
 
-```bash
-ng generate --help
+Si tu MySQL tiene contraseña, edita `DB_PASSWORD` en `backend/.env` antes de `npm run db:init`.
+Con pnpm funciona igual: `pnpm install`, `pnpm run db:init`, `pnpm start`.
+
+`npm run dev` es un alias de `npm start`.
+
+## Scripts
+
+| Script                   | Qué hace                                                                 |
+| ------------------------ | ------------------------------------------------------------------------ |
+| `npm start`              | Frontend + backend juntos, con salida diferenciada `FRONTEND` / `BACKEND` |
+| `npm run start:frontend` | Solo Angular (`ng serve`)                                                |
+| `npm run start:backend`  | Solo la API con recarga automática (nodemon)                             |
+| `npm run db:init`        | Crea la base de datos. Si ya existe no toca nada                         |
+| `npm run db:init -- --force` | Recrea la base desde cero (borra sus datos)                          |
+| `npm run build`          | Build de producción en `dist/`                                           |
+| `npm test`               | Pruebas unitarias (Vitest)                                               |
+
+## Estructura
+
+```
+backend/                      API REST (Node.js + Express + MySQL); ver backend/README.md
+database/                     Script SQL de la base de datos
+scripts/setup.js              Crea backend/.env e instala las dependencias del backend
+public/                       Archivos estáticos (favicon, img/ para el banner del login)
+src/
+├── environments/             URL del API (apiUrl)
+└── app/
+    ├── app.config.ts         Providers globales (router, HttpClient, interceptor)
+    ├── app.routes.ts         Rutas de la SPA
+    ├── core/                 Guards, interceptor, modelos y servicios de sesión
+    ├── layouts/main-layout/  Shell de páginas privadas: navbar + contenido + footer
+    ├── features/             auth, home, user/profile, admin, acceso-denegado
+    ├── shared/               navbar, footer, loading, validators
+    ├── paginas/donaciones/   Página del módulo de donaciones
+    ├── components/           Componentes del módulo de donaciones
+    ├── services/, models/    Servicios y modelos del módulo de donaciones
+    └── ...
 ```
 
-## Building
+## Rutas
 
-To build the project run:
+| Ruta                                | Acceso          | Descripción                                |
+| ----------------------------------- | --------------- | ------------------------------------------ |
+| `/`                                 | Público         | Redirige a `/login`                        |
+| `/login`, `/register`               | Público         | Autenticación, sin navbar ni footer        |
+| `/inicio`, `/profile`               | Sesión iniciada | Dentro de `MainLayout`                     |
+| `/donaciones`                       | Sesión iniciada | Módulo de donaciones                       |
+| `/admin`, `/admin/reportes[/nuevo\|/:id]` | Rol ADMIN | Administración                             |
+| `/acceso-denegado`                  | Sesión iniciada | Se muestra cuando falta el rol necesario   |
+| `**`                                | —               | Redirige a `/login`                        |
 
-```bash
-ng build
-```
+Los alias `@core/*`, `@features/*`, `@layouts/*`, `@shared/*` y `@env/*` están en `tsconfig.json`.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Notas
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- El registro público solo permite los roles BENEFICIARIO y DONADOR. Para probar la administración,
+  asigna el rol a mano: `UPDATE usuario SET id_rol = 1 WHERE correo = 'tu@correo.com';`
+- El banner del login usa `public/img/img1.jpg`, `img2.jpg` e `img3.jpg`; agrega esas imágenes.
+- El backend solo implementa `/api/auth`. El servicio de reportes de administración apunta a
+  `http://localhost:3000/api/reportes` y todavía no tiene backend.

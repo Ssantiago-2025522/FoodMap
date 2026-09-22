@@ -1,0 +1,18 @@
+<section class="home">
+  <h1>Hola{{ usuario() ? ', ' + usuario()!.username : '' }} 👋</h1>
+  <p class="home__texto">
+    Conectamos excedentes de alimentos con las personas y organizaciones que más los necesitan.
+  </p>
+
+  <div class="home__accesos">
+    <a class="home__tarjeta" routerLink="/donaciones">
+      <h2>Donaciones</h2>
+      <p>Publica y consulta alimentos disponibles cerca de ti.</p>
+    </a>
+
+    <a class="home__tarjeta" routerLink="/profile">
+      <h2>Mi perfil</h2>
+      <p>Revisa tus datos de cuenta.</p>
+    </a>
+  </div>
+</section>

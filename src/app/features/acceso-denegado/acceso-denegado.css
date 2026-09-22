@@ -1,0 +1,19 @@
+.denegado {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.denegado h1 {
+  margin: 0 0 0.5rem;
+  color: #991b1b;
+}
+
+.denegado p {
+  margin: 0 0 1rem;
+  color: #64748b;
+}
+
+.denegado a {
+  color: #1b4332;
+  font-weight: 600;
+}

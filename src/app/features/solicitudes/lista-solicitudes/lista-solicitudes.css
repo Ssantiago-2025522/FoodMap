@@ -1,0 +1,46 @@
+:host {
+  display: block;
+}
+
+.solicitudes-barra {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.solicitud-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.solicitud-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.solicitud-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(45, 52, 54, 0.08);
+}
+
+.solicitud-card h3 {
+  font-family: var(--fuente-titulos);
+  color: var(--color-gris-oscuro);
+  margin-bottom: 0.25rem;
+}
+
+.solicitud-card p {
+  color: var(--color-gris-oscuro);
+  margin: 0;
+}
+
+.solicitud-card .btn-outline {
+  align-self: flex-start;
+  margin-top: 0.75rem;
+}

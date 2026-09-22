@@ -1,0 +1,97 @@
+.contenedor-formulario {
+  background: #FFFFFF;
+  padding: 28px;
+  border-radius: 24px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: #2D3436;
+  margin-bottom: 20px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #EAE5DC;
+  border-radius: 12px;
+  background-color: #FAF7F2;
+  font-family: inherit;
+  font-size: 0.9rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #2E8B57;
+  background-color: #FFFFFF;
+}
+
+.error {
+  color: #d63031;
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
+
+.error--general {
+  background-color: rgba(214, 48, 49, 0.1);
+  border: 1px solid rgba(214, 48, 49, 0.3);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.acciones-form {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-cancelar {
+  background: transparent;
+  border: 1.5px solid #EAE5DC;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-guardar {
+  background-color: #F4A261;
+  color: #FFFFFF;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 50px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-guardar:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}

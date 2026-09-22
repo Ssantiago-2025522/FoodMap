@@ -1,0 +1,54 @@
+<section class="historial-container">
+
+    <div class="page-header">
+        <h1>Historial de Solicitudes y Entregas</h1>
+
+        <p>
+            Consulta el registro de tus solicitudes ya respondidas y sus entregas.
+        </p>
+    </div>
+
+    <div class="tabs">
+        @for (f of filtros; track f.valor) {
+            <button type="button" class="tab" [class.activa]="filtro() === f.valor" (click)="filtro.set(f.valor)">
+                {{ f.texto }}
+            </button>
+        }
+    </div>
+
+    @if (cargando()) {
+        <p class="mensaje-estado">Cargando historial…</p>
+    } @else if (error()) {
+        <p class="mensaje-error" role="alert">{{ error() }}</p>
+    } @else {
+        @for (item of visibles(); track item.id_solicitud) {
+            <div class="historial-card">
+
+                <h3>{{ item.titulo_donacion }}</h3>
+
+                <p>Fecha de solicitud: {{ item.fecha_solicitud | date: 'dd/MM/yyyy' }}</p>
+
+                <p>{{ item.rol === 'donador' ? 'Beneficiario' : 'Donador' }}: {{ item.contraparte }}</p>
+
+                <p>
+                    Estado:
+                    <span [class]="'estado ' + (item.estado === 'RECHAZADA' ? 'rechazada' : item.estado_entrega === 'ENTREGADA' ? 'aceptada' : 'pendiente')">
+                        {{ etiqueta(item) }}
+                    </span>
+                </p>
+
+                @if (item.fecha_entrega) {
+                    <p>Fecha de entrega: {{ item.fecha_entrega | date: 'dd/MM/yyyy' }}</p>
+                }
+
+                @if (item.observaciones) {
+                    <p>{{ item.observaciones }}</p>
+                }
+
+            </div>
+        } @empty {
+            <p class="mensaje-estado">No hay registros con este filtro.</p>
+        }
+    }
+
+</section>

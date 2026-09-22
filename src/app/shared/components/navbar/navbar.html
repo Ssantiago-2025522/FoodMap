@@ -1,0 +1,32 @@
+<header class="navbar">
+  <a class="navbar__brand" routerLink="/inicio">FoodMap</a>
+
+  <nav class="navbar__links">
+    <a routerLink="/inicio" routerLinkActive="activo">Inicio</a>
+    <a routerLink="/donaciones" routerLinkActive="activo">Donaciones</a>
+    <a routerLink="/solicitudes" routerLinkActive="activo">Solicitudes</a>
+    <a routerLink="/historial" routerLinkActive="activo">Historial</a>
+    <a routerLink="/lista-chats" routerLinkActive="activo">Chat</a>
+    <a routerLink="/notificaciones" routerLinkActive="activo" class="navbar__notificaciones">
+      Notificaciones
+      @if (noLeidas() > 0) {
+        <span class="badge" [attr.aria-label]="noLeidas() + ' sin leer'">
+          {{ noLeidas() > 99 ? '99+' : noLeidas() }}
+        </span>
+      }
+    </a>
+    <a routerLink="/profile" routerLinkActive="activo">Mi perfil</a>
+
+    @if (esAdmin) {
+      <a routerLink="/admin" routerLinkActive="activo" [routerLinkActiveOptions]="{ exact: true }">Administración</a>
+      <a routerLink="/admin/reportes" routerLinkActive="activo">Reportes</a>
+    }
+  </nav>
+
+  <div class="navbar__usuario">
+    @if (usuario(); as u) {
+      <span class="navbar__nombre">{{ u.username }}</span>
+    }
+    <button type="button" class="navbar__salir" (click)="cerrarSesion()">Cerrar sesión</button>
+  </div>
+</header>

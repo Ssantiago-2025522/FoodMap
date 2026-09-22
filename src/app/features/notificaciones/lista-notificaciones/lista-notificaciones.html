@@ -1,0 +1,60 @@
+<section class="notificaciones-container">
+
+    <div class="page-header">
+        <h1>Notificaciones</h1>
+        <p>Mantente informado sobre la actividad de tus solicitudes y donaciones.</p>
+    </div>
+
+    <div class="notificaciones-barra">
+        <div class="tabs">
+            <button type="button" class="tab" [class.activa]="!soloNoLeidas()" (click)="soloNoLeidas.set(false)">
+                Todas
+            </button>
+            <button type="button" class="tab" [class.activa]="soloNoLeidas()" (click)="soloNoLeidas.set(true)">
+                No leídas ({{ noLeidas() }})
+            </button>
+        </div>
+
+        <div class="tabs">
+            <button type="button" class="tab" [disabled]="noLeidas() === 0" (click)="marcarTodasLeidas()">
+                Marcar todas como leídas
+            </button>
+            <button type="button" class="tab" [disabled]="buscandoCercanos()" (click)="buscarCercanos()">
+                {{ buscandoCercanos() ? 'Buscando…' : 'Buscar donaciones cerca de mí' }}
+            </button>
+        </div>
+    </div>
+
+    @if (mensajeCercanos()) {
+        <p class="mensaje-estado" role="status">{{ mensajeCercanos() }}</p>
+    }
+
+    @if (cargando()) {
+        <p class="mensaje-estado">Cargando notificaciones…</p>
+    } @else if (error()) {
+        <p class="mensaje-error" role="alert">{{ error() }}</p>
+    } @else {
+        @for (notificacion of visibles(); track notificacion.id_notificacion) {
+            <div class="notificacion-card" [class.no-leida]="!notificacion.leida">
+
+                <h3>{{ notificacion.titulo }}</h3>
+
+                <p>{{ notificacion.mensaje }}</p>
+
+                <small>{{ notificacion.fecha | date: 'dd/MM/yyyy HH:mm' }}</small>
+
+                @if (!notificacion.leida) {
+                    <button type="button" class="tab" (click)="marcarLeida(notificacion.id_notificacion)">
+                        Marcar como leída
+                    </button>
+                }
+
+            </div>
+        } @empty {
+            <p class="mensaje-estado">
+                {{ soloNoLeidas() ? 'No tienes notificaciones sin leer.' : 'Todavía no tienes notificaciones.' }}
+            </p>
+        }
+    }
+
+</section>
