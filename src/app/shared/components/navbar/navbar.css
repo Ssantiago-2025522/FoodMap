@@ -1,0 +1,60 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #1b4332;
+  color: #ffffff;
+}
+
+.navbar__brand {
+  font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.navbar__links {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.navbar__links a {
+  color: #d8f3dc;
+  text-decoration: none;
+  padding: 0.25rem 0.1rem;
+  border-bottom: 2px solid transparent;
+}
+
+.navbar__links a:hover,
+.navbar__links a.activo {
+  color: #ffffff;
+  border-bottom-color: #95d5b2;
+}
+
+.navbar__usuario {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navbar__nombre {
+  font-size: 0.9rem;
+  color: #d8f3dc;
+}
+
+.navbar__salir {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid #95d5b2;
+  border-radius: 6px;
+  padding: 0.35rem 0.8rem;
+  cursor: pointer;
+}
+
+.navbar__salir:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+}

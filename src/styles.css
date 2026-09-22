@@ -1,24 +1,153 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
 :root {
-  --verde: #2E8B57;
-  --naranja: #F4A261;
-  --crema: #FAF7F2;
-  --gris-oscuro: #2D3436;
-  --rojo-error: #B42318;
+  --color-verde: #2E8B57;
+  --color-verde-oscuro: #1b5334;
+  --color-naranja: #F4A261;
+  --color-crema: #FAF7F2;
+  --color-gris-oscuro: #2D3436;
+  --color-blanco: #FFFFFF;
+  --color-borde: #EAE5DC;
+  --color-rojo-error: #B42318;
+
+  /* Aliases para compatibilidad */
+  --verde: var(--color-verde);
+  --naranja: var(--color-naranja);
+  --crema: var(--color-crema);
+  --gris-oscuro: var(--color-gris-oscuro);
+  --rojo-error: var(--color-rojo-error);
+
+  --fuente-titulos: 'Playfair Display', serif;
+  --fuente-cuerpo: 'Plus Jakarta Sans', sans-serif;
+
+  --radius-gran-curva: 24px;
+  --radius-input: 16px;
+  --radius-pill: 50px;
 }
 
-.mensaje-estado { color: var(--gris-oscuro); padding: 1.25rem 0; }
-.mensaje-error  { color: var(--rojo-error); padding: .5rem 0; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
+body {
+  background-color: var(--color-crema) !important;
+  color: var(--color-gris-oscuro);
+  font-family: var(--fuente-cuerpo);
+}
+
+.contenedor-principal {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.encabezado-app {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.badge-sostenible {
+  background-color: rgba(46, 139, 87, 0.12);
+  color: var(--color-verde);
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+h1 {
+  font-family: var(--fuente-titulos);
+  font-size: 2.2rem;
+  margin-top: 6px;
+}
+
+.seccion-espaciada {
+  margin-bottom: 36px;
+}
+
+.titulo-seccion {
+  font-size: 1.6rem;
+  margin-bottom: 18px;
+}
+
+.card-blanca {
+  background: var(--color-blanco);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-gran-curva);
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(45, 52, 54, 0.03);
+}
+
+.card-verde {
+  background-color: var(--color-verde-oscuro) !important;
+  color: var(--color-blanco) !important;
+  border-radius: var(--radius-gran-curva);
+  padding: 30px;
+  overflow: hidden;
+}
+
+.card-verde h2 {
+  color: var(--color-blanco) !important;
+  font-family: var(--fuente-titulos);
+  margin-bottom: 6px;
+}
+
+.card-verde p {
+  color: #E2E8F0;
+  margin-bottom: 20px;
+}
+
+.leaflet-container {
+  width: 100% !important;
+  height: 380px !important;
+  border-radius: 16px !important;
+  z-index: 1 !important;
+}
+
+/* Botones */
+.btn-naranja {
+  background-color: var(--color-naranja) !important;
+  color: var(--color-blanco) !important;
+  border: none;
+  height: 48px;
+  padding: 0 28px;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--color-borde);
+  height: 48px;
+  padding: 0 22px;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Mensajes y estados */
+.mensaje-estado { color: var(--color-gris-oscuro); padding: 1.25rem 0; }
+.mensaje-error  { color: var(--color-rojo-error); padding: .5rem 0; }
+
+/* Tabs de navegación */
 .tabs { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
 .tab {
   font: inherit; padding: .5rem 1rem; border-radius: 999px; cursor: pointer;
-  border: 1.5px solid var(--verde); background: transparent; color: var(--verde);
+  border: 1.5px solid var(--color-verde); background: transparent; color: var(--color-verde);
 }
-.tab.activa { background: var(--verde); color: #fff; font-weight: 600; }
+.tab.activa { background: var(--color-verde); color: #fff; font-weight: 600; }
 .tab:disabled { opacity: .5; cursor: not-allowed; }
-.tab:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--naranja); outline-offset: 2px; }
+.tab:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--color-naranja); outline-offset: 2px; }
 
+/* Badges de estado */
 .estado { display: inline-block; padding: .1rem .6rem; border-radius: 999px; font-size: .85rem; font-weight: 600; }
-.estado.pendiente { background: var(--naranja); color: var(--gris-oscuro); } /* texto oscuro: blanco sobre naranja no contrasta */
-.estado.aceptada  { background: var(--verde);   color: #fff; }
-.estado.rechazada { background: #fde4e1; color: var(--rojo-error); border: 1px solid var(--rojo-error); }
+.estado.pendiente { background: var(--color-naranja); color: var(--color-gris-oscuro); }
+.estado.aceptada  { background: var(--color-verde);   color: #fff; }
+.estado.rechazada { background: #fde4e1; color: var(--color-rojo-error); border: 1px solid var(--color-rojo-error); }

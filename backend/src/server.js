@@ -1,34 +1,29 @@
-import 'dotenv/config';
-import express from 'express';
-import cors from 'cors';
-import { pool } from './config/db.js';
-import { manejarErrores } from './middlewares/errores.js';
-import solicitudesRoutes from './routes/solicitudes.routes.js';
-import notificacionesRoutes from './routes/notificaciones.routes.js';
-import chatsRoutes from './routes/chats.routes.js';
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
-const app = express();
+const app = require('./app');
+const { verificarConexion } = require('./config/db');
 
-app.use(cors({ origin: process.env.FRONTEND_ORIGIN ?? 'http://localhost:4200' }));
-app.use(express.json());
+const PORT = process.env.PORT || 8080;
 
-app.get('/api/salud', (req, res) => res.json({ ok: true }));
+async function iniciar() {
+  try {
+    await verificarConexion();
+    console.log('Conexión a la base de datos establecida.');
+  } catch (error) {
+    console.error('No se pudo conectar a la base de datos:', error.message);
+    if (error.code === 'ER_BAD_DB_ERROR') {
+      console.error('La base de datos no existe. Créala con: npm run db:init');
+    } else {
+      console.error('Revisa DB_HOST, DB_USER, DB_PASSWORD y DB_NAME en .env');
+    }
+    process.exit(1);
+  }
 
-app.use('/api/solicitudes', solicitudesRoutes);
-app.use('/api/notificaciones', notificacionesRoutes);
-app.use('/api/chats', chatsRoutes);
-
-app.use((req, res) => res.status(404).json({ error: 'Ruta no encontrada.' }));
-app.use(manejarErrores);
-
-const puerto = Number(process.env.PORT ?? 3000);
-
-try {
-  await pool.query('SELECT 1');
-  console.log('Conectado a MySQL');
-} catch (error) {
-  console.error('No se pudo conectar a MySQL. Revisa tu archivo .env:', error.message);
-  process.exit(1);
+  app.listen(PORT, () => {
+    console.log(`FoodMap backend escuchando en http://localhost:${PORT}`);
+    console.log(`API disponible en http://localhost:${PORT}/api`);
+  });
 }
 
-app.listen(puerto, () => console.log(`API lista en http://localhost:${puerto}`));
+iniciar();
