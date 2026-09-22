@@ -13,9 +13,20 @@
         <textarea id="descripcion" formControlName="descripcion" rows="3" placeholder="Detalles de los alimentos..."></textarea>
       </div>
 
+      <!-- SECCIÓN DE SELECCIÓN DE IMAGEN LOCAL -->
       <div class="campo">
-        <label for="imagenUrl">URL de la Imagen (Opcional)</label>
-        <input id="imagenUrl" type="url" formControlName="imagenUrl" placeholder="https://ejemplo.com/imagen.jpg" />
+        <label for="archivoImagen">Imagen de la Donación</label>
+        <input 
+          id="archivoImagen" 
+          type="file" 
+          accept="image/*" 
+          (change)="onFileSelected($event)" 
+        />
+        @if (imagenPreview) {
+          <div class="preview-contenedor" style="margin-top: 10px; text-align: center;">
+            <img [src]="imagenPreview" alt="Vista previa" style="max-height: 120px; border-radius: 8px; object-fit: cover;" />
+          </div>
+        }
       </div>
 
       <div class="fila">

@@ -24,6 +24,7 @@ export class DonacionFormularioComponent implements OnInit {
   cargandoUbicacion = false;
   modoEdicion = false;
   errorGuardado = '';
+  imagenPreview: string = '';
 
   categorias: CategoriaDonacion[] = [
     'Frutas', 
@@ -43,11 +44,12 @@ export class DonacionFormularioComponent implements OnInit {
 
   ngOnInit(): void {
     this.modoEdicion = !!this.donacionEditar;
+    this.imagenPreview = (this.donacionEditar as any)?.imagen || this.donacionEditar?.imagenUrl || '';
 
     this.form = this.fb.group({
       titulo: [this.donacionEditar?.titulo || '', Validators.required],
       descripcion: [this.donacionEditar?.descripcion || '', Validators.required],
-      imagenUrl: [this.donacionEditar?.imagenUrl || ''],
+      imagenUrl: [this.imagenPreview],
       categoria: [this.donacionEditar?.categoria || 'Comida preparada', Validators.required],
       cantidad: [this.donacionEditar?.cantidad || 1, [Validators.required, Validators.min(1)]],
       codigoPais: ['gt', Validators.required],
@@ -55,6 +57,23 @@ export class DonacionFormularioComponent implements OnInit {
       fechaExpiracion: [this.donacionEditar?.fechaExpiracion || '', Validators.required],
       estado: [this.donacionEditar?.estado || 'Disponible']
     });
+  }
+
+  /** Convertir archivo local a cadena Base64 */
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const archivo = input.files[0];
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const base64String = reader.result as string;
+        this.imagenPreview = base64String;
+        this.form.patchValue({ imagenUrl: base64String });
+      };
+
+      reader.readAsDataURL(archivo);
+    }
   }
 
   async guardar(): Promise<void> {

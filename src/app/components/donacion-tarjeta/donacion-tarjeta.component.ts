@@ -1,11 +1,11 @@
 import { Component, Input, Output, EventEmitter, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { AuthService } from '@core/services/auth.service';
 import { Role } from '@core/models/role.enum';
 import { Donacion, EstadoDonacion } from '../../models/donacion';
 
-// Roles que tienen permiso de gestión (editar, eliminar, cambiar estado).
 const ROLES_CON_GESTION: Role[] = [Role.DONADOR, Role.ADMIN];
 
 @Component({
@@ -18,6 +18,7 @@ const ROLES_CON_GESTION: Role[] = [Role.DONADOR, Role.ADMIN];
 export class DonacionTarjetaComponent implements OnInit {
   private router = inject(Router);
   private authService = inject(AuthService);
+  private sanitizer = inject(DomSanitizer);
 
   @Input({ required: true }) donacion!: Donacion;
 
@@ -32,17 +33,11 @@ export class DonacionTarjetaComponent implements OnInit {
     this.verificarPermisos();
   }
 
-  /**
-   * Lee el usuario logueado directamente desde AuthService (fuente única
-   * de verdad, la misma que usa la pantalla de perfil) y compara su
-   * id_rol numérico contra los roles con permiso de gestión.
-   */
   private verificarPermisos(): void {
     const usuario = this.authService.getUsuario();
     this.esDonanteOAdmin = !!usuario && ROLES_CON_GESTION.includes(usuario.id_rol);
   }
 
-  /** Placeholder inline (SVG) usado cuando la URL de imagen falla o no existe. */
   readonly imagenPlaceholder =
     'data:image/svg+xml;charset=UTF-8,' +
     encodeURIComponent(
@@ -56,17 +51,22 @@ export class DonacionTarjetaComponent implements OnInit {
       </svg>`
     );
 
-  /**
-   * Devuelve la primera URL de imagen válida encontrada entre las
-   * distintas convenciones de nombre que puede traer el backend.
-   */
-  obtenerUrlImagen(): string {
+  /** Retorna la URL de imagen o la sanitiza si es una cadena Base64 local */
+  obtenerUrlImagen(): string | SafeUrl {
     if (!this.donacion) return this.imagenPlaceholder;
     const d = this.donacion as any;
-    return d.imagen || d.imagenUrl || d.urlImagen || d.imagen_url || d.foto || d.imageUrl || this.imagenPlaceholder;
+    const url = d.imagen || d.imagenUrl || d.urlImagen || d.imagen_url || d.foto || d.imageUrl;
+
+    if (url && typeof url === 'string' && url.trim().length > 0) {
+      if (url.startsWith('data:image')) {
+        return this.sanitizer.bypassSecurityTrustUrl(url);
+      }
+      return url;
+    }
+
+    return this.imagenPlaceholder;
   }
 
-  /** Si la URL de imagen falla al cargar, sustituye por el placeholder (una sola vez, sin loop). */
   onImagenError(event: Event): void {
     const img = event.target as HTMLImageElement;
     img.onerror = null;
