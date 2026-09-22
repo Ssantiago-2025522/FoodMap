@@ -4,6 +4,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const donacionRoutes = require('./routes/donacionRoutes');
 const reporteRoutes = require('./routes/reporteRoutes');
+const usuarioRoutes = require('./routes/usuarioRoutes');
 const solicitudesRoutes = require('./routes/solicitudes.routes');
 const { noEncontrado, errorHandler } = require('./middlewares/errorHandler');
 
@@ -37,6 +38,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/donaciones', donacionRoutes);
 app.use('/api/reportes', reporteRoutes);
+app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/solicitudes', solicitudesRoutes);
 
 app.use(noEncontrado);
