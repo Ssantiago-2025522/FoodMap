@@ -3,9 +3,15 @@ const ApiError = require('../utils/ApiError');
 
 const ESTADOS_VALIDOS = ['PENDIENTE', 'EN_REVISION', 'RESUELTO'];
 
+const SELECT_REPORTE = `
+  SELECT r.*, d.oculta AS donacion_oculta
+  FROM reporte r
+  LEFT JOIN donacion d ON d.id_donacion = r.id_donacion
+`;
+
 async function listar(req, res, next) {
   try {
-    const [filas] = await pool.query('SELECT * FROM reporte ORDER BY fecha DESC');
+    const [filas] = await pool.query(`${SELECT_REPORTE} ORDER BY r.fecha DESC`);
     res.status(200).json(filas);
   } catch (error) {
     next(error);
@@ -15,7 +21,7 @@ async function listar(req, res, next) {
 async function obtenerPorId(req, res, next) {
   try {
     const { id } = req.params;
-    const [filas] = await pool.query('SELECT * FROM reporte WHERE id_reporte = ? LIMIT 1', [id]);
+    const [filas] = await pool.query(`${SELECT_REPORTE} WHERE r.id_reporte = ? LIMIT 1`, [id]);
 
     if (filas.length === 0) {
       throw new ApiError(404, 'El reporte indicado no existe.');

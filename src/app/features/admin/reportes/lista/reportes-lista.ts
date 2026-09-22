@@ -1,14 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ReporteApiService } from '../../../../core/services/reporte-api.service';
+import { DonacionService } from '../../../../services/donacion.service';
 
 @Component({
     selector: 'app-reportes-lista',
     standalone: true,
     imports: [CommonModule, FormsModule, RouterLink],
-    templateUrl: './reportes-lista.html'
+    templateUrl: './reportes-lista.html',
+    styleUrl: './reportes-lista.css'
 })
 export class ReportesLista implements OnInit {
     reportes: any[] = [];
@@ -21,7 +23,9 @@ export class ReportesLista implements OnInit {
 
     constructor(
         private reporteApiService: ReporteApiService,
-        private router: Router
+        private donacionService: DonacionService,
+        private router: Router,
+        private cdr: ChangeDetectorRef
     ) {}
 
     ngOnInit(): void {
@@ -42,11 +46,13 @@ export class ReportesLista implements OnInit {
             next: (response: any) => {
                 this.isLoading = false;
                 this.reportes = Array.isArray(response) ? response : response?.data ?? [];
+                this.cdr.markForCheck();
             },
             error: (error: any) => {
                 this.isLoading = false;
                 this.errorMessage = 'Error al cargar lista de reportes.';
                 console.error(error);
+                this.cdr.markForCheck();
             }
         });
     }
@@ -57,13 +63,34 @@ export class ReportesLista implements OnInit {
             next: () => {
                 this.isLoading = false;
                 reporte.estado = nuevoEstado;
+                this.cdr.markForCheck();
             },
             error: (error: any) => {
                 this.isLoading = false;
                 this.errorMessage = 'Error al cambiar estado.';
                 console.error(error);
+                this.cdr.markForCheck();
             }
         });
+    }
+
+    alternarVisibilidadDonacion(reporte: any): void {
+        const nuevoValor = !reporte.donacion_oculta;
+
+        this.isLoading = true;
+        this.donacionService
+            .cambiarVisibilidad(String(reporte.id_donacion), nuevoValor)
+            .then(() => {
+                this.isLoading = false;
+                reporte.donacion_oculta = nuevoValor;
+                this.cdr.markForCheck();
+            })
+            .catch((error: any) => {
+                this.isLoading = false;
+                this.errorMessage = 'Error al cambiar la visibilidad de la donación.';
+                console.error(error);
+                this.cdr.markForCheck();
+            });
     }
 
     eliminar(id: number | string): void {
@@ -74,11 +101,13 @@ export class ReportesLista implements OnInit {
             next: () => {
                 this.isLoading = false;
                 this.cargarReportes();
+                this.cdr.markForCheck();
             },
             error: (error: any) => {
                 this.isLoading = false;
                 this.errorMessage = 'Error al eliminar el reporte.';
                 console.error(error);
+                this.cdr.markForCheck();
             }
         });
     }

@@ -93,6 +93,14 @@ export class DonacionService {
     this.donacionesSignal.update(lista => lista.filter(d => d.id !== id));
   }
 
+  async cambiarVisibilidad(id: string, oculta: boolean): Promise<Donacion> {
+    const actualizada = await firstValueFrom(
+      this.http.patch<Donacion>(`${this.API_URL}/${id}/visibilidad`, { oculta })
+    );
+    this.donacionesSignal.update(lista => lista.map(d => (d.id === id ? actualizada : d)));
+    return actualizada;
+  }
+
   cambiarEstado(id: string, estado: EstadoDonacion): void {
     this.actualizarDonacion(id, { estado }).catch(error => {
       console.error('Error al cambiar el estado de la donación:', error);

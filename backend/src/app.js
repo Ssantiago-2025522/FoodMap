@@ -4,10 +4,13 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const donacionRoutes = require('./routes/donacionRoutes');
 const reporteRoutes = require('./routes/reporteRoutes');
+const usuarioRoutes = require('./routes/usuarioRoutes');
 const solicitudesRoutes = require('./routes/solicitudes.routes');
 const { noEncontrado, errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
+
+app.set('etag', false);
 
 const origenesPermitidos = (process.env.CORS_ORIGIN || 'http://localhost:4200')
   .split(',')
@@ -25,6 +28,11 @@ app.use(
 // como una imagen en base64 dentro del cuerpo JSON.
 app.use(express.json({ limit: '3mb' }));
 
+app.use('/api', (req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
@@ -32,6 +40,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/donaciones', donacionRoutes);
 app.use('/api/reportes', reporteRoutes);
+app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/solicitudes', solicitudesRoutes);
 
 app.use(noEncontrado);
