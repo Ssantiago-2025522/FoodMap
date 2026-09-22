@@ -3,7 +3,6 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Solicitudes } from '../../../services/solicitudes.service';
-import { Sesion } from '../../../services/sesion.service';
 import { EstadoSolicitud, RolSolicitud, SolicitudDetalle } from '../../../models/solicitud';
 
 @Component({
@@ -14,7 +13,6 @@ import { EstadoSolicitud, RolSolicitud, SolicitudDetalle } from '../../../models
 })
 export class ListaSolicitudes implements OnInit {
   private solicitudesService = inject(Solicitudes);
-  private sesion = inject(Sesion);
   private peticion?: Subscription;
 
   titulo_solicitud = 'Solicitudes';
@@ -35,12 +33,12 @@ export class ListaSolicitudes implements OnInit {
   }
 
   cargar(): void {
-    this.peticion?.unsubscribe(); 
+    this.peticion?.unsubscribe();
     this.cargando.set(true);
     this.error.set('');
 
     this.peticion = this.solicitudesService
-      .obtenerSolicitudes(this.sesion.obtenerIdUsuarioActual(), this.rol())
+      .obtenerSolicitudes(this.rol())
       .subscribe({
         next: (data) => {
           this.solicitudes.set(data);
@@ -59,6 +57,6 @@ export class ListaSolicitudes implements OnInit {
   }
 
   etiquetaEstado(estado: EstadoSolicitud): string {
-    return estado.charAt(0) + estado.slice(1).toLowerCase(); 
+    return estado.charAt(0) + estado.slice(1).toLowerCase();
   }
 }

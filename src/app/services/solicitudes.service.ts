@@ -14,51 +14,44 @@ export class Solicitudes {
 
   constructor(private http: HttpClient) {}
 
-  obtenerDonacionesDisponibles(idUsuario: number): Observable<DonacionDisponible[]> {
-    const params = new HttpParams().set('usuario', idUsuario);
-    return this.http.get<DonacionDisponible[]>(`${this.baseUrl}/donaciones-disponibles`, { params });
+  obtenerDonacionesDisponibles(): Observable<DonacionDisponible[]> {
+    return this.http.get<DonacionDisponible[]>(`${this.baseUrl}/donaciones-disponibles`);
   }
 
   crearSolicitud(
-    idDonacion: number, idUsuario: number, cantidadSolicitada: number, comentario: string
+    idDonacion: number, cantidadSolicitada: number, comentario: string
   ): Observable<Solicitud> {
     return this.http.post<Solicitud>(this.baseUrl, {
       id_donacion: idDonacion,
-      id_usuario: idUsuario,
       cantidad_solicitada: cantidadSolicitada,
       comentario
     });
   }
 
-  obtenerSolicitudes(idUsuario: number, rol: RolSolicitud): Observable<SolicitudDetalle[]> {
-    const params = new HttpParams().set('usuario', idUsuario).set('rol', rol);
+  obtenerSolicitudes(rol: RolSolicitud): Observable<SolicitudDetalle[]> {
+    const params = new HttpParams().set('rol', rol);
     return this.http.get<SolicitudDetalle[]>(this.baseUrl, { params });
   }
 
-  obtenerSolicitud(id: number, idUsuario: number): Observable<SolicitudDetalle> {
-    const params = new HttpParams().set('usuario', idUsuario);
-    return this.http.get<SolicitudDetalle>(`${this.baseUrl}/${id}`, { params });
+  obtenerSolicitud(id: number): Observable<SolicitudDetalle> {
+    return this.http.get<SolicitudDetalle>(`${this.baseUrl}/${id}`);
   }
 
-  obtenerHistorial(idUsuario: number): Observable<HistorialItem[]> {
-    const params = new HttpParams().set('usuario', idUsuario);
-    return this.http.get<HistorialItem[]>(`${this.baseUrl}/historial`, { params });
+  obtenerHistorial(): Observable<HistorialItem[]> {
+    return this.http.get<HistorialItem[]>(`${this.baseUrl}/historial`);
   }
 
-  aceptarSolicitud(id: number, idUsuario: number): Observable<{ solicitud: Solicitud; chat: any; entrega: any }> {
+  aceptarSolicitud(id: number): Observable<{ solicitud: Solicitud; chat: any; entrega: any }> {
     return this.http.patch<{ solicitud: Solicitud; chat: any; entrega: any }>(
-      `${this.baseUrl}/${id}/aceptar`, { id_usuario: idUsuario }
+      `${this.baseUrl}/${id}/aceptar`, {}
     );
   }
 
-  rechazarSolicitud(id: number, idUsuario: number): Observable<Solicitud> {
-    return this.http.patch<Solicitud>(`${this.baseUrl}/${id}/rechazar`, { id_usuario: idUsuario });
+  rechazarSolicitud(id: number): Observable<Solicitud> {
+    return this.http.patch<Solicitud>(`${this.baseUrl}/${id}/rechazar`, {});
   }
 
-  confirmarRecepcion(id: number, idUsuario: number, observaciones?: string): Observable<any> {
-    return this.http.patch(`${this.baseUrl}/${id}/confirmar-recepcion`, {
-      id_usuario: idUsuario,
-      observaciones
-    });
+  confirmarRecepcion(id: number, observaciones?: string): Observable<any> {
+    return this.http.patch(`${this.baseUrl}/${id}/confirmar-recepcion`, { observaciones });
   }
 }

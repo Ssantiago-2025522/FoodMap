@@ -35,6 +35,25 @@
   border-bottom-color: #95d5b2;
 }
 
+.navbar__notificaciones {
+  position: relative;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.3rem;
+  margin-left: 0.3rem;
+  border-radius: 999px;
+  background: var(--color-naranja);
+  color: var(--color-gris-oscuro);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
 .navbar__usuario {
   display: flex;
   align-items: center;

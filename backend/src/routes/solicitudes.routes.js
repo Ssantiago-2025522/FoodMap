@@ -1,19 +1,18 @@
-import { Router } from 'express';
-import { usuarioActual } from '../middlewares/usuario.js';
-import { asyncHandler as ah } from '../utils/async-handler.js';
-import * as c from '../controllers/solicitudes.controller.js';
+const { Router } = require('express');
+const { requiereAutenticacion } = require('../middlewares/auth.middleware');
+const c = require('../controllers/solicitudes.controller');
 
 const router = Router();
-router.use(usuarioActual);
+router.use(requiereAutenticacion);
 
-router.get('/donaciones-disponibles', ah(c.donacionesDisponibles));
-router.get('/historial', ah(c.historial));
+router.get('/donaciones-disponibles', c.donacionesDisponibles);
+router.get('/historial', c.historial);
 
-router.get('/', ah(c.listar));
-router.post('/', ah(c.crear));
-router.get('/:id', ah(c.obtener));
-router.patch('/:id/aceptar', ah(c.aceptar));
-router.patch('/:id/rechazar', ah(c.rechazar));
-router.patch('/:id/confirmar-recepcion', ah(c.confirmarRecepcion));
+router.get('/', c.listar);
+router.post('/', c.crear);
+router.get('/:id', c.obtener);
+router.patch('/:id/aceptar', c.aceptar);
+router.patch('/:id/rechazar', c.rechazar);
+router.patch('/:id/confirmar-recepcion', c.confirmarRecepcion);
 
-export default router;
+module.exports = router;

@@ -3,7 +3,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, DatePipe } from '@angular/common';
 import { Solicitudes } from '../../../services/solicitudes.service';
-import { Sesion } from '../../../services/sesion.service';
 import { DonacionDisponible } from '../../../models/solicitud';
 
 @Component({
@@ -16,7 +15,6 @@ export class CrearSolicitud implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private solicitudesService = inject(Solicitudes);
-  private idUsuario = inject(Sesion).obtenerIdUsuarioActual();
 
   donaciones = signal<DonacionDisponible[]>([]);
   idDonacion = signal<number | null>(null);
@@ -35,7 +33,7 @@ export class CrearSolicitud implements OnInit {
     const param = this.route.snapshot.paramMap.get('idDonacion');
     if (param) this.idDonacion.set(Number(param));
 
-    this.solicitudesService.obtenerDonacionesDisponibles(this.idUsuario).subscribe({
+    this.solicitudesService.obtenerDonacionesDisponibles().subscribe({
       next: (data) => {
         this.donaciones.set(data);
         this.cargando.set(false);
@@ -76,14 +74,14 @@ export class CrearSolicitud implements OnInit {
     this.error.set('');
 
     this.solicitudesService
-      .crearSolicitud(donacion.id_donacion, this.idUsuario, cantidad, this.comentario().trim())
+      .crearSolicitud(donacion.id_donacion, cantidad, this.comentario().trim())
       .subscribe({
         next: () => {
           this.enviando.set(false);
           this.router.navigate(['/solicitudes']);
         },
         error: (err) => {
-          this.error.set(err.error?.error ?? 'No se pudo crear la solicitud.');
+          this.error.set(err.error?.message ?? 'No se pudo crear la solicitud.');
           this.enviando.set(false);
         }
       });

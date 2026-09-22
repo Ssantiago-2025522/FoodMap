@@ -1,11 +1,15 @@
-<section class="crear-solicitud-container">
+<main class="contenedor-principal seccion-espaciada">
 
-    <div class="page-header">
-        <h1>Solicitar Donación</h1>
-        <p>Elige una donación disponible y completa la información para enviar tu solicitud.</p>
-    </div>
+    <header class="encabezado-app">
+        <div>
+            <span class="badge-sostenible">FoodMap</span>
+            <h1>Solicitar Donación</h1>
+            <p class="subtitulo">Elige una donación disponible y completa la información para enviar tu solicitud.</p>
+        </div>
+        <button type="button" class="btn-outline" routerLink="/solicitudes">Regresar</button>
+    </header>
 
-    <form class="solicitud-form" (ngSubmit)="confirmarSolicitud()">
+    <form class="card-blanca solicitud-form" (ngSubmit)="confirmarSolicitud()">
 
         <fieldset class="form-group donaciones-lista">
             <legend>Donaciones disponibles</legend>
@@ -56,15 +60,11 @@
         }
 
         <div class="acciones">
-            <button type="submit" [disabled]="enviando() || cargando()">
+            <button type="submit" class="btn-naranja" [disabled]="enviando() || cargando()">
                 {{ enviando() ? 'Enviando...' : 'Enviar Solicitud' }}
             </button>
         </div>
 
     </form>
 
-    <div>
-        <button type="button" routerLink="/solicitudes">Regresar</button>
-    </div>
-
-</section>
+</main>

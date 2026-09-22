@@ -1,7 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Solicitudes } from '../../../services/solicitudes.service';
-import { Sesion } from '../../../services/sesion.service';
 import { HistorialItem } from '../../../models/solicitud';
 import { CommonModule } from '@angular/common';
 
@@ -15,7 +14,6 @@ type FiltroHistorial = 'TODAS' | 'ENTREGADAS' | 'PENDIENTES' | 'RECHAZADAS';
 })
 export class HistorialSolicitudes implements OnInit {
   private solicitudesService = inject(Solicitudes);
-  private idUsuario = inject(Sesion).obtenerIdUsuarioActual();
 
   filtros: { valor: FiltroHistorial; texto: string }[] = [
     { valor: 'TODAS', texto: 'Todas' },
@@ -40,7 +38,7 @@ export class HistorialSolicitudes implements OnInit {
   });
 
   ngOnInit(): void {
-    this.solicitudesService.obtenerHistorial(this.idUsuario).subscribe({
+    this.solicitudesService.obtenerHistorial().subscribe({
       next: (data) => {
         this.historial.set(data);
         this.cargando.set(false);

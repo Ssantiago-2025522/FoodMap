@@ -4,6 +4,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const donacionRoutes = require('./routes/donacionRoutes');
 const reporteRoutes = require('./routes/reporteRoutes');
+const solicitudesRoutes = require('./routes/solicitudes.routes');
 const { noEncontrado, errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
@@ -29,6 +30,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/donaciones', donacionRoutes);
 app.use('/api/reportes', reporteRoutes);
+app.use('/api/solicitudes', solicitudesRoutes);
 
 app.use(noEncontrado);
 app.use(errorHandler);
