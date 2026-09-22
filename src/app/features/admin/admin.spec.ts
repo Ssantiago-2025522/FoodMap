@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 import { Admin } from './admin';
 
 describe('Admin', () => {
@@ -6,8 +9,10 @@ describe('Admin', () => {
   let fixture: ComponentFixture<Admin>;
 
   beforeEach(async () => {
+    localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [Admin],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(Admin);

@@ -3,7 +3,13 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "postinstall": "node scripts/setup.js --install",
+    "prestart": "node scripts/setup.js",
+    "start": "concurrently -n FRONTEND,BACKEND -c blue,green \"npm run start:frontend\" \"npm run start:backend\"",
+    "dev": "npm run start",
+    "start:frontend": "ng serve",
+    "start:backend": "npm --prefix backend run dev",
+    "db:init": "node backend/scripts/init-db.js",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -26,6 +32,7 @@
     "@angular/cli": "^22.1.5",
     "@angular/compiler-cli": "^22.1.0",
     "@types/leaflet": "^1.9.22",
+    "concurrently": "^9.2.1",
     "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
     "typescript": "~6.0.2",

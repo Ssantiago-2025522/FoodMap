@@ -1,22 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 import { Home } from './home';
 
 describe('Home', () => {
-  let component: Home;
-  let fixture: ComponentFixture<Home>;
-
   beforeEach(async () => {
+    localStorage.clear();
     await TestBed.configureTestingModule({
-      imports: [Home]
-    })
-      .compileComponents();
-
-    fixture = TestBed.createComponent(Home);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
+      imports: [Home],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
+    }).compileComponents();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    const fixture = TestBed.createComponent(Home);
+    fixture.detectChanges();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 });

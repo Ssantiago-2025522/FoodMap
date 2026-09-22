@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { LoginCredentials } from '../../../core/models/auth.model';
-import { AuthService } from '../../../core/services/auth.service';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { LoginCredentials } from '@core/models/auth.model';
+import { AuthService } from '@core/services/auth.service';
+import { mensajeDeError } from '@core/utils/http-error';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -17,35 +18,41 @@ export class Login {
     contrasena: ''
   };
 
-  isLoading = false;
-  errorMessage = '';
+  isLoading = signal(false);
+  errorMessage = signal('');
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   login(): void {
     if (!this.credentials.correo || !this.credentials.contrasena) {
-      this.errorMessage = 'Debe ingresar correo y contraseña.';
+      this.errorMessage.set('Debe ingresar correo y contraseña.');
       return;
     }
 
-    this.isLoading = true;
-    this.errorMessage = '';
+    this.isLoading.set(true);
+    this.errorMessage.set('');
 
-    this.authService
-      .login(this.credentials)
-      .subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.router.navigate(['/inicio']);
-        },
-        error: (error: any) => {
-          this.isLoading = false;
-          console.error('Error de login:', error);
-          this.errorMessage = error?.error?.message ?? 'No se pudo iniciar sesión.';
-        }
-      });
+    this.authService.login(this.credentials).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.router.navigateByUrl(this.destinoTrasLogin());
+      },
+      error: (error: HttpErrorResponse) => {
+        this.isLoading.set(false);
+        console.error('Error de login:', error);
+        this.errorMessage.set(mensajeDeError(error, 'No se pudo iniciar sesión.'));
+      }
+    });
+  }
+
+  private destinoTrasLogin(): string {
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    return returnUrl && returnUrl.startsWith('/') && !returnUrl.startsWith('//')
+      ? returnUrl
+      : '/inicio';
   }
 }

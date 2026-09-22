@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { AuthResponse, LoginCredentials, RegisterData } from '../models/auth.model';
+import { AuthResponse, LoginCredentials, RegisterData, User } from '../models/auth.model';
 import { AuthApiService } from './auth-api.service';
 import { TokenService } from './token.service';
 import { UserService } from './user.service';
@@ -41,7 +41,7 @@ export class AuthService {
     return this.tokenService.hasToken() && this.userService.hasUser();
   }
 
-  getUsuario() {
+  getUsuario(): User | null {
     return this.userService.getUser();
   }
 

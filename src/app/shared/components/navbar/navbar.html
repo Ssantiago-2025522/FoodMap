@@ -1,1 +1,21 @@
-<p>navbar works!</p>
+<header class="navbar">
+  <a class="navbar__brand" routerLink="/inicio">FoodMap</a>
+
+  <nav class="navbar__links">
+    <a routerLink="/inicio" routerLinkActive="activo">Inicio</a>
+    <a routerLink="/donaciones" routerLinkActive="activo">Donaciones</a>
+    <a routerLink="/profile" routerLinkActive="activo">Mi perfil</a>
+
+    @if (esAdmin) {
+      <a routerLink="/admin" routerLinkActive="activo" [routerLinkActiveOptions]="{ exact: true }">Administración</a>
+      <a routerLink="/admin/reportes" routerLinkActive="activo">Reportes</a>
+    }
+  </nav>
+
+  <div class="navbar__usuario">
+    @if (usuario(); as u) {
+      <span class="navbar__nombre">{{ u.username }}</span>
+    }
+    <button type="button" class="navbar__salir" (click)="cerrarSesion()">Cerrar sesión</button>
+  </div>
+</header>

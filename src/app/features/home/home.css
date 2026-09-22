@@ -1,0 +1,44 @@
+.home h1 {
+  margin: 0 0 0.5rem;
+  font-family: Georgia, Cambria, 'Times New Roman', Times, serif;
+  color: #1b4332;
+}
+
+.home__texto {
+  margin: 0 0 1.5rem;
+  color: #64748b;
+}
+
+.home__accesos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.home__tarjeta {
+  display: block;
+  padding: 1.25rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  color: inherit;
+  text-decoration: none;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.home__tarjeta:hover {
+  box-shadow: 0 6px 18px rgba(27, 67, 50, 0.12);
+  transform: translateY(-2px);
+}
+
+.home__tarjeta h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+  color: #1b4332;
+}
+
+.home__tarjeta p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #64748b;
+}

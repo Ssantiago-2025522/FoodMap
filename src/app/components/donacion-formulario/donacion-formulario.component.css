@@ -56,6 +56,15 @@ input:focus, select:focus, textarea:focus {
   margin-top: 4px;
 }
 
+.error--general {
+  background-color: rgba(214, 48, 49, 0.1);
+  border: 1px solid rgba(214, 48, 49, 0.3);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
 .acciones-form {
   display: flex;
   justify-content: flex-end;

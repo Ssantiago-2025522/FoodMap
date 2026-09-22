@@ -17,6 +17,8 @@ export class DonacionListaComponent {
   @Output() editarDonacion = new EventEmitter<Donacion>();
 
   donaciones = this.donacionService.donacionesFiltradas;
+  cargando = this.donacionService.cargando;
+  error = this.donacionService.error;
 
   onCambiarEstado(evento: { id: string; estado: EstadoDonacion }): void {
     this.donacionService.cambiarEstado(evento.id, evento.estado);
@@ -24,7 +26,9 @@ export class DonacionListaComponent {
 
   onEliminar(id: string): void {
     if (confirm('¿Estás seguro de que deseas eliminar esta donación?')) {
-      this.donacionService.eliminarDonacion(id);
+      this.donacionService.eliminarDonacion(id).catch(error => {
+        console.error('Error al eliminar la donación:', error);
+      });
     }
   }
 

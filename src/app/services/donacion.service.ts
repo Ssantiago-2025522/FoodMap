@@ -1,18 +1,29 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import { environment } from '@env/environment';
 import { Donacion, CategoriaDonacion, EstadoDonacion, FiltrosDonacion } from '../models/donacion';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DonacionService {
-  private readonly STORAGE_KEY = 'foodmap_donaciones';
+  private readonly API_URL = `${environment.apiUrl}/donaciones`;
 
-  private donacionesSignal = signal<Donacion[]>(this.cargarStorage());
+  private http = inject(HttpClient);
+
+  private donacionesSignal = signal<Donacion[]>([]);
   private filtrosSignal = signal<FiltrosDonacion>({
     busqueda: '',
     categoria: 'Todas',
     estado: 'Todos'
   });
+
+  private cargandoSignal = signal(false);
+  private errorSignal = signal<string | null>(null);
+
+  readonly cargando = this.cargandoSignal.asReadonly();
+  readonly error = this.errorSignal.asReadonly();
 
   readonly donacionesFiltradas = computed(() => {
     const lista = this.donacionesSignal();
@@ -25,7 +36,7 @@ export class DonacionService {
       }
       return donacion;
     }).filter(donacion => {
-      const coincideBusqueda = !busqueda || 
+      const coincideBusqueda = !busqueda ||
         donacion.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
         donacion.descripcion.toLowerCase().includes(busqueda.toLowerCase()) ||
         donacion.ubicacion.toLowerCase().includes(busqueda.toLowerCase());
@@ -38,8 +49,21 @@ export class DonacionService {
   });
 
   constructor() {
-    if (this.donacionesSignal().length === 0) {
-      this.cargarDatosIniciales();
+    this.cargarDonaciones();
+  }
+
+  async cargarDonaciones(): Promise<void> {
+    this.cargandoSignal.set(true);
+    this.errorSignal.set(null);
+
+    try {
+      const donaciones = await firstValueFrom(this.http.get<Donacion[]>(this.API_URL));
+      this.donacionesSignal.set(donaciones);
+    } catch (error) {
+      console.error('Error al cargar donaciones:', error);
+      this.errorSignal.set('No se pudieron cargar las donaciones desde el servidor.');
+    } finally {
+      this.cargandoSignal.set(false);
     }
   }
 
@@ -51,65 +75,31 @@ export class DonacionService {
     return this.donacionesSignal().find(d => d.id === id);
   }
 
-  crearDonacion(datos: Omit<Donacion, 'id' | 'fechaCreacion' | 'estado'>): Donacion {
-    const nuevaDonacion: Donacion = {
-      ...datos,
-      id: crypto.randomUUID(),
-      estado: 'Disponible',
-      fechaCreacion: new Date().toISOString()
-    };
-
-    const actualizadas = [nuevaDonacion, ...this.donacionesSignal()];
-    this.actualizarEstado(actualizadas);
+  async crearDonacion(datos: Omit<Donacion, 'id' | 'fechaCreacion' | 'estado'>): Promise<Donacion> {
+    const nuevaDonacion = await firstValueFrom(this.http.post<Donacion>(this.API_URL, datos));
+    this.donacionesSignal.update(lista => [nuevaDonacion, ...lista]);
     return nuevaDonacion;
   }
 
-  actualizarDonacion(id: string, campos: Partial<Donacion>): void {
-    const actualizadas = this.donacionesSignal().map(d => 
-      d.id === id ? { ...d, ...campos } : d
+  async actualizarDonacion(id: string, campos: Partial<Donacion>): Promise<void> {
+    const actualizada = await firstValueFrom(
+      this.http.put<Donacion>(`${this.API_URL}/${id}`, campos)
     );
-    this.actualizarEstado(actualizadas);
+    this.donacionesSignal.update(lista => lista.map(d => (d.id === id ? actualizada : d)));
   }
 
-  eliminarDonacion(id: string): void {
-    const actualizadas = this.donacionesSignal().filter(d => d.id !== id);
-    this.actualizarEstado(actualizadas);
+  async eliminarDonacion(id: string): Promise<void> {
+    await firstValueFrom(this.http.delete<void>(`${this.API_URL}/${id}`));
+    this.donacionesSignal.update(lista => lista.filter(d => d.id !== id));
   }
 
   cambiarEstado(id: string, estado: EstadoDonacion): void {
-    this.actualizarDonacion(id, { estado });
+    this.actualizarDonacion(id, { estado }).catch(error => {
+      console.error('Error al cambiar el estado de la donación:', error);
+    });
   }
 
   aplicarFiltros(filtros: Partial<FiltrosDonacion>): void {
     this.filtrosSignal.update(actual => ({ ...actual, ...filtros }));
-  }
-
-  private actualizarEstado(donaciones: Donacion[]): void {
-    this.donacionesSignal.set(donaciones);
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(donaciones));
-  }
-
-  private cargarStorage(): Donacion[] {
-    const datos = localStorage.getItem(this.STORAGE_KEY);
-    return datos ? JSON.parse(datos) : [];
-  }
-
-  private cargarDatosIniciales(): void {
-    const iniciales: Donacion[] = [
-      {
-        id: '1',
-        titulo: 'Caja de Manzanas',
-        descripcion: 'Manzanas frescas de huerto local.',
-        categoria: 'Frutas',
-        cantidad: 10,
-        estado: 'Disponible',
-        ubicacion: 'Parque Central',
-        latitud: 14.6349,
-        longitud: -90.5069,
-        fechaCreacion: new Date().toISOString(),
-        fechaExpiracion: '2026-10-15'
-      }
-    ];
-    this.actualizarEstado(iniciales);
   }
 }

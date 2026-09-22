@@ -23,6 +23,7 @@ export class DonacionFormularioComponent implements OnInit {
   form!: FormGroup;
   cargandoUbicacion = false;
   modoEdicion = false;
+  errorGuardado = '';
 
   categorias: CategoriaDonacion[] = [
     'Frutas', 
@@ -62,6 +63,7 @@ export class DonacionFormularioComponent implements OnInit {
     }
 
     this.cargandoUbicacion = true;
+    this.errorGuardado = '';
     const datos = this.form.value;
 
     try {
@@ -83,15 +85,18 @@ export class DonacionFormularioComponent implements OnInit {
       };
 
       if (this.modoEdicion && this.donacionEditar) {
-        this.donacionService.actualizarDonacion(this.donacionEditar.id, payloadDonacion);
+        await this.donacionService.actualizarDonacion(this.donacionEditar.id, payloadDonacion);
       } else {
         // Uso de crearDonacion en lugar de agregarDonacion
-        this.donacionService.crearDonacion(payloadDonacion);
+        await this.donacionService.crearDonacion(payloadDonacion);
       }
 
       this.cerrar.emit();
     } catch (error) {
-      console.error('Error al obtener coordenadas:', error);
+      console.error('Error al guardar la donación:', error);
+      this.errorGuardado =
+        (error as any)?.error?.message ||
+        'No se pudo guardar la donación. Verifica los datos e inténtalo de nuevo.';
     } finally {
       this.cargandoUbicacion = false;
     }

@@ -1,5 +1,4 @@
 <div class="login-container">
-  <!-- Lado Izquierdo: Banner informativo -->
   <div class="banner-section">
     <div class="banner-content">
       <h1 class="main-heading">
@@ -32,9 +31,9 @@
 
    
     <div class="images-grid">
-      <img src="assets/img1.jpg" alt="Verduras frescas" class="banner-img" />
-      <img src="assets/img2.jpg" alt="Mercado de frutas" class="banner-img" />
-      <img src="assets/img3.jpg" alt="Voluntarios empaquetando" class="banner-img" />
+      <img src="img/img1.jpg" alt="Verduras frescas" class="banner-img" />
+      <img src="img/img2.jpg" alt="Mercado de frutas" class="banner-img" />
+      <img src="img/img3.jpg" alt="Voluntarios empaquetando" class="banner-img" />
     </div>
   </div>
 
@@ -44,9 +43,9 @@
       <p class="form-subtitle">Inicia sesión para continuar rescatando alimentos.</p>
 
     
-      @if (errorMessage) {
+      @if (errorMessage()) {
         <div class="error-banner">
-          {{ errorMessage }}
+          {{ errorMessage() }}
         </div>
       }
 
@@ -85,11 +84,11 @@
         
         <button
           type="submit"
-          [disabled]="isLoading"
+          [disabled]="isLoading()"
           class="btn-primary"
         >
-          <span>{{ isLoading ? 'Cargando...' : 'Iniciar sesión' }}</span>
-          @if (!isLoading) {
+          <span>{{ isLoading() ? 'Cargando...' : 'Iniciar sesión' }}</span>
+          @if (!isLoading()) {
             <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
@@ -116,7 +115,7 @@
       
       <p class="register-footer">
         ¿Aún no tienes cuenta?
-        <a href="#" class="register-link">Regístrate gratis</a>
+        <a routerLink="/register" class="register-link">Regístrate gratis</a>
       </p>
     </div>
   </div>

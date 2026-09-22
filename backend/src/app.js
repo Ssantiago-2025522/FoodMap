@@ -1,0 +1,36 @@
+const express = require('express');
+const cors = require('cors');
+
+const authRoutes = require('./routes/authRoutes');
+const donacionRoutes = require('./routes/donacionRoutes');
+const reporteRoutes = require('./routes/reporteRoutes');
+const { noEncontrado, errorHandler } = require('./middlewares/errorHandler');
+
+const app = express();
+
+const origenesPermitidos = (process.env.CORS_ORIGIN || 'http://localhost:4200')
+  .split(',')
+  .map((origen) => origen.trim());
+
+app.use(
+  cors({
+    origin: origenesPermitidos,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+  })
+);
+
+app.use(express.json());
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+app.use('/api/auth', authRoutes);
+app.use('/api/donaciones', donacionRoutes);
+app.use('/api/reportes', reporteRoutes);
+
+app.use(noEncontrado);
+app.use(errorHandler);
+
+module.exports = app;

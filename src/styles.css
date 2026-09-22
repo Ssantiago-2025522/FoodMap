@@ -27,7 +27,6 @@ body {
   background-color: var(--color-crema) !important;
   color: var(--color-gris-oscuro);
   font-family: var(--fuente-cuerpo);
-  padding: 30px 20px;
 }
 
 .contenedor-principal {

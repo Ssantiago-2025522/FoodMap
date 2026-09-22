@@ -1,36 +1,28 @@
-import {
-    Component
-} from '@angular/core';
-
-import {
-    Router
-} from '@angular/router';
-
-import {
-    AuthService
-} from '../../core/services/auth.service';
+import { Component } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
-    selector: 'app-admin',
-    standalone: true,
-    imports: [],
-    templateUrl: './admin.html'
+  selector: 'app-admin',
+  standalone: true,
+  imports: [RouterLink],
+  templateUrl: './admin.html',
+  styleUrl: './admin.css'
 })
 export class Admin {
+  isLoading = false;
+  errorMessage = '';
 
-    isLoading = false;
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
-    errorMessage = '';
+  get usuario() {
+    return this.authService.getUsuario();
+  }
 
-    constructor(
-        private authService: AuthService,
-        private router: Router
-    ) {}
-
-    volverseInicio(): void {
-        this.router.navigate([
-            '/inicio'
-        ]);
-    }
-
+  volverseInicio(): void {
+    this.router.navigate(['/inicio']);
+  }
 }

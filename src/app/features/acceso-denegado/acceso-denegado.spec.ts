@@ -1,21 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 import { AccesoDenegado } from './acceso-denegado';
 
 describe('AccesoDenegado', () => {
-  let component: AccesoDenegado;
-  let fixture: ComponentFixture<AccesoDenegado>;
-
   beforeEach(async () => {
+    localStorage.clear();
     await TestBed.configureTestingModule({
       imports: [AccesoDenegado],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
     }).compileComponents();
-
-    fixture = TestBed.createComponent(AccesoDenegado);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    const fixture = TestBed.createComponent(AccesoDenegado);
+    fixture.detectChanges();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 });

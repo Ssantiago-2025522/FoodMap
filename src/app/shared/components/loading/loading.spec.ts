@@ -1,22 +1,21 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 import { Loading } from './loading';
 
 describe('Loading', () => {
-  let component: Loading;
-  let fixture: ComponentFixture<Loading>;
-
   beforeEach(async () => {
+    localStorage.clear();
     await TestBed.configureTestingModule({
-      imports: [Loading]
-    })
-      .compileComponents();
-
-    fixture = TestBed.createComponent(Loading);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
+      imports: [Loading],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()]
+    }).compileComponents();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    const fixture = TestBed.createComponent(Loading);
+    fixture.detectChanges();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 });

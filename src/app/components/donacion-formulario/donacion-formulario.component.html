@@ -72,10 +72,14 @@
       </div>
     }
 
+    @if (errorGuardado) {
+      <p class="error error--general">{{ errorGuardado }}</p>
+    }
+
     <div class="acciones-form">
       <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
       <button type="submit" class="btn-guardar" [disabled]="cargandoUbicacion">
-        {{ cargandoUbicacion ? 'Ubicando en mapa...' : (modoEdicion ? 'Actualizar' : 'Guardar Donación') }}
+        {{ cargandoUbicacion ? (modoEdicion ? 'Actualizando...' : 'Guardando...') : (modoEdicion ? 'Actualizar' : 'Guardar Donación') }}
       </button>
     </div>
   </form>
