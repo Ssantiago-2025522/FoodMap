@@ -50,12 +50,14 @@
                 @for (usuario of usuariosFiltrados; track usuario.id_usuario) {
                     <tr>
                         <td>{{ usuario.id_usuario }}</td>
-                        <td>{{ usuario.username }}</td>
+                        <td class="celda-usuario">{{ usuario.username }}</td>
                         <td>{{ usuario.correo }}</td>
                         <td>{{ usuario.telefono }}</td>
                         <td>{{ usuario.fecha_registro | date: 'short' }}</td>
                         <td>
                             <select
+                                class="select-rol"
+                                [class.select-rol--admin]="usuario.id_rol === Role.ADMIN"
                                 [ngModel]="usuario.id_rol"
                                 (ngModelChange)="cambiarRol(usuario, $event)"
                             >
@@ -66,14 +68,16 @@
                             </select>
                         </td>
                         <td>
-                            <a [routerLink]="['/admin/usuarios', usuario.id_usuario]">Editar</a>
-                            @if (usuario.id_rol !== Role.ADMIN) {
-                                <button type="button" (click)="hacerAdmin(usuario)">Hacer admin</button>
-                            }
-                            <button type="button" (click)="alternarPublicaciones(usuario)">
-                                {{ publicacionesOcultas(usuario) ? 'Mostrar publicaciones' : 'Ocultar publicaciones' }}
-                            </button>
-                            <button type="button" (click)="eliminar(usuario.id_usuario)">Eliminar</button>
+                            <div class="celda-acciones">
+                                <a class="enlace-editar" [routerLink]="['/admin/usuarios', usuario.id_usuario]">Editar</a>
+                                @if (usuario.id_rol !== Role.ADMIN) {
+                                    <button type="button" class="boton-tabla" (click)="hacerAdmin(usuario)">Hacer admin</button>
+                                }
+                                <button type="button" class="boton-tabla" (click)="alternarPublicaciones(usuario)">
+                                    {{ publicacionesOcultas(usuario) ? 'Mostrar publicaciones' : 'Ocultar publicaciones' }}
+                                </button>
+                                <button type="button" class="boton-tabla boton-tabla--peligro" (click)="eliminar(usuario.id_usuario)">Eliminar</button>
+                            </div>
                         </td>
                     </tr>
                 }
