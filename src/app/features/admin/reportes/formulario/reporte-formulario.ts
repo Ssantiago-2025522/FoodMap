@@ -9,7 +9,8 @@ import { DonacionService } from '../../../../services/donacion.service';
     selector: 'app-reporte-formulario',
     standalone: true,
     imports: [CommonModule, FormsModule],
-    templateUrl: './reporte-formulario.html'
+    templateUrl: './reporte-formulario.html',
+    styleUrl: './reporte-formulario.css'
 })
 export class ReporteFormulario implements OnInit {
     reporteId: string | null = null;
