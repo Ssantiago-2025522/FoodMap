@@ -22,8 +22,20 @@ const SELECT_DETALLE = `
   LEFT JOIN entrega e ON e.id_solicitud = s.id_solicitud
   LEFT JOIN chat c    ON c.id_solicitud = s.id_solicitud`;
 
+// Compara IDs de forma segura (evita fallos si alguno llega como string vs number)
+function mismoUsuario(a, b, contexto) {
+  const iguales = Number(a) === Number(b);
+  if (iguales && (typeof a !== typeof b)) {
+    console.warn(
+      `[solicitudes] Tipos distintos al comparar IDs en "${contexto}": ` +
+      `a=${JSON.stringify(a)} (${typeof a}) vs b=${JSON.stringify(b)} (${typeof b})`
+    );
+  }
+  return iguales;
+}
+
 function ocultarContacto(fila, idUsuario) {
-  if (fila.id_donador === idUsuario) return fila;
+  if (mismoUsuario(fila.id_donador, idUsuario, 'ocultarContacto')) return fila;
   return { ...fila, correo_solicitante: null, telefono_solicitante: null };
 }
 
@@ -75,7 +87,12 @@ async function obtener(req, res, next) {
     const id = entero(req.params.id, 'El id de la solicitud');
     const [[fila]] = await pool.query(`${SELECT_DETALLE} WHERE s.id_solicitud = ?`, [id]);
     if (!fila) throw new ApiError(404, 'La solicitud no existe.');
-    if (fila.id_usuario !== idUsuario && fila.id_donador !== idUsuario) {
+    if (!mismoUsuario(fila.id_usuario, idUsuario, 'obtener') && !mismoUsuario(fila.id_donador, idUsuario, 'obtener')) {
+      console.warn('[solicitudes] Acceso denegado en "obtener":', {
+        idUsuario, tipoIdUsuario: typeof idUsuario,
+        id_usuario: fila.id_usuario, tipo_id_usuario: typeof fila.id_usuario,
+        id_donador: fila.id_donador, tipo_id_donador: typeof fila.id_donador
+      });
       throw new ApiError(403, 'No tienes acceso a esta solicitud.');
     }
     res.json(ocultarContacto(fila, idUsuario));
@@ -188,7 +205,11 @@ async function aceptar(req, res, next) {
 
     const resultado = await conTransaccion(async (conn) => {
       const s = await bloquearSolicitud(conn, id);
-      if (s.id_donador !== idUsuario) {
+      if (!mismoUsuario(s.id_donador, idUsuario, 'aceptar')) {
+        console.warn('[solicitudes] Rechazo en "aceptar":', {
+          idUsuario, tipoIdUsuario: typeof idUsuario,
+          id_donador: s.id_donador, tipo_id_donador: typeof s.id_donador
+        });
         throw new ApiError(403, 'Solo el donador puede responder esta solicitud.');
       }
       if (s.estado !== 'PENDIENTE') throw new ApiError(409, 'La solicitud ya fue respondida.');
@@ -233,7 +254,11 @@ async function rechazar(req, res, next) {
 
     const solicitud = await conTransaccion(async (conn) => {
       const s = await bloquearSolicitud(conn, id);
-      if (s.id_donador !== idUsuario) {
+      if (!mismoUsuario(s.id_donador, idUsuario, 'rechazar')) {
+        console.warn('[solicitudes] Rechazo en "rechazar":', {
+          idUsuario, tipoIdUsuario: typeof idUsuario,
+          id_donador: s.id_donador, tipo_id_donador: typeof s.id_donador
+        });
         throw new ApiError(403, 'Solo el donador puede responder esta solicitud.');
       }
       if (s.estado !== 'PENDIENTE') throw new ApiError(409, 'La solicitud ya fue respondida.');
@@ -264,7 +289,11 @@ async function confirmarRecepcion(req, res, next) {
 
     const entrega = await conTransaccion(async (conn) => {
       const s = await bloquearSolicitud(conn, id);
-      if (s.id_usuario !== idUsuario) {
+      if (!mismoUsuario(s.id_usuario, idUsuario, 'confirmarRecepcion')) {
+        console.warn('[solicitudes] Rechazo en "confirmarRecepcion":', {
+          idUsuario, tipoIdUsuario: typeof idUsuario,
+          id_usuario: s.id_usuario, tipo_id_usuario: typeof s.id_usuario
+        });
         throw new ApiError(403, 'Solo quien solicitó la donación puede confirmar la recepción.');
       }
       if (s.estado !== 'ACEPTADA') throw new ApiError(409, 'La solicitud aún no fue aceptada.');
