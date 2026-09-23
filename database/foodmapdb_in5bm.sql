@@ -15,7 +15,9 @@ CREATE TABLE usuario (
     telefono VARCHAR(10) NOT NULL UNIQUE,
     contrasena VARCHAR(225) NOT NULL,
     fecha_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    foto VARCHAR(225),
+    foto MEDIUMTEXT,
+    reset_token VARCHAR(255),
+    reset_token_expira DATETIME,
     id_rol BIGINT NOT NULL,
 
     CONSTRAINT fk_usuario_rol

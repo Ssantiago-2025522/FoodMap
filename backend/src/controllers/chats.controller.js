@@ -1,6 +1,6 @@
-import { pool } from '../config/db.js';
-import { HttpError } from '../utils/http-error.js';
-import { entero, texto } from '../utils/validar.js';
+const { pool } = require('../config/db.js');
+const { HttpError } = require('../utils/http-error.js');
+const { entero, texto } = require('../utils/validar.js');
 
 const SELECT_CHAT = `
   SELECT c.id_chat, c.fecha_creacion, c.id_solicitud,
@@ -19,7 +19,7 @@ const SELECT_CHAT = `
       ORDER BY m.fecha_envio DESC, m.id_mensaje DESC LIMIT 1)`;
 
 function aResumen(f, idUsuario) {
-  const soyDonador = f.id_donador === idUsuario;
+  const soyDonador = Number(f.id_donador) === Number(idUsuario);
   return {
     id_chat: f.id_chat,
     fecha_creacion: f.fecha_creacion,
@@ -34,25 +34,27 @@ function aResumen(f, idUsuario) {
 async function cargarChat(idChat, idUsuario) {
   const [[fila]] = await pool.query(`${SELECT_CHAT} WHERE c.id_chat = ?`, [idChat]);
   if (!fila) throw new HttpError(404, 'El chat no existe.');
-  if (fila.id_donador !== idUsuario && fila.id_beneficiario !== idUsuario) {
+  if (Number(fila.id_donador) !== Number(idUsuario) && Number(fila.id_beneficiario) !== Number(idUsuario)) {
     throw new HttpError(403, 'No participas en este chat.');
   }
   return fila;
 }
 
-export async function listar(req, res) {
+async function listar(req, res) {
+  const idUsuario = req.usuario.id_usuario;
   const [filas] = await pool.query(
     `${SELECT_CHAT}
      WHERE s.id_usuario = ? OR d.id_usuario = ?
      ORDER BY COALESCE(lm.fecha_envio, c.fecha_creacion) DESC, c.id_chat DESC`,
-    [req.idUsuario, req.idUsuario]
+    [idUsuario, idUsuario]
   );
-  res.json(filas.map((f) => aResumen(f, req.idUsuario)));
+  res.json(filas.map((f) => aResumen(f, idUsuario)));
 }
 
-export async function obtener(req, res) {
+async function obtener(req, res) {
+  const idUsuario = req.usuario.id_usuario;
   const idChat = entero(req.params.id, 'El id del chat');
-  const fila = await cargarChat(idChat, req.idUsuario);
+  const fila = await cargarChat(idChat, idUsuario);
 
   const [recientes] = await pool.query(
     `SELECT m.id_mensaje, m.contenido, m.fecha_envio, m.id_chat, m.id_usuario, u.username
@@ -62,19 +64,20 @@ export async function obtener(req, res) {
      LIMIT 500`,
     [idChat]
   );
-  res.json({ chat: aResumen(fila, req.idUsuario), mensajes: recientes.reverse() });
+  res.json({ chat: aResumen(fila, idUsuario), mensajes: recientes.reverse() });
 }
 
-export async function enviarMensaje(req, res) {
+async function enviarMensaje(req, res) {
+  const idUsuario = req.usuario.id_usuario;
   const idChat = entero(req.params.id, 'El id del chat');
   const contenido = texto(req.body?.contenido, 255, 'El mensaje');
   if (!contenido) throw new HttpError(400, 'El mensaje no puede estar vacío.');
 
-  await cargarChat(idChat, req.idUsuario);
+  await cargarChat(idChat, idUsuario);
 
   const [r] = await pool.query(
     'INSERT INTO mensaje (contenido, id_chat, id_usuario) VALUES (?, ?, ?)',
-    [contenido, idChat, req.idUsuario]
+    [contenido, idChat, idUsuario]
   );
   const [[mensaje]] = await pool.query(
     `SELECT m.id_mensaje, m.contenido, m.fecha_envio, m.id_chat, m.id_usuario, u.username
@@ -84,3 +87,5 @@ export async function enviarMensaje(req, res) {
   );
   res.status(201).json(mensaje);
 }
+
+module.exports = { listar, obtener, enviarMensaje };

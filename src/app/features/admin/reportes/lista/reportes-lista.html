@@ -18,13 +18,18 @@
         </label>
 
         <label>
-            Tipo
-            <select [(ngModel)]="filtroTipo">
-                <option value="TODOS">Todos</option>
-                @for (tipo of tipos; track tipo) {
-                    <option [value]="tipo">{{ tipo }}</option>
-                }
-            </select>
+            ID de reporte
+            <input type="text" [(ngModel)]="filtroId" placeholder="Buscar por ID de reporte">
+        </label>
+
+        <label>
+            ID de donación
+            <input type="text" [(ngModel)]="filtroDonacion" placeholder="Buscar por ID de donación">
+        </label>
+
+        <label>
+            ID de usuario
+            <input type="text" [(ngModel)]="filtroUsuario" placeholder="Buscar por ID de usuario">
         </label>
 
     </div>
@@ -64,21 +69,30 @@
                     <tr>
                         <td>{{ reporte.id_reporte }}</td>
                         <td>{{ reporte.motivo }}</td>
-                        <td>{{ reporte.descripcion }}</td>
+                        <td class="celda-descripcion" [title]="reporte.descripcion">{{ reporte.descripcion }}</td>
                         <td>{{ reporte.fecha | date: 'short' }}</td>
                         <td>{{ reporte.id_usuario }}</td>
                         <td>{{ reporte.id_donacion }}</td>
                         <td>
-                            <span>{{ reporte.donacion_oculta ? 'Oculta' : 'Visible' }}</span>
-                            <button
-                                type="button"
-                                (click)="alternarVisibilidadDonacion(reporte)"
-                            >
-                                {{ reporte.donacion_oculta ? 'Mostrar' : 'Ocultar' }}
-                            </button>
+                            <div class="celda-visibilidad">
+                                <span class="badge" [class.badge--oculta]="reporte.donacion_oculta" [class.badge--visible]="!reporte.donacion_oculta">
+                                    {{ reporte.donacion_oculta ? 'Oculta' : 'Visible' }}
+                                </span>
+                                <button
+                                    type="button"
+                                    class="boton-tabla"
+                                    (click)="alternarVisibilidadDonacion(reporte)"
+                                >
+                                    {{ reporte.donacion_oculta ? 'Mostrar' : 'Ocultar' }}
+                                </button>
+                            </div>
                         </td>
                         <td>
                             <select
+                                class="select-estado"
+                                [class.select-estado--pendiente]="reporte.estado === 'PENDIENTE'"
+                                [class.select-estado--revision]="reporte.estado === 'EN_REVISION'"
+                                [class.select-estado--resuelto]="reporte.estado === 'RESUELTO'"
                                 [ngModel]="reporte.estado"
                                 (ngModelChange)="cambiarEstado(reporte, $event)"
                             >
@@ -88,7 +102,7 @@
                             </select>
                         </td>
                         <td>
-                            <a [routerLink]="['/admin/reportes', reporte.id_reporte]">Ver</a>
+                            <a class="enlace-ver" [routerLink]="['/admin/reportes', reporte.id_reporte]">Ver</a>
                         </td>
                     </tr>
                 }

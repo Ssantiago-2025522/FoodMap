@@ -15,15 +15,26 @@ const SELECT_DETALLE = `
          sol.correo AS correo_solicitante, sol.telefono AS telefono_solicitante,
          e.estado AS estado_entrega, c.id_chat
   FROM solicitud s
-  JOIN donacion d  ON d.id_donacion = s.id_donacion
-  JOIN ubicacion u ON u.id_ubicacion = d.id_ubicacion
-  JOIN usuario sol ON sol.id_usuario = s.id_usuario
-  JOIN usuario don ON don.id_usuario = d.id_usuario
-  LEFT JOIN entrega e ON e.id_solicitud = s.id_solicitud
-  LEFT JOIN chat c    ON c.id_solicitud = s.id_solicitud`;
+  JOIN donacion d       ON d.id_donacion = s.id_donacion
+  LEFT JOIN ubicacion u ON u.id_ubicacion = d.id_ubicacion
+  JOIN usuario sol      ON sol.id_usuario = s.id_usuario
+  JOIN usuario don      ON don.id_usuario = d.id_usuario
+  LEFT JOIN entrega e   ON e.id_solicitud = s.id_solicitud
+  LEFT JOIN chat c      ON c.id_solicitud = s.id_solicitud`;
+
+function mismoUsuario(a, b, contexto) {
+  const iguales = Number(a) === Number(b);
+  if (iguales && (typeof a !== typeof b)) {
+    console.warn(
+      `[solicitudes] Tipos distintos al comparar IDs en "${contexto}": ` +
+      `a=${JSON.stringify(a)} (${typeof a}) vs b=${JSON.stringify(b)} (${typeof b})`
+    );
+  }
+  return iguales;
+}
 
 function ocultarContacto(fila, idUsuario) {
-  if (fila.id_donador === idUsuario) return fila;
+  if (mismoUsuario(fila.id_donador, idUsuario, 'ocultarContacto')) return fila;
   return { ...fila, correo_solicitante: null, telefono_solicitante: null };
 }
 
@@ -35,7 +46,7 @@ async function donacionesDisponibles(req, res, next) {
               d.fecha_vencimiento, d.imagen, u.municipio, u.departamento,
               don.username AS username_donador
        FROM donacion d
-       JOIN ubicacion u ON u.id_ubicacion = d.id_ubicacion
+       LEFT JOIN ubicacion u ON u.id_ubicacion = d.id_ubicacion
        JOIN usuario don ON don.id_usuario = d.id_usuario
        WHERE ${VIGENTE}
          AND d.id_usuario <> ?
@@ -58,7 +69,7 @@ async function listar(req, res, next) {
     if (rol !== 'donador' && rol !== 'beneficiario') {
       throw new ApiError(400, "El rol debe ser 'donador' o 'beneficiario'.");
     }
-    const columna = rol === 'donador' ? 'd.id_usuario' : 's.id_usuario'; // lista blanca, no viene del usuario
+    const columna = rol === 'donador' ? 'd.id_usuario' : 's.id_usuario';
     const [filas] = await pool.query(
       `${SELECT_DETALLE} WHERE ${columna} = ? ORDER BY s.fecha_solicitud DESC, s.id_solicitud DESC`,
       [idUsuario]
@@ -75,7 +86,7 @@ async function obtener(req, res, next) {
     const id = entero(req.params.id, 'El id de la solicitud');
     const [[fila]] = await pool.query(`${SELECT_DETALLE} WHERE s.id_solicitud = ?`, [id]);
     if (!fila) throw new ApiError(404, 'La solicitud no existe.');
-    if (fila.id_usuario !== idUsuario && fila.id_donador !== idUsuario) {
+    if (!mismoUsuario(fila.id_usuario, idUsuario, 'obtener') && !mismoUsuario(fila.id_donador, idUsuario, 'obtener')) {
       throw new ApiError(403, 'No tienes acceso a esta solicitud.');
     }
     res.json(ocultarContacto(fila, idUsuario));
@@ -95,10 +106,11 @@ async function historial(req, res, next) {
               CASE WHEN d.id_usuario = ? THEN sol.username ELSE don.username END AS contraparte,
               CASE WHEN d.id_usuario = ? THEN 'donador' ELSE 'beneficiario' END AS rol
        FROM solicitud s
-       JOIN donacion d  ON d.id_donacion = s.id_donacion
-       JOIN usuario sol ON sol.id_usuario = s.id_usuario
-       JOIN usuario don ON don.id_usuario = d.id_usuario
-       LEFT JOIN entrega e ON e.id_solicitud = s.id_solicitud
+       JOIN donacion d       ON d.id_donacion = s.id_donacion
+       JOIN usuario sol      ON sol.id_usuario = s.id_usuario
+       JOIN usuario don      ON don.id_usuario = d.id_usuario
+       LEFT JOIN entrega e   ON e.id_solicitud = s.id_solicitud
+       LEFT JOIN ubicacion u ON u.id_ubicacion = d.id_ubicacion
        WHERE s.estado <> 'PENDIENTE' AND (s.id_usuario = ? OR d.id_usuario = ?)
        ORDER BY s.fecha_solicitud DESC, s.id_solicitud DESC`,
       [idUsuario, idUsuario, idUsuario, idUsuario]
@@ -188,7 +200,7 @@ async function aceptar(req, res, next) {
 
     const resultado = await conTransaccion(async (conn) => {
       const s = await bloquearSolicitud(conn, id);
-      if (s.id_donador !== idUsuario) {
+      if (!mismoUsuario(s.id_donador, idUsuario, 'aceptar')) {
         throw new ApiError(403, 'Solo el donador puede responder esta solicitud.');
       }
       if (s.estado !== 'PENDIENTE') throw new ApiError(409, 'La solicitud ya fue respondida.');
@@ -233,7 +245,7 @@ async function rechazar(req, res, next) {
 
     const solicitud = await conTransaccion(async (conn) => {
       const s = await bloquearSolicitud(conn, id);
-      if (s.id_donador !== idUsuario) {
+      if (!mismoUsuario(s.id_donador, idUsuario, 'rechazar')) {
         throw new ApiError(403, 'Solo el donador puede responder esta solicitud.');
       }
       if (s.estado !== 'PENDIENTE') throw new ApiError(409, 'La solicitud ya fue respondida.');
@@ -264,7 +276,7 @@ async function confirmarRecepcion(req, res, next) {
 
     const entrega = await conTransaccion(async (conn) => {
       const s = await bloquearSolicitud(conn, id);
-      if (s.id_usuario !== idUsuario) {
+      if (!mismoUsuario(s.id_usuario, idUsuario, 'confirmarRecepcion')) {
         throw new ApiError(403, 'Solo quien solicitó la donación puede confirmar la recepción.');
       }
       if (s.estado !== 'ACEPTADA') throw new ApiError(409, 'La solicitud aún no fue aceptada.');
@@ -279,6 +291,8 @@ async function confirmarRecepcion(req, res, next) {
          WHERE id_entrega = ?`,
         [observaciones, e.id_entrega]
       );
+
+      await conn.query("UPDATE donacion SET estado = 'Entregada' WHERE id_donacion = ?", [s.id_donacion]);
 
       const beneficiario = await nombreDe(conn, idUsuario);
       await notificar(

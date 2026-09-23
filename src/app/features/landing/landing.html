@@ -1,0 +1,224 @@
+<div class="landing">
+  <!-- Navbar -->
+  <header class="landing__navbar">
+    <a class="landing__brand" routerLink="/">
+      <span class="landing__brand-icono">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2C8 2 5 5.5 5 9.5c0 5.2 6.2 11.4 6.5 11.7a.7.7 0 0 0 1 0C12.8 20.9 19 14.7 19 9.5 19 5.5 16 2 12 2Z" fill="currentColor"/>
+          <circle cx="12" cy="9.5" r="2.6" fill="#FAF7F2"/>
+        </svg>
+      </span>
+      Food<span class="landing__brand-acento">Map</span>
+    </a>
+
+    <nav class="landing__nav-links">
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#caracteristicas">Características</a>
+      <a href="#perfiles">Perfiles</a>
+      <a href="#impacto">Impacto</a>
+    </nav>
+
+    <div class="landing__nav-acciones">
+      <a class="boton boton--fantasma" routerLink="/login">Iniciar sesión</a>
+      <a class="boton boton--naranja" routerLink="/register">Únete gratis</a>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="landing__hero">
+    <div class="landing__hero-container">
+      <div class="landing__hero-texto">
+        <span class="badge">
+          <span class="badge__punto"></span>
+          Plataforma activa en Guatemala
+        </span>
+
+        <h1 class="landing__titulo">
+          La comida que sobra<br />
+          <span class="landing__titulo-acento">llega a quien</span><br />
+          la necesita
+        </h1>
+
+        <p class="landing__subtitulo">
+          FoodMap conecta en tiempo real a restaurantes, supermercados y caterings con organizaciones
+          benéficas, bancos de alimentos y voluntarios. Cero desperdicio. Máximo impacto.
+        </p>
+
+        <div class="landing__hero-botones">
+          <a class="boton boton--naranja boton--grande" routerLink="/register">
+            Publicar un excedente
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="boton boton--contorno boton--grande" routerLink="/register">Soy voluntario</a>
+        </div>
+
+        <div class="landing__hero-social">
+          <div class="landing__avatares">
+            <span class="avatar avatar--mc">MG</span>
+            <span class="avatar avatar--cf">CF</span>
+            <span class="avatar avatar--ar">AR</span>
+            <span class="avatar avatar--lt">LT</span>
+          </div>
+          <div>
+            <div class="landing__estrellas" aria-hidden="true">★★★★★</div>
+            <p>+4,200 usuarios activos</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="landing__hero-visual">
+        <div class="landing__hero-imagen">
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="100" cy="100" r="92" fill="rgba(244,162,97,0.16)" />
+            <circle cx="100" cy="100" r="64" fill="rgba(255,255,255,0.12)" />
+            <path d="M70 120c6 18 24 30 30 30s24-12 30-30c4-12-4-24-16-24-6 0-10 4-14 4s-8-4-14-4c-12 0-20 12-16 24Z" fill="#F4A261" />
+            <path d="M100 96c0-16 12-28 26-28-2 16-12 26-26 28Z" fill="#2E8B57" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cómo funciona -->
+  <section id="como-funciona" class="seccion seccion--clara" #reveal>
+    <div class="seccion__cabecera">
+      <span class="etiqueta">Cómo funciona</span>
+      <h2>Tres pasos, impacto real</h2>
+    </div>
+
+    <div class="pasos">
+      @for (paso of pasos; track paso.numero) {
+        <div class="pasos__item">
+          <div class="pasos__icono" [class.pasos__icono--activo]="paso.numero === '02'">
+            @switch (paso.icono) {
+              @case ('paquete') {
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M3 8l9 5 9-5M12 13v8" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              }
+              @case ('mapa') {
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none"><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+              }
+              @case ('corazon') {
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none"><path d="M12 20s-7.5-4.9-10-9.4C.5 7 2.6 3.5 6.3 3.5c2.1 0 3.7 1.2 4.7 2.7 1-1.5 2.6-2.7 4.7-2.7 3.7 0 5.8 3.5 4.3 7.1C19.5 15.1 12 20 12 20Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              }
+            }
+          </div>
+          <span class="pasos__numero">{{ paso.numero }}</span>
+          <h3>{{ paso.titulo }}</h3>
+          <p>{{ paso.descripcion }}</p>
+        </div>
+      }
+    </div>
+
+    <div class="pasos__ilustraciones">
+      <div class="pasos__ilustracion pasos__ilustracion--uno">
+        <svg viewBox="0 0 24 24" width="34" height="34" fill="none"><path d="M20 7H4a1 1 0 0 0-1 1v3a9 9 0 0 0 18 0V8a1 1 0 0 0-1-1Z" stroke="#FAF7F2" stroke-width="1.6"/><path d="M9 3v3M15 3v3" stroke="#FAF7F2" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <p>Recolección en punto de origen</p>
+      </div>
+      <div class="pasos__ilustracion pasos__ilustracion--dos">
+        <svg viewBox="0 0 24 24" width="34" height="34" fill="none"><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z" stroke="#FAF7F2" stroke-width="1.6"/></svg>
+        <p>Entrega a la red beneficiaria</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Características -->
+  <section id="caracteristicas" class="seccion seccion--crema" #reveal>
+    <div class="seccion__cabecera">
+      <span class="etiqueta">Características</span>
+      <h2>Todo lo que necesitas para<br />salvar alimentos</h2>
+      <p class="seccion__descripcion">
+        Una plataforma completa diseñada para eliminar las barreras entre quien tiene comida de sobra
+        y quien la necesita.
+      </p>
+    </div>
+
+    <div class="tarjetas-caracteristicas">
+      @for (c of caracteristicas; track c.titulo) {
+        <div class="tarjeta-caracteristica">
+          <div class="tarjeta-caracteristica__icono" [ngClass]="'icono--' + c.color">
+            @switch (c.icono) {
+              @case ('rayo') {
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              }
+              @case ('campana') {
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10.5 21a1.7 1.7 0 0 0 3 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              }
+              @case ('pin') {
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M12 21s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="9" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg>
+              }
+              @case ('escudo') {
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M12 3l7 3v6c0 5-3.4 7.9-7 9-3.6-1.1-7-4-7-9V6l7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              }
+              @case ('grafico') {
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M4 20V10M11 20V4M18 20v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              }
+              @case ('usuarios') {
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="7" r="2.4" stroke="currentColor" stroke-width="1.8"/><path d="M15.5 14.2c2.6.5 4.5 2.6 4.5 5.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              }
+            }
+          </div>
+          <h3>{{ c.titulo }}</h3>
+          <p>{{ c.descripcion }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Perfiles / Testimonios -->
+  <section id="perfiles" class="seccion seccion--clara" #reveal>
+    <div class="seccion__cabecera">
+      <span class="etiqueta">Testimonios</span>
+      <h2>La comunidad habla</h2>
+    </div>
+
+    <div class="testimonios">
+      @for (t of testimonios; track t.nombre) {
+        <div class="testimonio">
+          <div class="testimonio__estrellas" aria-hidden="true">★★★★★</div>
+          <p class="testimonio__cita">“{{ t.cita }}”</p>
+          <div class="testimonio__autor">
+            <span class="avatar" [ngClass]="'avatar--' + t.color">{{ t.iniciales }}</span>
+            <div>
+              <p class="testimonio__nombre">{{ t.nombre }}</p>
+              <p class="testimonio__rol">{{ t.rol }}</p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Impacto / actividad en vivo -->
+  <section id="impacto" class="seccion seccion--clara seccion--sin-top" #reveal>
+    <div class="panel-actividad">
+      <div class="panel-actividad__texto">
+        <span class="panel-actividad__estado">
+          <span class="panel-actividad__punto"></span>
+          En vivo · Actividad ahora mismo
+        </span>
+        <h2>12 donaciones activas<br />en Ciudad de Guatemala</h2>
+        <p>
+          En este momento hay voluntarios y organizaciones recogiendo alimentos a pocos kilómetros
+          de donde estás. Únete a la red.
+        </p>
+        <a class="boton boton--naranja" routerLink="/register">Únete a FoodMap</a>
+      </div>
+
+      <div class="panel-actividad__lista">
+        @for (a of actividad; track a.nombre) {
+          <div class="panel-actividad__item">
+            <span class="panel-actividad__punto-item" [ngClass]="'punto--' + a.color"></span>
+            <div>
+              <p class="panel-actividad__nombre">{{ a.nombre }} · {{ a.detalle }}</p>
+              <p class="panel-actividad__hace">{{ a.hace }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <footer class="landing__footer">
+    <p>© 2026 FoodMap · Rescatando alimentos en Guatemala.</p>
+  </footer>
+</div>

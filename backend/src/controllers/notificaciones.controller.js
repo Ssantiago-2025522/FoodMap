@@ -1,13 +1,13 @@
-import { pool } from '../config/db.js';
-import { HttpError } from '../utils/http-error.js';
-import { entero } from '../utils/validar.js';
-import { DISPONIBLE, VIGENTE } from '../utils/sql.js';
-import { recortar } from '../helpers/notificar.js';
+const { pool } = require('../config/db.js');
+const { HttpError } = require('../utils/http-error.js');
+const { entero } = require('../utils/validar.js');
+const { DISPONIBLE, VIGENTE } = require('../utils/sql.js');
+const { recortar } = require('../helpers/notificar.js');
 
 const TITULO_CERCANO = 'Alimento cercano';
 const RADIO_MAXIMO_KM = 50;
 
-export async function listar(req, res) {
+async function listar(req, res) {
   const soloNoLeidas = req.query.leida === 'false';
   const [filas] = await pool.query(
     `SELECT id_notificacion, titulo, mensaje, fecha, leida, id_usuario
@@ -15,16 +15,16 @@ export async function listar(req, res) {
      WHERE id_usuario = ? ${soloNoLeidas ? 'AND leida = FALSE' : ''}
      ORDER BY fecha DESC, id_notificacion DESC
      LIMIT 200`,
-    [req.idUsuario]
+    [req.usuario.id_usuario]
   );
   res.json(filas);
 }
 
-export async function marcarLeida(req, res) {
+async function marcarLeida(req, res) {
   const id = entero(req.params.id, 'El id de la notificación');
   const [r] = await pool.query(
     'UPDATE notificacion SET leida = TRUE WHERE id_notificacion = ? AND id_usuario = ?',
-    [id, req.idUsuario]
+    [id, req.usuario.id_usuario]
   );
   if (r.affectedRows === 0) throw new HttpError(404, 'La notificación no existe.');
 
@@ -36,15 +36,15 @@ export async function marcarLeida(req, res) {
   res.json(fila);
 }
 
-export async function marcarTodasLeidas(req, res) {
+async function marcarTodasLeidas(req, res) {
   const [r] = await pool.query(
     'UPDATE notificacion SET leida = TRUE WHERE id_usuario = ? AND leida = FALSE',
-    [req.idUsuario]
+    [req.usuario.id_usuario]
   );
   res.json({ actualizadas: r.affectedRows });
 }
 
-export async function generarCercanas(req, res) {
+async function generarCercanas(req, res) {
   const latitud = Number(req.body?.latitud);
   const longitud = Number(req.body?.longitud);
   const radioKm = Number(req.body?.radio_km ?? 5);
@@ -62,8 +62,8 @@ export async function generarCercanas(req, res) {
   const [cercanas] = await pool.query(
     `SELECT d.id_donacion, d.titulo, u.municipio, don.username AS donador,
             (6371 * ACOS(LEAST(1, GREATEST(-1,
-               COS(RADIANS(?)) * COS(RADIANS(u.latitud)) * COS(RADIANS(u.longitud) - RADIANS(?))
-             + SIN(RADIANS(?)) * SIN(RADIANS(u.latitud)))))) AS distancia_km
+                COS(RADIANS(?)) * COS(RADIANS(u.latitud)) * COS(RADIANS(u.longitud) - RADIANS(?))
+              + SIN(RADIANS(?)) * SIN(RADIANS(u.latitud)))))) AS distancia_km
      FROM donacion d
      JOIN ubicacion u ON u.id_ubicacion = d.id_ubicacion
      JOIN usuario don ON don.id_usuario = d.id_usuario
@@ -76,7 +76,7 @@ export async function generarCercanas(req, res) {
      HAVING distancia_km <= ?
      ORDER BY distancia_km ASC
      LIMIT 20`,
-    [latitud, longitud, latitud, req.idUsuario, req.idUsuario, radioKm]
+    [latitud, longitud, latitud, req.usuario.id_usuario, req.usuario.id_usuario, radioKm]
   );
 
   if (cercanas.length === 0) return res.json({ generadas: 0 });
@@ -87,7 +87,7 @@ export async function generarCercanas(req, res) {
 
   const [existentes] = await pool.query(
     'SELECT mensaje FROM notificacion WHERE id_usuario = ? AND titulo = ? AND mensaje IN (?)',
-    [req.idUsuario, TITULO_CERCANO, mensajes]
+    [req.usuario.id_usuario, TITULO_CERCANO, mensajes]
   );
   const yaEnviados = new Set(existentes.map((e) => e.mensaje));
   const nuevos = mensajes.filter((m) => !yaEnviados.has(m));
@@ -95,8 +95,15 @@ export async function generarCercanas(req, res) {
   if (nuevos.length > 0) {
     await pool.query(
       'INSERT INTO notificacion (titulo, mensaje, id_usuario) VALUES ?',
-      [nuevos.map((m) => [TITULO_CERCANO, m, req.idUsuario])]
+      [nuevos.map((m) => [TITULO_CERCANO, m, req.usuario.id_usuario])]
     );
   }
   res.json({ generadas: nuevos.length });
 }
+
+module.exports = {
+  listar,
+  marcarLeida,
+  marcarTodasLeidas,
+  generarCercanas
+};

@@ -27,7 +27,7 @@ export class DetalleSolicitud implements OnInit {
   observaciones = signal('');
   error = signal('');
 
-  esDonador = computed(() => this.solicitud()?.id_donador === this.idUsuario);
+  esDonador = computed(() => Number(this.solicitud()?.id_donador) === Number(this.idUsuario));
 
   puedeResponder = computed(() => this.esDonador() && this.solicitud()?.estado === 'PENDIENTE');
 

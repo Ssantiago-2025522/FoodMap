@@ -9,7 +9,8 @@ import { DonacionService } from '../../../../services/donacion.service';
     selector: 'app-reportes-lista',
     standalone: true,
     imports: [CommonModule, FormsModule, RouterLink],
-    templateUrl: './reportes-lista.html'
+    templateUrl: './reportes-lista.html',
+    styleUrl: './reportes-lista.css'
 })
 export class ReportesLista implements OnInit {
     reportes: any[] = [];
@@ -17,8 +18,9 @@ export class ReportesLista implements OnInit {
     errorMessage = '';
 
     filtroEstado = '';
-    filtroTipo = '';
-    tipos: string[] = ['Publicación', 'Usuario', 'Donación', 'Comentario'];
+    filtroId = '';
+    filtroDonacion = '';
+    filtroUsuario = '';
 
     constructor(
         private reporteApiService: ReporteApiService,
@@ -33,9 +35,11 @@ export class ReportesLista implements OnInit {
 
     get reportesFiltrados(): any[] {
         return this.reportes.filter(reporte => {
-            const cumpleEstado = !this.filtroEstado || reporte.estado === this.filtroEstado;
-            const cumpleTipo = !this.filtroTipo || reporte.tipo === this.filtroTipo;
-            return cumpleEstado && cumpleTipo;
+            const cumpleEstado = !this.filtroEstado || this.filtroEstado === 'TODOS' || reporte.estado === this.filtroEstado;
+            const cumpleId = !this.filtroId || String(reporte.id_reporte) === this.filtroId.trim();
+            const cumpleDonacion = !this.filtroDonacion || String(reporte.id_donacion) === this.filtroDonacion.trim();
+            const cumpleUsuario = !this.filtroUsuario || String(reporte.id_usuario) === this.filtroUsuario.trim();
+            return cumpleEstado && cumpleId && cumpleDonacion && cumpleUsuario;
         });
     }
 

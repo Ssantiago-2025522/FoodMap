@@ -4,7 +4,10 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const donacionRoutes = require('./routes/donacionRoutes');
 const reporteRoutes = require('./routes/reporteRoutes');
+const usuarioRoutes = require('./routes/usuarioRoutes');
+const notificacionesRoutes = require('./routes/notificaciones.routes');
 const solicitudesRoutes = require('./routes/solicitudes.routes');
+const chatsRoutes = require('./routes/chats.routes');
 const { noEncontrado, errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
@@ -44,7 +47,10 @@ app.get('/api/notificaciones', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/donaciones', donacionRoutes);
 app.use('/api/reportes', reporteRoutes);
+app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/solicitudes', solicitudesRoutes);
+app.use('/api/notificaciones', notificacionesRoutes);
+app.use('/api/chats', chatsRoutes);
 
 app.use(noEncontrado);
 app.use(errorHandler);

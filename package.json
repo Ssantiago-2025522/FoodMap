@@ -10,6 +10,7 @@
     "start:frontend": "ng serve",
     "start:backend": "npm --prefix backend run dev",
     "db:init": "node backend/scripts/init-db.js",
+    "db:migrate": "node backend/scripts/migrate.js",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -23,6 +24,7 @@
     "@angular/forms": "^22.1.0",
     "@angular/platform-browser": "^22.1.0",
     "@angular/router": "^22.1.0",
+    "cors": "^2.8.6",
     "leaflet": "^1.9.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

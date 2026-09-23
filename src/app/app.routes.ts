@@ -6,8 +6,9 @@ import { Role } from '@core/models/role.enum';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
-    pathMatch: 'full'
+    title: 'FoodMap | La comida que sobra llega a quien la necesita',
+    pathMatch: 'full',
+    loadComponent: () => import('@features/landing/landing').then((m) => m.Landing)
   },
 {
   path: 'chat',
@@ -23,6 +24,18 @@ export const routes: Routes = [
     path: 'register',
     title: 'FoodMap | Crear cuenta',
     loadComponent: () => import('@features/auth/register/register').then((m) => m.Register)
+  },
+  {
+    path: 'olvide-contrasena',
+    title: 'FoodMap | Recuperar contraseña',
+    loadComponent: () =>
+      import('@features/auth/forgot-password/forgot-password').then((m) => m.ForgotPassword)
+  },
+  {
+    path: 'restablecer-contrasena',
+    title: 'FoodMap | Restablecer contraseña',
+    loadComponent: () =>
+      import('@features/auth/reset-password/reset-password').then((m) => m.ResetPassword)
   },
   {
     path: '',
@@ -131,6 +144,30 @@ export const routes: Routes = [
           import('@features/admin/reportes/formulario/reporte-formulario').then(
             (m) => m.ReporteFormulario
           )
+      },
+      {
+        path: 'admin/usuarios',
+        title: 'FoodMap | Usuarios',
+        canActivate: [roleGuard],
+        data: { roles: [Role.ADMIN] },
+        loadComponent: () =>
+          import('@features/admin/usuarios/lista/usuarios-lista').then((m) => m.UsuariosLista)
+      },
+      {
+        path: 'admin/usuarios/nuevo',
+        title: 'FoodMap | Nuevo usuario',
+        canActivate: [roleGuard],
+        data: { roles: [Role.ADMIN] },
+        loadComponent: () =>
+          import('@features/admin/usuarios/formulario/usuario-formulario').then((m) => m.UsuarioFormulario)
+      },
+      {
+        path: 'admin/usuarios/:id',
+        title: 'FoodMap | Editar usuario',
+        canActivate: [roleGuard],
+        data: { roles: [Role.ADMIN] },
+        loadComponent: () =>
+          import('@features/admin/usuarios/formulario/usuario-formulario').then((m) => m.UsuarioFormulario)
       },
       {
         path: 'acceso-denegado',

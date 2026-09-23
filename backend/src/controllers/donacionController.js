@@ -2,23 +2,6 @@ const { pool } = require('../config/db');
 const ApiError = require('../utils/ApiError');
 
 const ESTADOS_VALIDOS = ['Disponible', 'Reservada', 'Entregada', 'Expirada'];
-const ROL_ADMIN = 1;
-
-// Mapeo entre las cadenas del Frontend y los enteros de la Base de Datos
-const ESTADOS_MAP = {
-  'Disponible': 1,
-  'Reservada': 2,
-  'Entregada': 3,
-  'Expirada': 4
-};
-
-// Mapeo inverso para devolver texto al Frontend en la serialización
-const ESTADOS_REVERSO = {
-  1: 'Disponible',
-  2: 'Reservada',
-  3: 'Entregada',
-  4: 'Expirada'
-};
 
 const SELECT_BASE = `
   SELECT
@@ -34,29 +17,38 @@ const SELECT_BASE = `
     d.id_usuario,
     c.nombre AS categoria_nombre,
     u.direccion,
+    u.municipio,
+    u.departamento,
     u.latitud,
-    u.longitud
+    u.longitud,
+    us.username AS username_donador
   FROM donacion d
   JOIN categoria c ON c.id_categoria = d.id_categoria
   JOIN ubicacion u ON u.id_ubicacion = d.id_ubicacion
+  JOIN usuario us ON us.id_usuario = d.id_usuario
 `;
 
 function serializarDonacion(fila) {
+  if (!fila) return null;
   return {
     id: String(fila.id_donacion),
+    id_donacion: Number(fila.id_donacion),
     titulo: fila.titulo,
     descripcion: fila.descripcion,
     categoria: fila.categoria_nombre,
     cantidad: Number(fila.cantidad),
-    // Convierte el entero de MySQL al string que espera Angular
-    estado: ESTADOS_REVERSO[fila.estado] || fila.estado,
-    imagen: fila.imagen, // Mapeo del campo imagen hacia el frontend
+    estado: fila.estado,
     oculta: Boolean(fila.oculta),
     ubicacion: fila.direccion,
+    municipio: fila.municipio || 'No especificado',
+    departamento: fila.departamento || 'No especificado',
+    username_donador: fila.username_donador || 'Anónimo',
     latitud: fila.latitud !== null ? Number(fila.latitud) : null,
     longitud: fila.longitud !== null ? Number(fila.longitud) : null,
     fechaCreacion: fila.fecha_publicacion,
     fechaExpiracion: fila.fecha_vencimiento,
+    fecha_vencimiento: fila.fecha_vencimiento,
+    imagen: fila.imagen || '',
     idUsuario: fila.id_usuario
   };
 }
@@ -64,7 +56,6 @@ function serializarDonacion(fila) {
 function formatearFechaVencimiento(fecha) {
   if (!fecha) return null;
   const fechaStr = String(fecha).trim();
-  // Si no trae hora especificada (formato YYYY-MM-DD), fijar la hora al final del día
   return fechaStr.includes('T') || fechaStr.includes(' ')
     ? fechaStr
     : `${fechaStr} 23:59:59`;
@@ -119,6 +110,7 @@ async function listar(req, res, next) {
     const [filas] = await pool.query(
       `${SELECT_BASE} WHERE d.oculta = FALSE ORDER BY d.fecha_publicacion DESC`
     );
+
     res.status(200).json(filas.map(serializarDonacion));
   } catch (error) {
     next(error);
@@ -128,7 +120,11 @@ async function listar(req, res, next) {
 async function obtenerPorId(req, res, next) {
   try {
     const { id } = req.params;
-    const [filas] = await pool.query(`${SELECT_BASE} WHERE d.id_donacion = ? LIMIT 1`, [id]);
+    if (!id || id === 'undefined' || isNaN(Number(id))) {
+      throw new ApiError(400, 'El ID proporcionado no es válido.');
+    }
+
+    const [filas] = await pool.query(`${SELECT_BASE} WHERE d.id_donacion = ? LIMIT 1`, [Number(id)]);
 
     if (filas.length === 0) {
       throw new ApiError(404, 'La donación indicada no existe.');
@@ -144,20 +140,10 @@ async function crear(req, res, next) {
   const conexion = await pool.getConnection();
 
   try {
-    const {
-      titulo,
-      descripcion,
-      categoria,
-      cantidad,
-      ubicacion,
-      fechaExpiracion,
-      estado,
-      latitud,
-      longitud,
-      imagen
-    } = req.body;
+    const body = req.body;
+    const fechaExpiracion = body.fechaExpiracion || body.fecha_vencimiento;
 
-    validarDatos({ titulo, descripcion, categoria, cantidad, ubicacion, fechaExpiracion, estado });
+    validarDatos({ ...body, fechaExpiracion });
 
     if (!req.usuario || !req.usuario.id_usuario) {
       throw new ApiError(401, 'No autenticado.');
@@ -169,31 +155,36 @@ async function crear(req, res, next) {
       `INSERT INTO ubicacion (departamento, municipio, direccion, latitud, longitud)
        VALUES (?, ?, ?, ?, ?)`,
       [
-        'No especificado',
-        'No especificado',
-        String(ubicacion).trim(),
-        latitud ?? null,
-        longitud ?? null
+        'Guatemala',
+        'Guatemala',
+        String(body.ubicacion).trim(),
+        body.latitud ?? null,
+        body.longitud ?? null
       ]
     );
 
-    const idCategoria = await obtenerOcrearCategoria(conexion, categoria);
-
-    const estadoTexto = estado || 'Disponible';
-    const estadoNumerico = ESTADOS_MAP[estadoTexto] || 1;
+    const idCategoria = await obtenerOcrearCategoria(conexion, body.categoria);
+    const estadoTexto = body.estado || 'Disponible';
     const fechaVencimientoFormateada = formatearFechaVencimiento(fechaExpiracion);
+
+    const [[usuarioCreador]] = await conexion.query(
+      'SELECT oculto FROM usuario WHERE id_usuario = ? LIMIT 1',
+      [req.usuario.id_usuario]
+    );
+    const naceOculta = Boolean(usuarioCreador?.oculto);
 
     const [resultadoDonacion] = await conexion.query(
       `INSERT INTO donacion
-        (titulo, descripcion, cantidad, fecha_vencimiento, estado, imagen, id_usuario, id_ubicacion, id_categoria)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (titulo, descripcion, cantidad, fecha_vencimiento, estado, imagen, oculta, id_usuario, id_ubicacion, id_categoria)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        String(titulo).trim(),
-        String(descripcion).trim(),
-        Number(cantidad),
+        String(body.titulo).trim(),
+        String(body.descripcion).trim(),
+        Number(body.cantidad),
         fechaVencimientoFormateada,
-        estadoNumerico,
-        imagen ?? null,
+        estadoTexto,
+        body.imagen ?? null,
+        naceOculta,
         req.usuario.id_usuario,
         resultadoUbicacion.insertId,
         idCategoria
@@ -220,6 +211,11 @@ async function actualizar(req, res, next) {
 
   try {
     const { id } = req.params;
+
+    if (!id || id === 'undefined' || isNaN(Number(id))) {
+      throw new ApiError(400, 'El ID de la donación proporcionado no es válido.');
+    }
+
     const {
       titulo,
       descripcion,
@@ -227,15 +223,18 @@ async function actualizar(req, res, next) {
       cantidad,
       ubicacion,
       fechaExpiracion,
+      fecha_vencimiento,
       estado,
       latitud,
       longitud,
       imagen
     } = req.body;
 
+    const fechaFinal = fechaExpiracion || fecha_vencimiento;
+
     const [existentes] = await conexion.query(
       'SELECT id_donacion, id_ubicacion FROM donacion WHERE id_donacion = ? LIMIT 1',
-      [id]
+      [Number(id)]
     );
 
     if (existentes.length === 0) {
@@ -265,9 +264,10 @@ async function actualizar(req, res, next) {
         valores.push(longitud);
       }
 
-      valores.push(existentes[0].id_ubicacion);
-
-      await conexion.query(`UPDATE ubicacion SET ${campos.join(', ')} WHERE id_ubicacion = ?`, valores);
+      if (campos.length > 0) {
+        valores.push(existentes[0].id_ubicacion);
+        await conexion.query(`UPDATE ubicacion SET ${campos.join(', ')} WHERE id_ubicacion = ?`, valores);
+      }
     }
 
     const camposDonacion = [];
@@ -285,19 +285,17 @@ async function actualizar(req, res, next) {
       camposDonacion.push('cantidad = ?');
       valoresDonacion.push(Number(cantidad));
     }
-    if (fechaExpiracion !== undefined) {
+    if (fechaFinal !== undefined) {
       camposDonacion.push('fecha_vencimiento = ?');
-      valoresDonacion.push(formatearFechaVencimiento(fechaExpiracion));
+      valoresDonacion.push(formatearFechaVencimiento(fechaFinal));
     }
     if (estado !== undefined) {
       camposDonacion.push('estado = ?');
-      valoresDonacion.push(ESTADOS_MAP[estado] || 1);
+      valoresDonacion.push(String(estado).trim());
     }
-    
-    // Únicamente se actualiza la imagen si se envía un valor no nulo y no vacío
     if (imagen !== undefined && imagen !== null && String(imagen).trim() !== '') {
-      camposDonacion.push('imagen = ?');
-      valoresDonacion.push(imagen);
+    camposDonacion.push('imagen = ?');
+    valoresDonacion.push(imagen);
     }
 
     if (categoria !== undefined) {
@@ -307,7 +305,7 @@ async function actualizar(req, res, next) {
     }
 
     if (camposDonacion.length > 0) {
-      valoresDonacion.push(id);
+      valoresDonacion.push(Number(id));
       await conexion.query(
         `UPDATE donacion SET ${camposDonacion.join(', ')} WHERE id_donacion = ?`,
         valoresDonacion
@@ -316,7 +314,7 @@ async function actualizar(req, res, next) {
 
     await conexion.commit();
 
-    const [filas] = await pool.query(`${SELECT_BASE} WHERE d.id_donacion = ? LIMIT 1`, [id]);
+    const [filas] = await pool.query(`${SELECT_BASE} WHERE d.id_donacion = ? LIMIT 1`, [Number(id)]);
     res.status(200).json(serializarDonacion(filas[0]));
   } catch (error) {
     await conexion.rollback();
@@ -331,20 +329,24 @@ async function cambiarVisibilidad(req, res, next) {
     const { id } = req.params;
     const { oculta } = req.body;
 
+    if (!id || id === 'undefined' || isNaN(Number(id))) {
+      throw new ApiError(400, 'El ID de la donación no es válido.');
+    }
+
     if (typeof oculta !== 'boolean') {
       throw new ApiError(400, 'El campo "oculta" es obligatorio y debe ser verdadero o falso.');
     }
 
     const [resultado] = await pool.query(
       'UPDATE donacion SET oculta = ? WHERE id_donacion = ?',
-      [oculta, id]
+      [oculta, Number(id)]
     );
 
     if (resultado.affectedRows === 0) {
       throw new ApiError(404, 'La donación indicada no existe.');
     }
 
-    const [filas] = await pool.query(`${SELECT_BASE} WHERE d.id_donacion = ? LIMIT 1`, [id]);
+    const [filas] = await pool.query(`${SELECT_BASE} WHERE d.id_donacion = ? LIMIT 1`, [Number(id)]);
     res.status(200).json(serializarDonacion(filas[0]));
   } catch (error) {
     next(error);
@@ -355,7 +357,11 @@ async function eliminar(req, res, next) {
   try {
     const { id } = req.params;
 
-    const [resultado] = await pool.query('DELETE FROM donacion WHERE id_donacion = ?', [id]);
+    if (!id || id === 'undefined' || isNaN(Number(id))) {
+      throw new ApiError(400, 'El ID de la donación proporcionado no es válido.');
+    }
+
+    const [resultado] = await pool.query('DELETE FROM donacion WHERE id_donacion = ?', [Number(id)]);
 
     if (resultado.affectedRows === 0) {
       throw new ApiError(404, 'La donación indicada no existe.');
