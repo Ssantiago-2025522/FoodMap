@@ -6,7 +6,7 @@ CREATE TABLE donacion (
     fecha_publicacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_vencimiento DATETIME,
     estado VARCHAR(20) NOT NULL DEFAULT 'Disponible',
-    imagen VARCHAR(225),
+    imagen LONGTEXT,
     oculta BOOLEAN NOT NULL DEFAULT FALSE,
     id_usuario BIGINT NOT NULL,
     id_ubicacion BIGINT NOT NULL,

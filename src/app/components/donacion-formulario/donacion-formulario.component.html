@@ -13,7 +13,6 @@
         <textarea id="descripcion" formControlName="descripcion" rows="3" placeholder="Detalles de los alimentos..."></textarea>
       </div>
 
-      <!-- SECCIÓN DE SELECCIÓN DE IMAGEN LOCAL -->
       <div class="campo">
         <label for="archivoImagen">Imagen de la Donación</label>
         <input 
@@ -47,15 +46,20 @@
 
       <div class="fila">
         <div class="campo">
-          <label for="codigoPais">País *</label>
-          <select id="codigoPais" formControlName="codigoPais">
-            <option value="gt">Guatemala</option>
-            <option value="mx">México</option>
-            <option value="es">España</option>
-            <option value="us">Estados Unidos</option>
-            <option value="co">Colombia</option>
-            <option value="ar">Argentina</option>
-          </select>
+          <label for="codigoPaisInput">País *</label>
+          <input
+            id="codigoPaisInput"
+            type="text"
+            list="listaPaises"
+            placeholder="Escribe para buscar tu país..."
+            [value]="paisNombreSeleccionado"
+            (input)="onPaisInput($event)"
+          />
+          <datalist id="listaPaises">
+            @for (p of listaPaisesCompleta; track p.codigo) {
+              <option [value]="p.nombre">{{ p.nombre }}</option>
+            }
+          </datalist>
         </div>
 
         <div class="campo">

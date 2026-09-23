@@ -47,7 +47,6 @@ export class GeocodingService {
       console.error('Error en geocodificación:', error);
     }
 
-    // Coordenadas por defecto (Guatemala) si no encuentra la dirección
     return { latitud: 14.6349, longitud: -90.5069 };
   }
 }

@@ -17,10 +17,11 @@
 .tarjeta-donacion {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  width: 220px;
+  min-height: 300px;
   background: var(--dt-color-bg);
   border: 1px solid var(--dt-color-border);
-  border-radius: 14px;
+  border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 1px 2px rgba(31, 61, 46, 0.06);
   transition: box-shadow 0.2s ease, transform 0.2s ease;
@@ -35,7 +36,7 @@
 .imagen-contenedor {
   position: relative;
   width: 100%;
-  height: 170px;
+  height: 120px;
   background: #eee7d8;
   overflow: hidden;
 }
@@ -49,11 +50,11 @@
 
 .badge {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 4px 12px;
+  top: 7px;
+  right: 7px;
+  padding: 3px 8px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.02em;
   color: #fff;
@@ -71,20 +72,20 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 16px 18px 18px;
+  padding: 10px 12px 12px;
 }
 
 .contenido-tarjeta h3 {
   margin: 0 0 2px;
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 20px;
+  font-size: 16px;
   color: var(--dt-color-title);
 }
 
 .descripcion {
-  margin: 0 0 10px;
+  margin: 0 0 7px;
   color: var(--dt-color-subtitle);
-  font-size: 14px;
+  font-size: 11px;
   font-style: italic;
 }
 
@@ -92,13 +93,13 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  margin-bottom: 14px;
+  margin-bottom: 9px;
 }
 
 .detalles p {
   margin: 0;
-  font-size: 13.5px;
-  line-height: 1.5;
+  font-size: 11px;
+  line-height: 1.35;
   color: var(--dt-color-text);
 }
 
@@ -111,7 +112,7 @@
 .acciones-donante,
 .acciones-receptor {
   margin-top: auto;
-  padding-top: 10px;
+  padding-top: 7px;
   border-top: 1px solid var(--dt-color-border);
 }
 
@@ -119,23 +120,23 @@
 .selector-estado {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 6px;
+  margin-bottom: 7px;
 }
 
 .selector-estado label {
-  font-size: 13px;
+  font-size: 11px;
   color: var(--dt-color-muted);
   font-weight: 600;
 }
 
 .selector-estado select {
   flex: 1;
-  padding: 6px 10px;
+  padding: 4px 6px;
   border: 1px solid var(--dt-color-border);
   border-radius: 8px;
   background: #fff;
-  font-size: 13.5px;
+  font-size: 11px;
   color: var(--dt-color-text);
   cursor: pointer;
 }
@@ -147,15 +148,15 @@
 
 .botones-accion {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .botones-accion button,
 .acciones-receptor button {
   flex: 1;
-  padding: 9px 12px;
-  border-radius: 8px;
-  font-size: 13.5px;
+  padding: 6px 8px;
+  border-radius: 5px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.15s ease, opacity 0.15s ease;

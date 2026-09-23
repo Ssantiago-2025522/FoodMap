@@ -9,7 +9,6 @@ export const routes: Routes = [
     redirectTo: 'login',
     pathMatch: 'full'
   },
-  // Agrega esta ruta dentro de los children del main-layout en app.routes.ts:
 {
   path: 'chat',
   redirectTo: 'lista-chats',

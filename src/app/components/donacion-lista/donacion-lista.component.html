@@ -1,26 +1,18 @@
-<div class="contenedor-lista">
-  @if (cargando()) {
-    <div class="lista-vacia">
-      <p>Cargando donaciones...</p>
-    </div>
-  } @else if (error()) {
-    <div class="lista-vacia">
-      <p>{{ error() }}</p>
-    </div>
-  } @else if (donaciones().length === 0) {
-    <div class="lista-vacia">
-      <p>No se encontraron publicaciones de donaciones.</p>
-    </div>
+<div class="lista-donaciones">
+  @if (donacionService.cargando()) {
+    <p>Cargando donaciones...</p>
+  } @else if (donacionService.error()) {
+    <p>{{ donacionService.error() }}</p>
   } @else {
-    <div class="grid-donaciones">
-      @for (donacion of donaciones(); track donacion.id) {
-        <app-donacion-tarjeta
-          [donacion]="donacion"
-          (cambiarEstado)="onCambiarEstado($event)"
-          (eliminar)="onEliminar($event)"
-          (editar)="onEditar($event)"
-        ></app-donacion-tarjeta>
-      }
-    </div>
+    @for (donacion of donaciones(); track donacion.id) {
+      <app-donacion-tarjeta
+        [donacion]="donacion"
+        (editar)="editarDonacion.emit($event)"
+        (cambiarEstado)="cambiarEstado($event)"
+        (eliminar)="eliminarDonacion($event)">
+      </app-donacion-tarjeta>
+    } @empty {
+      <p>No hay donaciones disponibles.</p>
+    }
   }
 </div>

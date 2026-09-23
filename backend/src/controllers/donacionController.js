@@ -50,6 +50,7 @@ function serializarDonacion(fila) {
     cantidad: Number(fila.cantidad),
     // Convierte el entero de MySQL al string que espera Angular
     estado: ESTADOS_REVERSO[fila.estado] || fila.estado,
+    imagen: fila.imagen, // Mapeo del campo imagen hacia el frontend
     oculta: Boolean(fila.oculta),
     ubicacion: fila.direccion,
     latitud: fila.latitud !== null ? Number(fila.latitud) : null,
@@ -228,7 +229,8 @@ async function actualizar(req, res, next) {
       fechaExpiracion,
       estado,
       latitud,
-      longitud
+      longitud,
+      imagen
     } = req.body;
 
     const [existentes] = await conexion.query(
@@ -291,6 +293,13 @@ async function actualizar(req, res, next) {
       camposDonacion.push('estado = ?');
       valoresDonacion.push(ESTADOS_MAP[estado] || 1);
     }
+    
+    // Únicamente se actualiza la imagen si se envía un valor no nulo y no vacío
+    if (imagen !== undefined && imagen !== null && String(imagen).trim() !== '') {
+      camposDonacion.push('imagen = ?');
+      valoresDonacion.push(imagen);
+    }
+
     if (categoria !== undefined) {
       const idCategoria = await obtenerOcrearCategoria(conexion, categoria);
       camposDonacion.push('id_categoria = ?');
