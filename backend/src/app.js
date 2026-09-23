@@ -7,6 +7,7 @@ const reporteRoutes = require('./routes/reporteRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const notificacionesRoutes = require('./routes/notificaciones.routes');
 const solicitudesRoutes = require('./routes/solicitudes.routes');
+const chatsRoutes = require('./routes/chats.routes');
 const { noEncontrado, errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
@@ -25,9 +26,7 @@ app.use(
   })
 );
 
-// Se aumenta el límite por defecto (100kb) porque la foto de perfil se envía
-// como una imagen en base64 dentro del cuerpo JSON.
-app.use(express.json({ limit: '3mb' }));
+app.use(express.json());
 
 app.use('/api', (req, res, next) => {
   res.set('Cache-Control', 'no-store');
@@ -44,6 +43,7 @@ app.use('/api/reportes', reporteRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/solicitudes', solicitudesRoutes);
 app.use('/api/notificaciones', notificacionesRoutes);
+app.use('/api/chats', chatsRoutes);
 
 app.use(noEncontrado);
 app.use(errorHandler);

@@ -15,7 +15,7 @@ async function listar(req, res) {
      WHERE id_usuario = ? ${soloNoLeidas ? 'AND leida = FALSE' : ''}
      ORDER BY fecha DESC, id_notificacion DESC
      LIMIT 200`,
-    [req.idUsuario]
+    [req.usuario.id_usuario]
   );
   res.json(filas);
 }
@@ -24,7 +24,7 @@ async function marcarLeida(req, res) {
   const id = entero(req.params.id, 'El id de la notificación');
   const [r] = await pool.query(
     'UPDATE notificacion SET leida = TRUE WHERE id_notificacion = ? AND id_usuario = ?',
-    [id, req.idUsuario]
+    [id, req.usuario.id_usuario]
   );
   if (r.affectedRows === 0) throw new HttpError(404, 'La notificación no existe.');
 
@@ -39,7 +39,7 @@ async function marcarLeida(req, res) {
 async function marcarTodasLeidas(req, res) {
   const [r] = await pool.query(
     'UPDATE notificacion SET leida = TRUE WHERE id_usuario = ? AND leida = FALSE',
-    [req.idUsuario]
+    [req.usuario.id_usuario]
   );
   res.json({ actualizadas: r.affectedRows });
 }
@@ -76,7 +76,7 @@ async function generarCercanas(req, res) {
      HAVING distancia_km <= ?
      ORDER BY distancia_km ASC
      LIMIT 20`,
-    [latitud, longitud, latitud, req.idUsuario, req.idUsuario, radioKm]
+    [latitud, longitud, latitud, req.usuario.id_usuario, req.usuario.id_usuario, radioKm]
   );
 
   if (cercanas.length === 0) return res.json({ generadas: 0 });
@@ -87,7 +87,7 @@ async function generarCercanas(req, res) {
 
   const [existentes] = await pool.query(
     'SELECT mensaje FROM notificacion WHERE id_usuario = ? AND titulo = ? AND mensaje IN (?)',
-    [req.idUsuario, TITULO_CERCANO, mensajes]
+    [req.usuario.id_usuario, TITULO_CERCANO, mensajes]
   );
   const yaEnviados = new Set(existentes.map((e) => e.mensaje));
   const nuevos = mensajes.filter((m) => !yaEnviados.has(m));
@@ -95,7 +95,7 @@ async function generarCercanas(req, res) {
   if (nuevos.length > 0) {
     await pool.query(
       'INSERT INTO notificacion (titulo, mensaje, id_usuario) VALUES ?',
-      [nuevos.map((m) => [TITULO_CERCANO, m, req.idUsuario])]
+      [nuevos.map((m) => [TITULO_CERCANO, m, req.usuario.id_usuario])]
     );
   }
   res.json({ generadas: nuevos.length });

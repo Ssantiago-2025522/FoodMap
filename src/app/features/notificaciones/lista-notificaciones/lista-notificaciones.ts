@@ -1,7 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Notificaciones } from '../../../services/notificaciones.service';
-import { Sesion } from '../../../services/sesion.service';
+import { AuthService } from '@core/services/auth.service';
 import { Notificacion } from '../../../models/notificacion';
 import { CommonModule } from '@angular/common';
 
@@ -15,7 +15,7 @@ const RADIO_KM = 5;
 })
 export class ListaNotificaciones implements OnInit {
   private notificacionesService = inject(Notificaciones);
-  private idUsuario = inject(Sesion).obtenerIdUsuarioActual();
+  private idUsuario = inject(AuthService).getUsuario()?.id_usuario ?? 0;
 
   radioKm = RADIO_KM;
 
@@ -72,7 +72,6 @@ export class ListaNotificaciones implements OnInit {
     });
   }
 
-  /** Pide la ubicación al navegador (solo cuando el usuario lo pide) y genera avisos de donaciones cercanas. */
   buscarCercanos(): void {
     if (!navigator.geolocation) {
       this.mensajeCercanos.set('Tu navegador no permite obtener la ubicación.');

@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, catchError, switchMap, timer } from 'rxjs';
 import { Chat as ChatService } from '../../../services/chat.service';
-import { Sesion } from '../../../services/sesion.service';
+import { AuthService } from '@core/services/auth.service';
 import { ChatDetalle } from '../../../models/chat';
 import { Mensaje } from '../../../models/mensaje';
 import { CommonModule } from '@angular/common';
@@ -23,7 +23,7 @@ export class Chat {
   private contenedor = viewChild<ElementRef<HTMLElement>>('contenedor');
   private totalMensajes = 0;
 
-  readonly idUsuario = inject(Sesion).obtenerIdUsuarioActual();
+  readonly idUsuario = inject(AuthService).getUsuario()?.id_usuario ?? 0;
 
   detalle = signal<ChatDetalle | null>(null);
   texto = signal('');

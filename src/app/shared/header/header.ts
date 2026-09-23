@@ -3,7 +3,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { timer } from 'rxjs';
 import { Notificaciones } from '../../services/notificaciones.service';
-import { Sesion } from '../../services/sesion.service';
+import { AuthService } from '@core/services/auth.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -14,13 +14,16 @@ import { CommonModule } from '@angular/common';
 })
 export class Header {
   private notificaciones = inject(Notificaciones);
-  private sesion = inject(Sesion);
+  private authService = inject(AuthService);
 
   noLeidas = this.notificaciones.noLeidas;
 
   constructor() {
     timer(0, 30_000)
       .pipe(takeUntilDestroyed())
-      .subscribe(() => this.notificaciones.actualizarContador(this.sesion.obtenerIdUsuarioActual()));
+      .subscribe(() => {
+        const idUsuario = this.authService.getUsuario()?.id_usuario;
+        if (idUsuario) this.notificaciones.actualizarContador(idUsuario);
+      });
   }
 }

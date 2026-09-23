@@ -1,10 +1,10 @@
 const { Router } = require('express');
-const { usuarioActual } = require('../middlewares/usuario.js');
+const { requiereAutenticacion } = require('../middlewares/auth.middleware.js');
 const { asyncHandler: ah } = require('../utils/async-handler.js');
 const c = require('../controllers/notificaciones.controller.js');
 
 const router = Router();
-router.use(usuarioActual);
+router.use(requiereAutenticacion);
 
 router.get('/', ah(c.listar));
 router.post('/cercanos', ah(c.generarCercanas));
