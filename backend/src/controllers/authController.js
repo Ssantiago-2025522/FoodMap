@@ -257,12 +257,14 @@ async function solicitarRecuperacion(req, res, next) {
     const origenFrontend = process.env.FRONTEND_ORIGIN || 'http://localhost:4200';
     const enlace = `${origenFrontend}/restablecer-contrasena?token=${token}`;
 
-    await enviarCorreoRecuperacion(filas[0].correo, enlace);
+    const { enviado } = await enviarCorreoRecuperacion(filas[0].correo, enlace);
 
     const respuesta = { ...mensajeRespuesta };
-    // Solo en desarrollo, para poder probar el flujo sin tener un correo real
-    // conectado: se devuelve el enlace en la respuesta.
-    if (process.env.NODE_ENV !== 'production') {
+    // El enlace solo se incluye en la respuesta cuando NO se envió un correo
+    // real (por ejemplo, en desarrollo sin SMTP configurado), para poder
+    // probar el flujo. Nunca se incluye en producción, y tampoco cuando ya
+    // se envió un correo real, sin importar el entorno.
+    if (process.env.NODE_ENV !== 'production' && !enviado) {
       respuesta.enlaceDesarrollo = enlace;
     }
 
