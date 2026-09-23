@@ -6,8 +6,9 @@ import { Role } from '@core/models/role.enum';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'login',
-    pathMatch: 'full'
+    title: 'FoodMap | La comida que sobra llega a quien la necesita',
+    pathMatch: 'full',
+    loadComponent: () => import('@features/landing/landing').then((m) => m.Landing)
   },
   {
     path: 'login',
@@ -18,6 +19,18 @@ export const routes: Routes = [
     path: 'register',
     title: 'FoodMap | Crear cuenta',
     loadComponent: () => import('@features/auth/register/register').then((m) => m.Register)
+  },
+  {
+    path: 'olvide-contrasena',
+    title: 'FoodMap | Recuperar contraseña',
+    loadComponent: () =>
+      import('@features/auth/forgot-password/forgot-password').then((m) => m.ForgotPassword)
+  },
+  {
+    path: 'restablecer-contrasena',
+    title: 'FoodMap | Restablecer contraseña',
+    loadComponent: () =>
+      import('@features/auth/reset-password/reset-password').then((m) => m.ResetPassword)
   },
   {
     path: '',

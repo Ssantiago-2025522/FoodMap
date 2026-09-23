@@ -168,10 +168,17 @@ async function crear(req, res, next) {
 
     const estadoTexto = estado || 'Disponible';
 
+
+    const [[usuarioCreador]] = await conexion.query(
+      'SELECT oculto FROM usuario WHERE id_usuario = ? LIMIT 1',
+      [req.usuario.id_usuario]
+    );
+    const naceOculta = Boolean(usuarioCreador?.oculto);
+
     const [resultadoDonacion] = await conexion.query(
       `INSERT INTO donacion
-        (titulo, descripcion, cantidad, fecha_vencimiento, estado, imagen, id_usuario, id_ubicacion, id_categoria)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (titulo, descripcion, cantidad, fecha_vencimiento, estado, imagen, oculta, id_usuario, id_ubicacion, id_categoria)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         String(titulo).trim(),
         String(descripcion).trim(),
@@ -179,6 +186,7 @@ async function crear(req, res, next) {
         fechaExpiracion,
         estadoTexto,
         imagen ?? null,
+        naceOculta,
         req.usuario.id_usuario,
         resultadoUbicacion.insertId,
         idCategoria

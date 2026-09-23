@@ -25,3 +25,24 @@ export interface AuthResponse {
     token: string;
     usuario: User;
 }
+
+export interface ActualizarPerfilData {
+    username?: string;
+    /** string en base64 para guardar/cambiar la foto, null para quitarla, undefined para no tocarla. */
+    foto?: string | null;
+}
+
+export interface CambiarContrasenaData {
+    contrasenaActual: string;
+    contrasenaNueva: string;
+}
+
+export interface RestablecerContrasenaData {
+    token: string;
+    contrasenaNueva: string;
+}
+
+export interface MensajeRespuesta {
+    message: string;
+    enlaceDesarrollo?: string;
+}
