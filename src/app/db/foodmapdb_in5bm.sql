@@ -259,3 +259,6 @@ INSERT INTO rol (nombre, descripcion) VALUES
     ('BENEFICIARIO', 'Usuario que recibe donaciones'),
     ('DONADOR', 'Usuario que realiza donaciones'),
     ('ESTUDIANTE', 'Usuario estudiante que utiliza la plataforma');
+
+    SET id_rol = 1 
+WHERE id_usuario = 1;
