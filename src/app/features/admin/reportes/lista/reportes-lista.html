@@ -18,13 +18,18 @@
         </label>
 
         <label>
-            Tipo
-            <select [(ngModel)]="filtroTipo">
-                <option value="TODOS">Todos</option>
-                @for (tipo of tipos; track tipo) {
-                    <option [value]="tipo">{{ tipo }}</option>
-                }
-            </select>
+            ID de reporte
+            <input type="text" [(ngModel)]="filtroId" placeholder="Buscar por ID de reporte">
+        </label>
+
+        <label>
+            ID de donación
+            <input type="text" [(ngModel)]="filtroDonacion" placeholder="Buscar por ID de donación">
+        </label>
+
+        <label>
+            ID de usuario
+            <input type="text" [(ngModel)]="filtroUsuario" placeholder="Buscar por ID de usuario">
         </label>
 
     </div>

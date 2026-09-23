@@ -10,6 +10,7 @@
     "start:frontend": "ng serve",
     "start:backend": "npm --prefix backend run dev",
     "db:init": "node backend/scripts/init-db.js",
+    "db:migrate": "node backend/scripts/migrate.js",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
