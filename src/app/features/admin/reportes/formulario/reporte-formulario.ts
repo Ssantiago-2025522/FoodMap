@@ -96,6 +96,8 @@ export class ReporteFormulario implements OnInit {
         }
     }
 
+    // Ocultar/mostrar donaciones y usuarios: lógica generada con ayuda de IA.
+    // Alterna la visibilidad de la donación relacionada a este reporte en particular.
     alternarVisibilidadDonacion(): void {
         if (!this.reporte) return;
         const nuevoValor = !this.reporte.donacion_oculta;

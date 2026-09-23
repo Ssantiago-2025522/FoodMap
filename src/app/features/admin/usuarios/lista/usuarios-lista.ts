@@ -75,11 +75,14 @@ export class UsuariosLista implements OnInit {
         });
     }
 
+    // --- Funcionalidad de ocultar/mostrar publicaciones de un usuario (hecho con IA) ---
     publicacionesOcultas(usuario: any): boolean {
      
         return Boolean(usuario.oculto);
     }
 
+    // Alterna (toggle) la visibilidad de todas las publicaciones/donaciones de un usuario.
+    // Bloque generado con ayuda de IA.
     alternarPublicaciones(usuario: any): void {
         const ocultarAhora = !this.publicacionesOcultas(usuario);
         const mensaje = ocultarAhora

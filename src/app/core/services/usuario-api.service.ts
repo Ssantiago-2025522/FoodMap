@@ -29,6 +29,7 @@ export class UsuarioApiService {
         return this.http.delete<any>(`${this.apiUrl}/${id}`);
     }
 
+    // Ocultar/mostrar publicaciones y donaciones de un usuario (usado por el panel de administración) — hecho con IA.
     ocultarPublicaciones(id: number | string, oculta: boolean = true): Observable<any> {
         return this.http.patch<any>(`${this.apiUrl}/${id}/ocultar-publicaciones`, { oculta });
     }

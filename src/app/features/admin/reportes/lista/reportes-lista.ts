@@ -77,6 +77,8 @@ export class ReportesLista implements OnInit {
         });
     }
 
+    // Alterna (toggle) la visibilidad de la donación asociada a un reporte,
+    // directamente desde la lista de reportes (hecho con IA).
     alternarVisibilidadDonacion(reporte: any): void {
         const nuevoValor = !reporte.donacion_oculta;
 
