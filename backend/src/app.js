@@ -26,7 +26,9 @@ app.use(
   })
 );
 
-app.use(express.json());
+// Aumentamos el límite del cuerpo de las peticiones a 50MB para soportar imágenes en Base64
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.use('/api', (req, res, next) => {
   res.set('Cache-Control', 'no-store');
@@ -35,6 +37,11 @@ app.use('/api', (req, res, next) => {
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+// Ruta para corregir el 404 del Navbar
+app.get('/api/notificaciones', (req, res) => {
+  res.json([]);
 });
 
 app.use('/api/auth', authRoutes);

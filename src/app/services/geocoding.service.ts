@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom, map } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 export interface Pais {
   codigo: string;
@@ -14,38 +14,27 @@ export class GeocodingService {
   private http = inject(HttpClient);
 
   async obtenerPaises(): Promise<Pais[]> {
-    try {
-      const url = 'https://restcountries.com/v3.1/all?fields=name,cca2';
-      const data = await firstValueFrom(this.http.get<any[]>(url));
-      
-      const listaPaises = data.map(p => ({
-        codigo: p.cca2.toLowerCase(),
-        nombre: p.name.common
-      }));
-
-      return listaPaises.sort((a, b) => a.nombre.localeCompare(b.nombre));
-    } catch (error) {
-      console.error('Error al cargar países mundialmente:', error);
-      return [
-        { codigo: 'gt', nombre: 'Guatemala' },
-        { codigo: 'mx', nombre: 'México' },
-        { codigo: 'es', nombre: 'España' },
-        { codigo: 'us', nombre: 'Estados Unidos' }
-      ];
-    }
+    return [
+      { codigo: 'gt', nombre: 'Guatemala' },
+      { codigo: 'mx', nombre: 'México' },
+      { codigo: 'sv', nombre: 'El Salvador' },
+      { codigo: 'hn', nombre: 'Honduras' },
+      { codigo: 'cr', nombre: 'Costa Rica' },
+      { codigo: 'co', nombre: 'Colombia' },
+      { codigo: 'es', nombre: 'España' },
+      { codigo: 'us', nombre: 'Estados Unidos' }
+    ];
   }
 
   async obtenerCoordenadas(
     direccion: string,
-     codigoPais: string = 'gt'
-    ): Promise<{ latitud: number; longitud: number }> {
+    codigoPais: string = 'gt'
+  ): Promise<{ latitud: number; longitud: number }> {
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}&countrycodes=${codigoPais}&limit=1`;
 
     try {
       const resultados = await firstValueFrom(
-        this.http.get<any[]>(url, {
-          headers: { 'User-Agent': 'FoodMapApp/1.0' }
-        })
+        this.http.get<any[]>(url)
       );
 
       if (resultados && resultados.length > 0) {

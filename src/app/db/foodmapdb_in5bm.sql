@@ -21,6 +21,7 @@ CREATE TABLE usuario (
     fecha_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     foto VARCHAR(225),
     id_rol BIGINT NOT NULL,
+    oculto BOOLEAN NOT NULL DEFAULT FALSE,
 
     CONSTRAINT fk_usuario_rol
         FOREIGN KEY (id_rol)
@@ -58,8 +59,8 @@ CREATE TABLE donacion (
     cantidad INT NOT NULL DEFAULT 1,
     fecha_publicacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_vencimiento DATETIME,
-    imagen VARCHAR(225),
     estado VARCHAR(20) NOT NULL DEFAULT 'Disponible',
+    imagen LONGTEXT,
     oculta BOOLEAN NOT NULL DEFAULT FALSE,
     id_usuario BIGINT NOT NULL,
     id_ubicacion BIGINT NOT NULL,
@@ -249,7 +250,7 @@ CREATE INDEX idx_notificacion_usuario ON notificacion(id_usuario);
 CREATE INDEX idx_notificacion_leida ON notificacion(leida);
 
 -- =====================================================
--- DATOS INICIALES (¡MUY IMPORTANTE!)
+-- DATOS INICIALES
 -- =====================================================
 
 INSERT INTO rol (nombre, descripcion) VALUES
@@ -258,10 +259,3 @@ INSERT INTO rol (nombre, descripcion) VALUES
     ('BENEFICIARIO', 'Usuario que recibe donaciones'),
     ('DONADOR', 'Usuario que realiza donaciones'),
     ('ESTUDIANTE', 'Usuario estudiante que utiliza la plataforma');
-    
-    UPDATE usuario 
-SET id_rol = 1 
-WHERE id_usuario = 2;
-
-ALTER TABLE usuario
-  ADD COLUMN oculto BOOLEAN NOT NULL DEFAULT FALSE AFTER id_rol;

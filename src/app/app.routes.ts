@@ -10,6 +10,11 @@ export const routes: Routes = [
     pathMatch: 'full',
     loadComponent: () => import('@features/landing/landing').then((m) => m.Landing)
   },
+{
+  path: 'chat',
+  redirectTo: 'lista-chats',
+  pathMatch: 'full'
+},
   {
     path: 'login',
     title: 'FoodMap | Iniciar sesión',
