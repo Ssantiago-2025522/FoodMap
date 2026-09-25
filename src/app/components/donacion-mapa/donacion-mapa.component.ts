@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, inject, EffectRef, effect } from '@angular/core';
+import { Component, AfterViewInit, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DonacionService } from '../../services/donacion.service';
 import * as L from 'leaflet';
@@ -74,13 +74,18 @@ export class DonacionMapaComponent implements AfterViewInit {
 
     donaciones.forEach(donacion => {
       if (donacion.latitud && donacion.longitud) {
+        
+        const contenidoPopup = `
+          <div style="width: 180px; text-align: center; font-family: sans-serif;">
+            <b style="color: #1b5334; font-size: 13px; display: block; margin-bottom: 2px;">${donacion.titulo}</b>
+            <p style="margin: 0 0 4px 0; font-size: 11px; color: #555; line-height: 1.2;">${donacion.ubicacion || 'Sin dirección'}</p>
+            <span style="font-size: 11px; color: #2E8B57; font-weight: bold;">Cantidad: ${donacion.cantidad}</span>
+          </div>
+        `;
+
         const marker = L.marker([donacion.latitud, donacion.longitud], { icon: iconoPersonalizado })
           .addTo(this.map)
-          .bindPopup(`
-            <b style="color: #2E8B57;">${donacion.titulo}</b><br>
-            <span>${donacion.ubicacion}</span><br>
-            <small>Cantidad: ${donacion.cantidad}</small>
-          `);
+          .bindPopup(contenidoPopup);
 
         this.capasMarcadores.push(marker);
         puntosCoordenadas.push([donacion.latitud, donacion.longitud]);

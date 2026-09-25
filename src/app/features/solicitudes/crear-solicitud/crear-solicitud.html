@@ -26,8 +26,8 @@
                         <span class="donacion-titulo">{{ d.titulo }}</span>
                         <span class="donacion-detalle">{{ d.descripcion }}</span>
                         <span class="donacion-detalle">Disponible: {{ d.cantidad }}</span>
-                        <span class="donacion-detalle">{{ d.municipio }}, {{ d.departamento }}</span>
-                        <span class="donacion-detalle">Donador: {{ d.username_donador }}</span>
+                        <span class="donacion-detalle">Ubicacion: {{ d.municipio }}, {{ d.departamento }}</span>
+                        <span class="donacion-detalle">Donador ID: {{ d.username_donador }}</span>
                         @if (d.fecha_vencimiento) {
                             <span class="donacion-detalle">Vence: {{ d.fecha_vencimiento | date: 'dd/MM/yyyy' }}</span>
                         }

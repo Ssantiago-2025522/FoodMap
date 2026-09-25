@@ -4,15 +4,17 @@ const { entero, texto } = require('../utils/validar');
 
 const SELECT_CHAT = `
   SELECT c.id_chat, c.fecha_creacion, c.id_solicitud,
-         d.titulo AS titulo_donacion,
-         s.id_usuario AS id_beneficiario, d.id_usuario AS id_donador,
-         sol.username AS username_beneficiario, don.username AS username_donador,
-         lm.contenido AS ultimo_mensaje, lm.fecha_envio AS fecha_ultimo_mensaje
+         s.id_usuario AS id_beneficiario,
+         d.id_usuario AS id_donador,
+         ub.username AS beneficiario_username,
+         ud.username AS donador_username,
+         lm.contenido AS ultimo_mensaje,
+         lm.fecha_envio AS ultima_fecha
   FROM chat c
   JOIN solicitud s ON s.id_solicitud = c.id_solicitud
-  JOIN donacion d ON d.id_donacion = s.id_donacion
-  JOIN usuario sol ON sol.id_usuario = s.id_usuario
-  JOIN usuario don ON don.id_usuario = d.id_usuario
+  JOIN donacion d ON d.id_donacion = c.id_donacion
+  JOIN usuario ub ON ub.id_usuario = s.id_usuario
+  JOIN usuario ud ON ud.id_usuario = d.id_usuario
   LEFT JOIN mensaje lm ON lm.id_mensaje = (
       SELECT m.id_mensaje
       FROM mensaje m
@@ -22,18 +24,19 @@ const SELECT_CHAT = `
   )`;
 
 function aResumen(f, idUsuario) {
-  const soyDonador = f.id_donador === idUsuario;
+  const soyDonador = Number(f.id_donador) === Number(idUsuario);
 
   return {
     id_chat: f.id_chat,
     fecha_creacion: f.fecha_creacion,
     id_solicitud: f.id_solicitud,
-    titulo_donacion: f.titulo_donacion,
-    username_contraparte: soyDonador
-      ? f.username_beneficiario
-      : f.username_donador,
+    id_beneficiario: f.id_beneficiario,
+    id_donador: f.id_donador,
+    beneficiario_username: f.beneficiario_username,
+    donador_username: f.donador_username,
     ultimo_mensaje: f.ultimo_mensaje,
-    fecha_ultimo_mensaje: f.fecha_ultimo_mensaje,
+    ultima_fecha: f.ultima_fecha,
+    rol_usuario: soyDonador ? 'donador' : 'beneficiario'
   };
 }
 
@@ -48,8 +51,8 @@ async function cargarChat(idChat, idUsuario) {
   }
 
   if (
-    fila.id_donador !== idUsuario &&
-    fila.id_beneficiario !== idUsuario
+    Number(fila.id_donador) !== Number(idUsuario) &&
+    Number(fila.id_beneficiario) !== Number(idUsuario)
   ) {
     throw new ApiError(403, 'No participas en este chat.');
   }
@@ -58,19 +61,23 @@ async function cargarChat(idChat, idUsuario) {
 }
 
 async function listar(req, res) {
+  const idUsuario = req.idUsuario;
+
   const [filas] = await pool.query(
     `${SELECT_CHAT}
      WHERE s.id_usuario = ? OR d.id_usuario = ?
      ORDER BY COALESCE(lm.fecha_envio, c.fecha_creacion) DESC, c.id_chat DESC`,
-    [req.idUsuario, req.idUsuario]
+    [idUsuario, idUsuario]
   );
 
-  res.json(filas.map((f) => aResumen(f, req.idUsuario)));
+  res.json(filas.map((f) => aResumen(f, idUsuario)));
 }
 
 async function obtener(req, res) {
+  const idUsuario = req.idUsuario;
   const idChat = entero(req.params.id, 'El id del chat');
-  const fila = await cargarChat(idChat, req.idUsuario);
+
+  const fila = await cargarChat(idChat, idUsuario);
 
   const [recientes] = await pool.query(
     `SELECT m.id_mensaje, m.contenido, m.fecha_envio,
@@ -84,13 +91,15 @@ async function obtener(req, res) {
   );
 
   res.json({
-    chat: aResumen(fila, req.idUsuario),
+    chat: aResumen(fila, idUsuario),
     mensajes: recientes.reverse()
   });
 }
 
 async function enviarMensaje(req, res) {
+  const idUsuario = req.idUsuario;
   const idChat = entero(req.params.id, 'El id del chat');
+
   const contenido = texto(
     req.body?.contenido,
     255,
@@ -101,11 +110,11 @@ async function enviarMensaje(req, res) {
     throw new ApiError(400, 'El mensaje no puede estar vacío.');
   }
 
-  await cargarChat(idChat, req.idUsuario);
+  await cargarChat(idChat, idUsuario);
 
   const [r] = await pool.query(
     'INSERT INTO mensaje (contenido, id_chat, id_usuario) VALUES (?, ?, ?)',
-    [contenido, idChat, req.idUsuario]
+    [contenido, idChat, idUsuario]
   );
 
   const [[mensaje]] = await pool.query(
@@ -123,5 +132,5 @@ async function enviarMensaje(req, res) {
 module.exports = {
   listar,
   obtener,
-  enviarMensaje,
+  enviarMensaje
 };

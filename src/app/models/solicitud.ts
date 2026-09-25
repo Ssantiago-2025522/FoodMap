@@ -27,7 +27,7 @@ export interface SolicitudDetalle extends Solicitud {
   id_chat: number | null;
 }
 
-export interface DonacionDisponible {
+export interface DonacionDisponible { 
   id_donacion: number;
   titulo: string;
   descripcion: string;

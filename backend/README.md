@@ -101,7 +101,7 @@ npm start          # sin recarga automática
 ## Variables de entorno (`.env`)
 
 | Variable         | Valor por defecto                        |
-| ---------------- | ---------------------------------------- |
+| ---------------- | ----------------------------------------- |
 | `PORT`           | `8080`                                   |
 | `CORS_ORIGIN`    | `http://localhost:4200` (separa varios con coma) |
 | `DB_HOST`        | `localhost`                              |
@@ -111,6 +111,29 @@ npm start          # sin recarga automática
 | `DB_NAME`        | `foodmapdb_in5bm`                        |
 | `JWT_SECRET`     | generado automáticamente al instalar     |
 | `JWT_EXPIRES_IN` | `1d`                                     |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` / `SMTP_USER` / `SMTP_PASSWORD` / `SMTP_FROM` | vacíos (ver "Envío de correo") |
+
+`.env.example` solo tiene valores genéricos de ejemplo (`usuario` / `contrasena`, etc.), nunca
+credenciales reales. Copia ese archivo a `.env` y coloca ahí tus propios valores; `.env` está en
+`.gitignore` y nunca debe subirse al repositorio.
+
+> ⚠️ Si credenciales reales llegaron a subirse alguna vez al repositorio (por ejemplo en un
+> commit anterior de `.env.example`), tómalas como comprometidas y rótalas (cambia el usuario o
+> la contraseña en la base de datos), aunque ya no aparezcan en la versión actual del archivo:
+> siguen visibles en el historial de git.
+
+## Envío de correo (recuperación de contraseña)
+
+`POST /api/auth/olvide-contrasena` envía el enlace para restablecer la contraseña usando SMTP
+(vía Nodemailer):
+
+- **Producción** (`NODE_ENV=production`): es obligatorio configurar `SMTP_HOST`, `SMTP_USER` y
+  `SMTP_PASSWORD` (Gmail, Resend, SendGrid, Amazon SES o un servidor propio). Si faltan, la
+  petición falla explícitamente en vez de fallar en silencio.
+- **Desarrollo**: si no configuras SMTP, no se envía un correo real; el enlace se imprime en la
+  consola del servidor y se incluye en la respuesta de la API (`enlaceDesarrollo`) solo para
+  poder probar el flujo localmente. Ese campo nunca aparece en producción, ni cuando ya se envió
+  un correo real.
 
 ## Base de datos
 
@@ -122,6 +145,33 @@ mysql -u root -p < database/foodmapdb_in5bm.sql
 ```
 
 Roles: `ADMIN=1`, `MODERADOR=2`, `BENEFICIARIO=3`, `DONADOR=4`.
+
+### Migraciones
+
+Los cambios de esquema posteriores al script inicial viven en `database/migrations/` (un archivo
+`.sql` por cambio, numerado en orden: `0001_...`, `0002_...`, etc.). Se aplican con un runner que
+registra cada migración ejecutada en una tabla `schema_migrations`, en vez de depender de correr
+archivos `.sql` sueltos a mano y de recordar cuáles ya se aplicaron:
+
+```bash
+npm run db:migrate            # aplica las migraciones pendientes
+npm run db:migrate -- --list  # muestra cuáles ya se aplicaron y cuáles faltan
+```
+
+Para agregar un cambio de esquema nuevo: crea `database/migrations/000N_descripcion.sql` con el
+siguiente número disponible y ejecuta `npm run db:migrate`.
+
+## Pruebas automatizadas
+
+```bash
+npm test
+```
+
+Usa el runner de pruebas integrado en Node.js (`node --test`, sin dependencias adicionales) y
+cubre las utilidades puras del backend (`src/utils/`) y el helper de correo
+(`src/helpers/correo.js`), incluyendo el caso de SMTP no configurado en desarrollo y el error
+esperado en producción. Los archivos de prueba están en `test/*.test.js`.
+
 
 ## Probar
 

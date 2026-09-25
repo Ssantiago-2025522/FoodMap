@@ -1,86 +1,107 @@
-<div class="contenedor-formulario">
-  <h2>{{ modoEdicion ? 'Editar Donación' : 'Crear Nueva Donación' }}</h2>
+<div class="modal-overlay" (click)="cancelar()">
+  <div class="contenedor-formulario" (click)="$event.stopPropagation()">
+    <h2>{{ modoEdicion ? 'Editar Donación' : 'Crear Nueva Donación' }}</h2>
 
-  <form [formGroup]="form" (ngSubmit)="guardar()">
-    <div class="campo">
-      <label for="titulo">Título *</label>
-      <input id="titulo" type="text" formControlName="titulo" placeholder="Ej. Manzanas frescas" />
-    </div>
-
-    <div class="campo">
-      <label for="descripcion">Descripción *</label>
-      <textarea id="descripcion" formControlName="descripcion" rows="3" placeholder="Detalles de los alimentos..."></textarea>
-    </div>
-
-    <div class="fila">
+    <form [formGroup]="form" (ngSubmit)="guardar()">
       <div class="campo">
-        <label for="categoria">Categoría *</label>
-        <select id="categoria" formControlName="categoria">
-          @for (cat of categorias; track cat) {
-            <option [value]="cat">{{ cat }}</option>
-          }
-        </select>
+        <label for="titulo">Título *</label>
+        <input id="titulo" type="text" formControlName="titulo" placeholder="Ej. Manzanas frescas" />
       </div>
 
       <div class="campo">
-        <label for="cantidad">Cantidad *</label>
-        <input id="cantidad" type="number" formControlName="cantidad" min="1" />
-      </div>
-    </div>
-
-    <!-- Nuevo selector de país en el formulario -->
-    <div class="fila">
-      <div class="campo">
-        <label for="codigoPais">País *</label>
-        <select id="codigoPais" formControlName="codigoPais">
-          <option value="gt">Guatemala</option>
-          <option value="mx">México</option>
-          <option value="es">España</option>
-          <option value="us">Estados Unidos</option>
-          <option value="co">Colombia</option>
-          <option value="ar">Argentina</option>
-        </select>
+        <label for="descripcion">Descripción *</label>
+        <textarea id="descripcion" formControlName="descripcion" rows="3" placeholder="Detalles de los alimentos..."></textarea>
       </div>
 
       <div class="campo">
-        <label for="fechaExpiracion">Fecha de Expiración *</label>
-        <input id="fechaExpiracion" type="date" formControlName="fechaExpiracion" />
+        <label for="archivoImagen">Imagen de la Donación</label>
+        <input 
+          id="archivoImagen" 
+          type="file" 
+          accept="image/*" 
+          (change)="onFileSelected($event)" 
+        />
+        @if (imagenPreview) {
+          <div class="preview-contenedor" style="margin-top: 10px; text-align: center;">
+            <img [src]="imagenPreview" alt="Vista previa" style="max-height: 120px; border-radius: 8px; object-fit: cover;" />
+          </div>
+        }
       </div>
-    </div>
 
-    <div class="campo">
-      <label for="ubicacion">Ubicación / Dirección Exacta *</label>
-      <input 
-        id="ubicacion" 
-        type="text" 
-        formControlName="ubicacion" 
-        placeholder="Ej. Calle de Alcalá 45, Madrid" 
-      />
-      @if (form.get('ubicacion')?.touched && form.get('ubicacion')?.invalid) {
-        <span class="error">La ubicación es requerida.</span>
+      <div class="fila">
+        <div class="campo">
+          <label for="categoria">Categoría *</label>
+          <select id="categoria" formControlName="categoria">
+            @for (cat of categorias; track cat) {
+              <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="cantidad">Cantidad *</label>
+          <input id="cantidad" type="number" formControlName="cantidad" min="1" />
+        </div>
+      </div>
+
+      <div class="fila">
+        <div class="campo">
+          <label for="codigoPaisInput">País *</label>
+          <input
+            id="codigoPaisInput"
+            type="text"
+            list="listaPaises"
+            placeholder="Escribe para buscar tu país..."
+            [value]="paisNombreSeleccionado"
+            (input)="onPaisInput($event)"
+          />
+          <datalist id="listaPaises">
+            @for (p of listaPaisesCompleta; track p.codigo) {
+              <option [value]="p.nombre">{{ p.nombre }}</option>
+            }
+          </datalist>
+        </div>
+
+        <div class="campo">
+          <label for="fechaExpiracion">Fecha de Expiración *</label>
+          <input id="fechaExpiracion" type="date" formControlName="fechaExpiracion" />
+        </div>
+      </div>
+
+      <div class="campo">
+        <label for="ubicacion">Ubicación / Dirección Exacta *</label>
+        <input 
+          id="ubicacion" 
+          type="text" 
+          formControlName="ubicacion" 
+          placeholder="Ej. Calle de Alcalá 45, Madrid" 
+        />
+        @if (form.get('ubicacion')?.touched && form.get('ubicacion')?.invalid) {
+          <span class="error">La ubicación es requerida.</span>
+        }
+      </div>
+
+      @if (modoEdicion) {
+        <div class="campo">
+          <label for="estado">Estado</label>
+          <select id="estado" formControlName="estado">
+            @for (est of estados; track est) {
+              <option [value]="est">{{ est }}</option>
+            }
+          </select>
+        </div>
       }
-    </div>
 
-    @if (modoEdicion) {
-      <div class="campo">
-        <label for="estado">Estado</label>
-        <select id="estado" formControlName="estado">
-          @for (est of estados; track est) {
-            <option [value]="est">{{ est }}</option>
-          }
-        </select>
+      @if (errorGuardado) {
+        <p class="error error--general">{{ errorGuardado }}</p>
+      }
+
+      <div class="acciones-form">
+        <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+        <button type="submit" class="btn-guardar" [disabled]="cargandoUbicacion">
+          {{ cargandoUbicacion ? (modoEdicion ? 'Actualizando...' : 'Guardando...') : (modoEdicion ? 'Actualizar' : 'Guardar Donación') }}
+        </button>
       </div>
-    }
-
-    @if (errorGuardado) {
-      <p class="error error--general">{{ errorGuardado }}</p>
-    }
-
-    <div class="acciones-form">
-      <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
-      <button type="submit" class="btn-guardar" [disabled]="cargandoUbicacion">
-        {{ cargandoUbicacion ? (modoEdicion ? 'Actualizando...' : 'Guardando...') : (modoEdicion ? 'Actualizar' : 'Guardar Donación') }}
-      </button>
-    </div>
-  </form>
+    </form>
+  </div>
 </div>

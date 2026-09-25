@@ -2,7 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Chat as ChatService } from '../../../services/chat.service';
-import { Sesion } from '../../../services/sesion.service';
+import { AuthService } from '@core/services/auth.service';
 import { ChatResumen } from '../../../models/chat';
 import { CommonModule } from '@angular/common';
 
@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 })
 export class ListaChats implements OnInit {
   private chatService = inject(ChatService);
-  private idUsuario = inject(Sesion).obtenerIdUsuarioActual();
+  private idUsuario = inject(AuthService).getUsuario()?.id_usuario ?? 0;
 
   chats = signal<ChatResumen[]>([]);
   busqueda = signal('');

@@ -7,7 +7,6 @@ import { Role } from '@core/models/role.enum';
 import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
 import { Notificaciones } from '../../../services/notificaciones.service';
-import { Sesion } from '../../../services/sesion.service';
 
 @Component({
   selector: 'app-navbar',
@@ -20,7 +19,6 @@ export class Navbar {
   private userService = inject(UserService);
   private router = inject(Router);
   private notificaciones = inject(Notificaciones);
-  private sesion = inject(Sesion);
 
   readonly usuario = toSignal(this.userService.user$, {
     initialValue: this.userService.getUser()
@@ -31,7 +29,10 @@ export class Navbar {
   constructor() {
     timer(0, 30_000)
       .pipe(takeUntilDestroyed())
-      .subscribe(() => this.notificaciones.actualizarContador(this.sesion.obtenerIdUsuarioActual()));
+      .subscribe(() => {
+        const idUsuario = this.authService.getUsuario()?.id_usuario;
+        if (idUsuario) this.notificaciones.actualizarContador(idUsuario);
+      });
   }
 
   get esAdmin(): boolean {
