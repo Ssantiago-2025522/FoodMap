@@ -1,0 +1,55 @@
+<div class="contenedor-lista-calificaciones">
+  <h2>Calificaciones</h2>
+
+  <div class="menu-calificaciones">
+    <a routerLink="/calificaciones/crear">Crear calificación</a>
+    <a routerLink="/calificaciones/promedio">Calcular promedio</a>
+    <a routerLink="/calificaciones/historial">Historial de reputación</a>
+  </div>
+
+  <h3>Consultar calificaciones</h3>
+
+  <div class="campo">
+    <label for="entregaIdFiltro">Filtrar por ID de entrega</label>
+    <input
+      type="text"
+      id="entregaIdFiltro"
+      name="entregaIdFiltro"
+      [(ngModel)]="entregaIdFiltro"
+    />
+  </div>
+
+  <div class="acciones">
+    <button type="button" (click)="buscarPorEntrega()">Buscar</button>
+    <button type="button" (click)="limpiarFiltro()">Limpiar</button>
+  </div>
+
+  <p class="mensaje-info" *ngIf="mensajeInfo">
+    {{ mensajeInfo }}
+  </p>
+
+  <table class="tabla-calificaciones" *ngIf="calificaciones.length > 0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Entrega</th>
+        <th>Calificador</th>
+        <th>Calificado</th>
+        <th>Puntuación</th>
+        <th>Comentario</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let calificacion of calificaciones">
+        <td>{{ calificacion.id }}</td>
+        <td>{{ calificacion.entregaId }}</td>
+        <td>{{ calificacion.calificadorId }}</td>
+        <td>{{ calificacion.calificadoId }}</td>
+        <td>{{ calificacion.puntuacion }}</td>
+        <td>{{ calificacion.comentario ? calificacion.comentario : '-' }}</td>
+        <td>{{ calificacion.fecha }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

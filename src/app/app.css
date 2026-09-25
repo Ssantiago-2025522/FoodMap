@@ -1,45 +1,4 @@
-.main-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
-.contenedor-principal {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-  font-family: system-ui, -apple-system, sans-serif;
-}
-
-.encabezado-app {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  border-bottom: 2px solid #f1f5f9;
-  padding-bottom: 1rem;
-}
-
-.encabezado-app h1 {
-  margin: 0;
-  color: #0f172a;
-  font-size: 1.8rem;
-}
-
-.btn-nueva-donacion {
-  background-color: #10b981;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-nueva-donacion:hover {
-  background-color: #059669;
-}
-
-.seccion-formulario {
-  margin-bottom: 2rem;
+:host {
+  display: block;
+  min-height: 100vh;
 }

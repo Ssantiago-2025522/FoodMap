@@ -66,108 +66,145 @@ export const routes: Routes = [
         path: 'solicitudes',
         title: 'FoodMap | Solicitudes',
         loadComponent: () =>
-          import('./features/solicitudes/lista-solicitudes/lista-solicitudes').then((m) => m.ListaSolicitudes)
+          import('@features/solicitudes/lista-solicitudes/lista-solicitudes').then((m) => m.ListaSolicitudes)
       },
       {
-        path: 'crear-solicitud',
+        path: 'solicitudes/crear',
         title: 'FoodMap | Crear Solicitud',
         loadComponent: () =>
-          import('./features/solicitudes/crear-solicitud/crear-solicitud').then((m) => m.CrearSolicitud)
+          import('@features/solicitudes/crear-solicitud/crear-solicitud').then((m) => m.CrearSolicitud)
       },
       {
-        path: 'crear-solicitud/:idDonacion',
+        path: 'solicitudes/crear/:idDonacion',
         title: 'FoodMap | Crear Solicitud',
         loadComponent: () =>
-          import('./features/solicitudes/crear-solicitud/crear-solicitud').then((m) => m.CrearSolicitud)
+          import('@features/solicitudes/crear-solicitud/crear-solicitud').then((m) => m.CrearSolicitud)
       },
       {
-        path: 'detalle-solicitud/:id',
+        path: 'solicitudes/historial',
+        title: 'FoodMap | Historial de Solicitudes',
+        loadComponent: () =>
+          import('@features/historial/historial-solicitudes/historial-solicitudes').then((m) => m.HistorialSolicitudes)
+      },
+      {
+        path: 'solicitudes/:id',
         title: 'FoodMap | Detalle de Solicitud',
         loadComponent: () =>
-          import('./features/solicitudes/detalle-solicitud/detalle-solicitud').then((m) => m.DetalleSolicitud)
+          import('@features/solicitudes/detalle-solicitud/detalle-solicitud').then((m) => m.DetalleSolicitud)
       },
       {
         path: 'notificaciones',
         title: 'FoodMap | Notificaciones',
         loadComponent: () =>
-          import('./features/notificaciones/lista-notificaciones/lista-notificaciones').then((m) => m.ListaNotificaciones)
+          import('@features/notificaciones/lista-notificaciones/lista-notificaciones').then((m) => m.ListaNotificaciones)
       },
       {
-        path: 'historial',
-        title: 'FoodMap | Historial de Solicitudes',
-        loadComponent: () =>
-          import('./features/historial/historial-solicitudes/historial-solicitudes').then((m) => m.HistorialSolicitudes)
-      },
-      {
-        path: 'lista-chats',
+        path: 'chats',
         title: 'FoodMap | Mensajes',
         loadComponent: () =>
-          import('./features/chat/lista-chats/lista-chats').then((m) => m.ListaChats)
+          import('@features/chat/lista-chats/lista-chats').then((m) => m.ListaChats)
       },
       {
-        path: 'chat/:idChat',
+        path: 'chats/:idChat',
         title: 'FoodMap | Chat',
         loadComponent: () =>
-          import('./features/chat/chat/chat').then((m) => m.Chat)
+          import('@features/chat/chat/chat').then((m) => m.Chat)
+      },
+      {
+        path: 'entregas/crear',
+        title: 'FoodMap | Crear entrega',
+        loadComponent: () =>
+          import('@components/entregas/crear-entrega/crear-entrega').then((m) => m.CrearEntrega)
+      },
+      {
+        path: 'entregas/detalle',
+        title: 'FoodMap | Detalle de entrega',
+        loadComponent: () =>
+          import('@components/entregas/detalle-entrega/detalle-entrega').then((m) => m.DetalleEntrega)
+      },
+      {
+        path: 'entregas/generar-qr',
+        title: 'FoodMap | Generar QR',
+        loadComponent: () =>
+          import('@components/entregas/generar-qr/generar-qr').then((m) => m.GenerarQr)
+      },
+      {
+        path: 'entregas/validar-qr',
+        title: 'FoodMap | Validar QR',
+        loadComponent: () =>
+          import('@components/entregas/validar-qr/validar-qr').then((m) => m.ValidarQr)
+      },
+      {
+        path: 'calificaciones',
+        title: 'FoodMap | Lista de calificaciones',
+        loadComponent: () =>
+          import('@components/calificaciones/lista-calificaciones/lista-calificaciones').then((m) => m.ListaCalificaciones)
+      },
+      {
+        path: 'calificaciones/crear',
+        title: 'FoodMap | Crear calificación',
+        loadComponent: () =>
+          import('@components/calificaciones/crear-calificacion/crear-calificacion').then((m) => m.CrearCalificacion)
+      },
+      {
+        path: 'calificaciones/promedio',
+        title: 'FoodMap | Promedio de calificaciones',
+        loadComponent: () =>
+          import('@components/calificaciones/promedio-calificaciones/promedio-calificaciones').then((m) => m.PromedioCalificaciones)
+      },
+      {
+        path: 'calificaciones/historial',
+        title: 'FoodMap | Historial de reputación',
+        loadComponent: () =>
+          import('@components/calificaciones/historial-reputacion/historial-reputacion').then((m) => m.HistorialReputacion)
       },
       {
         path: 'admin',
-        title: 'FoodMap | Administración',
         canActivate: [roleGuard],
         data: { roles: [Role.ADMIN] },
-        loadComponent: () => import('@features/admin/admin').then((m) => m.Admin)
-      },
-      {
-        path: 'admin/reportes',
-        title: 'FoodMap | Reportes',
-        canActivate: [roleGuard],
-        data: { roles: [Role.ADMIN] },
-        loadComponent: () =>
-          import('@features/admin/reportes/lista/reportes-lista').then((m) => m.ReportesLista)
-      },
-      {
-        path: 'admin/reportes/nuevo',
-        title: 'FoodMap | Nuevo reporte',
-        canActivate: [roleGuard],
-        data: { roles: [Role.ADMIN] },
-        loadComponent: () =>
-          import('@features/admin/reportes/formulario/reporte-formulario').then(
-            (m) => m.ReporteFormulario
-          )
-      },
-      {
-        path: 'admin/reportes/:id',
-        title: 'FoodMap | Detalle de reporte',
-        canActivate: [roleGuard],
-        data: { roles: [Role.ADMIN] },
-        loadComponent: () =>
-          import('@features/admin/reportes/formulario/reporte-formulario').then(
-            (m) => m.ReporteFormulario
-          )
-      },
-      {
-        path: 'admin/usuarios',
-        title: 'FoodMap | Usuarios',
-        canActivate: [roleGuard],
-        data: { roles: [Role.ADMIN] },
-        loadComponent: () =>
-          import('@features/admin/usuarios/lista/usuarios-lista').then((m) => m.UsuariosLista)
-      },
-      {
-        path: 'admin/usuarios/nuevo',
-        title: 'FoodMap | Nuevo usuario',
-        canActivate: [roleGuard],
-        data: { roles: [Role.ADMIN] },
-        loadComponent: () =>
-          import('@features/admin/usuarios/formulario/usuario-formulario').then((m) => m.UsuarioFormulario)
-      },
-      {
-        path: 'admin/usuarios/:id',
-        title: 'FoodMap | Editar usuario',
-        canActivate: [roleGuard],
-        data: { roles: [Role.ADMIN] },
-        loadComponent: () =>
-          import('@features/admin/usuarios/formulario/usuario-formulario').then((m) => m.UsuarioFormulario)
+        children: [
+          {
+            path: '',
+            title: 'FoodMap | Administración',
+            loadComponent: () => import('@features/admin/admin').then((m) => m.Admin)
+          },
+          {
+            path: 'reportes',
+            title: 'FoodMap | Reportes',
+            loadComponent: () =>
+              import('@features/admin/reportes/lista/reportes-lista').then((m) => m.ReportesLista)
+          },
+          {
+            path: 'reportes/nuevo',
+            title: 'FoodMap | Nuevo reporte',
+            loadComponent: () =>
+              import('@features/admin/reportes/formulario/reporte-formulario').then((m) => m.ReporteFormulario)
+          },
+          {
+            path: 'reportes/:id',
+            title: 'FoodMap | Detalle de reporte',
+            loadComponent: () =>
+              import('@features/admin/reportes/formulario/reporte-formulario').then((m) => m.ReporteFormulario)
+          },
+          {
+            path: 'usuarios',
+            title: 'FoodMap | Usuarios',
+            loadComponent: () =>
+              import('@features/admin/usuarios/lista/usuarios-lista').then((m) => m.UsuariosLista)
+          },
+          {
+            path: 'usuarios/nuevo',
+            title: 'FoodMap | Nuevo usuario',
+            loadComponent: () =>
+              import('@features/admin/usuarios/formulario/usuario-formulario').then((m) => m.UsuarioFormulario)
+          },
+          {
+            path: 'usuarios/:id',
+            title: 'FoodMap | Editar usuario',
+            loadComponent: () =>
+              import('@features/admin/usuarios/formulario/usuario-formulario').then((m) => m.UsuarioFormulario)
+          }
+        ]
       },
       {
         path: 'acceso-denegado',
