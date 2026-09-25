@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { CalificacionService } from '../../../services/calificacion.service';
 import { Calificacion } from '../../../models/calificacion.model';
 
 @Component({
   selector: 'app-lista-calificaciones',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './lista-calificaciones.html',
   styleUrl: './lista-calificaciones.css'
 })

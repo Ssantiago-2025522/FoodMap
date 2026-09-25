@@ -6,6 +6,7 @@ const donacionRoutes = require('./routes/donacionRoutes');
 const reporteRoutes = require('./routes/reporteRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const solicitudesRoutes = require('./routes/solicitudes.routes');
+const chatsRoutes = require('./routes/chats.routes');
 const { noEncontrado, errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
@@ -40,6 +41,7 @@ app.use('/api/donaciones', donacionRoutes);
 app.use('/api/reportes', reporteRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/solicitudes', solicitudesRoutes);
+app.use('/api/chats', chatsRoutes);
 
 app.use(noEncontrado);
 app.use(errorHandler);

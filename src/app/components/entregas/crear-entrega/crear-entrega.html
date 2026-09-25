@@ -1,9 +1,26 @@
 <div class="contenedor-crear-entrega">
-  <h2>Crear registro de entrega</h2>
+
+  <h2>Entregas</h2>
+
+  <div class="menu-entregas">
+
+    <a routerLink="/entregas/detalle">
+      Consultar detalle
+    </a>
+
+    <a routerLink="/entregas/validar-qr">
+      Validar QR
+    </a>
+
+  </div>
+
+  <h3>Crear registro de entrega</h3>
 
   <form (ngSubmit)="crearEntrega()">
+
     <div class="campo">
       <label for="donadorId">Nombre del donador</label>
+
       <input
         type="text"
         id="donadorId"
@@ -14,6 +31,7 @@
 
     <div class="campo">
       <label for="beneficiarioId">Nombre del beneficiario</label>
+
       <input
         type="text"
         id="beneficiarioId"
@@ -24,6 +42,7 @@
 
     <div class="campo">
       <label for="descripcion">Descripción</label>
+
       <textarea
         id="descripcion"
         name="descripcion"
@@ -31,19 +50,74 @@
       ></textarea>
     </div>
 
-    <button type="submit">Crear entrega</button>
+    <button type="submit">
+      Crear entrega
+    </button>
+
   </form>
 
-  <p class="mensaje-error" *ngIf="mensajeError">{{ mensajeError }}</p>
-  <p class="mensaje-exito" *ngIf="mensajeExito">{{ mensajeExito }}</p>
+  <p
+    class="mensaje-error"
+    *ngIf="mensajeError"
+  >
+    {{ mensajeError }}
+  </p>
 
-  <div class="detalle-entrega" *ngIf="entregaCreada">
+  <p
+    class="mensaje-exito"
+    *ngIf="mensajeExito"
+  >
+    {{ mensajeExito }}
+  </p>
+
+  <div
+    class="detalle-entrega"
+    *ngIf="entregaCreada"
+  >
+
     <h3>Entrega creada</h3>
-    <p><strong>ID:</strong> {{ entregaCreada.id }}</p>
-    <p><strong>Donador:</strong> {{ entregaCreada.donadorId }}</p>
-    <p><strong>Beneficiario:</strong> {{ entregaCreada.beneficiarioId }}</p>
-    <p><strong>Descripción:</strong> {{ entregaCreada.descripcion }}</p>
-    <p><strong>Estado:</strong> {{ entregaCreada.estado }}</p>
-    <p><strong>Fecha de creación:</strong> {{ entregaCreada.fechaCreacion }}</p>
+
+    <p>
+      <strong>ID:</strong>
+      {{ entregaCreada.id }}
+    </p>
+
+    <p>
+      <strong>Donador:</strong>
+      {{ entregaCreada.donadorId }}
+    </p>
+
+    <p>
+      <strong>Beneficiario:</strong>
+      {{ entregaCreada.beneficiarioId }}
+    </p>
+
+    <p>
+      <strong>Descripción:</strong>
+      {{ entregaCreada.descripcion }}
+    </p>
+
+    <p>
+      <strong>Estado:</strong>
+      {{ entregaCreada.estado }}
+    </p>
+
+    <p>
+      <strong>Fecha de creación:</strong>
+      {{ entregaCreada.fechaCreacion }}
+    </p>
+
+    <div class="acciones-entrega">
+
+      <a
+        [routerLink]="['/entregas/generar-qr']"
+        [queryParams]="{ id: entregaCreada.id }"
+      >
+        Generar QR
+      </a>
+
+    </div>
+
   </div>
+
 </div>

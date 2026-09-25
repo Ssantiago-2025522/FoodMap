@@ -1,13 +1,18 @@
-import { Router } from 'express';
-import { usuarioActual } from '../middlewares/usuario.js';
-import { asyncHandler as ah } from '../utils/async-handler.js';
-import * as c from '../controllers/chats.controller.js';
+const { Router } = require('express');
+const { usuarioActual } = require('../middlewares/usuario');
+const { asyncHandler: ah } = require('../utils/async-handler');
+const {
+  listar,
+  obtener,
+  enviarMensaje
+} = require('../controllers/chats.controller');
 
 const router = Router();
+
 router.use(usuarioActual);
 
-router.get('/', ah(c.listar));
-router.get('/:id', ah(c.obtener));
-router.post('/:id/mensajes', ah(c.enviarMensaje));
+router.get('/', ah(listar));
+router.get('/:id', ah(obtener));
+router.post('/:id/mensajes', ah(enviarMensaje));
 
-export default router;
+module.exports = router;

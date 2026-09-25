@@ -1,5 +1,13 @@
 <div class="contenedor-lista-calificaciones">
-  <h2>Consultar calificaciones</h2>
+  <h2>Calificaciones</h2>
+
+  <div class="menu-calificaciones">
+    <a routerLink="/calificaciones/crear">Crear calificación</a>
+    <a routerLink="/calificaciones/promedio">Calcular promedio</a>
+    <a routerLink="/calificaciones/historial">Historial de reputación</a>
+  </div>
+
+  <h3>Consultar calificaciones</h3>
 
   <div class="campo">
     <label for="entregaIdFiltro">Filtrar por ID de entrega</label>
@@ -16,7 +24,9 @@
     <button type="button" (click)="limpiarFiltro()">Limpiar</button>
   </div>
 
-  <p class="mensaje-info" *ngIf="mensajeInfo">{{ mensajeInfo }}</p>
+  <p class="mensaje-info" *ngIf="mensajeInfo">
+    {{ mensajeInfo }}
+  </p>
 
   <table class="tabla-calificaciones" *ngIf="calificaciones.length > 0">
     <thead>

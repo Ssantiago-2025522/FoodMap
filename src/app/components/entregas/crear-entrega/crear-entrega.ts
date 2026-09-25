@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { EntregaService } from '../../../services/entrega.service';
 import { Entrega } from '../../../models/entrega.model';
 
 @Component({
   selector: 'app-crear-entrega',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './crear-entrega.html',
   styleUrl: './crear-entrega.css'
 })
