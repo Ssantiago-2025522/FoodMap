@@ -75,7 +75,6 @@ export class DonacionFormularioComponent implements OnInit, OnChanges {
     this.cargandoUbicacion = true;
     const datosForm = this.form.value;
 
-    // Se obtienen latitud y longitud automáticamente usando la dirección ingresada
     const { latitud, longitud } = await this.geocodingService.obtenerCoordenadas(datosForm.ubicacion);
     const donacionConCoords = { ...datosForm, latitud, longitud };
 

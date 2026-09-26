@@ -119,6 +119,7 @@ CREATE TABLE entrega (
     hora_entrega TIME NOT NULL DEFAULT (CURRENT_TIME),
     observaciones VARCHAR(255),
     estado VARCHAR(50) NOT NULL,
+    token_qr VARCHAR(64) NULL UNIQUE,
     id_solicitud BIGINT NOT NULL UNIQUE,
 
     CONSTRAINT fk_entrega_solicitud

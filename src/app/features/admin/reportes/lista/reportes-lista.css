@@ -6,6 +6,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
     margin-bottom: 20px;
 }
 
@@ -191,4 +193,19 @@
 
 .boton:hover {
     background: var(--color-verde-oscuro);
+}
+
+/* La tabla tiene 9 columnas; sin esto, en tablet/móvil empujaba el
+   ancho de toda la página en vez de desbordar solo dentro de sí misma.
+   Mismo mecanismo que ya usa lista-calificaciones.css. */
+@media (max-width: 1000px) {
+    .reportes {
+        padding: 20px 16px;
+    }
+
+    .reportes__tabla {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 }

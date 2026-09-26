@@ -22,7 +22,6 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    // Verifica que el router-outlet existe en el DOM
     expect(compiled.querySelector('router-outlet')).toBeTruthy();
   });
 });

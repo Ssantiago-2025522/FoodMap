@@ -10,7 +10,7 @@
 
             <p>Solicitud: {{ d.chat.titulo_donacion }}</p>
 
-            <a routerLink="/lista-chats">Volver a chats</a>
+            <a routerLink="/chats">Volver a chats</a>
 
         </div>
 
@@ -51,7 +51,7 @@
 
     } @else {
         <p class="mensaje-error" role="alert">{{ error() || 'No se encontró el chat.' }}</p>
-        <a routerLink="/lista-chats">Volver a chats</a>
+        <a routerLink="/chats">Volver a chats</a>
     }
 
 </section>

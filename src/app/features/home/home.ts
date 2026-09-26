@@ -7,6 +7,7 @@ import { Role } from '@core/models/role.enum';
 import { Solicitudes } from '../../services/solicitudes.service';
 import { Notificaciones } from '../../services/notificaciones.service';
 import { Sesion } from '../../services/sesion.service';
+import { DonacionService } from '../../services/donacion.service';
 import { HistorialItem } from '../../models/solicitud';
 
 interface AccesoRapido {
@@ -36,6 +37,7 @@ export class Home implements OnInit {
   private solicitudesService = inject(Solicitudes);
   private notificaciones = inject(Notificaciones);
   private sesion = inject(Sesion);
+  private donacionService = inject(DonacionService);
 
   readonly usuario = toSignal(this.userService.user$, {
     initialValue: this.userService.getUser()
@@ -45,7 +47,6 @@ export class Home implements OnInit {
 
   readonly esAdmin = computed(() => this.usuario()?.id_rol === Role.ADMIN);
 
-  // Estado de carga del historial (fuente real: Solicitudes.obtenerHistorial())
   private historial = signal<HistorialItem[]>([]);
   cargandoActividad = signal(true);
   errorActividad = signal('');
@@ -63,7 +64,7 @@ export class Home implements OnInit {
       icono: 'chat',
       titulo: 'Chat',
       descripcion: 'Coordina la entrega con la otra persona.',
-      ruta: '/lista-chats'
+      ruta: '/chats'
     },
     {
       id: 'notificaciones',
@@ -77,7 +78,7 @@ export class Home implements OnInit {
       icono: 'historial',
       titulo: 'Historial',
       descripcion: 'Consulta tus donaciones y entregas pasadas.',
-      ruta: '/historial'
+      ruta: '/solicitudes/historial'
     },
     {
       id: 'perfil',
@@ -88,19 +89,11 @@ export class Home implements OnInit {
     }
   ];
 
-  // ---------------------------------------------------------------------
-  // TU IMPACTO
-  // "solicitudesCompletadas" y "entregasRealizadas" se calculan con datos
-  // reales de Solicitudes.obtenerHistorial() (el mismo endpoint que usa
-  // la vista de Historial).
-  //
-  // "donacionesRealizadasMock" todavía no tiene un endpoint que devuelva
-  // el conteo de donaciones publicadas por el usuario autenticado, así
-  // que por ahora es un valor MOCK, señalado explícitamente. Cuando
-  // exista (por ejemplo GET /donaciones filtrado por el usuario en
-  // sesión), sustituir este valor por el real.
-  // ---------------------------------------------------------------------
-  readonly donacionesRealizadasMock = 12; // MOCK — pendiente de conectar al backend
+  readonly donacionesRealizadas = computed(() => {
+    const idUsuario = this.usuario()?.id_usuario;
+    if (!idUsuario) return 0;
+    return this.donacionService.donaciones().filter((d) => d.idUsuario === idUsuario).length;
+  });
 
   readonly solicitudesCompletadas = computed(
     () => this.historial().filter((item) => item.estado === 'ACEPTADA').length

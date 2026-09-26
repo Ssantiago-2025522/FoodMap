@@ -27,13 +27,26 @@ export class DetalleSolicitud implements OnInit {
   observaciones = signal('');
   error = signal('');
 
-  esDonador = computed(() => Number(this.solicitud()?.id_donador) === Number(this.idUsuario));
+ esDonador = computed(() => {
+  console.log('DEBUG DONADOR:', {
+    idDonador: this.solicitud()?.id_donador,
+    idUsuario: this.idUsuario,
+    estado: this.solicitud()?.estado
+  });
+
+  return Number(this.solicitud()?.id_donador) === Number(this.idUsuario);
+});
 
   puedeResponder = computed(() => this.esDonador() && this.solicitud()?.estado === 'PENDIENTE');
 
   puedeConfirmar = computed(() => {
     const s = this.solicitud();
     return !!s && !this.esDonador() && s.estado === 'ACEPTADA' && s.estado_entrega === 'PENDIENTE';
+  });
+
+  puedeMostrarQr = computed(() => {
+    const s = this.solicitud();
+    return !!s && this.esDonador() && s.estado === 'ACEPTADA' && s.estado_entrega === 'PENDIENTE';
   });
 
   ngOnInit(): void {

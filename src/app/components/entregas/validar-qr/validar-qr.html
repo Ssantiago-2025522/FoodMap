@@ -1,34 +1,61 @@
-<div class="contenedor-validar-qr">
-  <h2>Validar código QR y confirmar entrega</h2>
+<main class="contenedor-validar-qr">
+
+  <header class="validar-qr__encabezado">
+    <h2>Validar código QR</h2>
+    <p class="subtitulo">Ingresa el código que te muestra el donador para confirmar la recepción.</p>
+  </header>
 
   <div class="campo">
-    <label for="codigoIngresado">Código QR</label>
+    <label for="token">Código QR</label>
     <input
       type="text"
-      id="codigoIngresado"
-      name="codigoIngresado"
-      [(ngModel)]="codigoIngresado"
+      id="token"
+      name="token"
+      [(ngModel)]="token"
+      [disabled]="enviando()"
+      placeholder="Pega o escribe el código aquí"
     />
   </div>
 
+  <div class="campo">
+    <label for="observaciones">Observaciones (opcional)</label>
+    <textarea
+      id="observaciones"
+      name="observaciones"
+      rows="3"
+      maxlength="255"
+      [(ngModel)]="observaciones"
+      [disabled]="enviando()"
+    ></textarea>
+  </div>
+
   <div class="acciones">
-    <button type="button" (click)="confirmarPorQr()">Validar y confirmar</button>
-    <button type="button" (click)="limpiar()">Limpiar</button>
+    <button type="button" class="btn-naranja" (click)="confirmarPorQr()" [disabled]="enviando()">
+      {{ enviando() ? 'Validando…' : 'Validar y confirmar' }}
+    </button>
+    <button type="button" class="btn-outline" (click)="limpiar()" [disabled]="enviando()">Limpiar</button>
   </div>
 
-  <p class="mensaje-error" *ngIf="mensajeError">{{ mensajeError }}</p>
-  <p class="mensaje-exito" *ngIf="mensajeExito">{{ mensajeExito }}</p>
+  @if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+  }
 
-  <div class="detalle-entrega" *ngIf="entregaValidada">
-    <h3>Datos de la entrega</h3>
-    <p><strong>ID:</strong> {{ entregaValidada.id }}</p>
-    <p><strong>Donador:</strong> {{ entregaValidada.donadorId }}</p>
-    <p><strong>Beneficiario:</strong> {{ entregaValidada.beneficiarioId }}</p>
-    <p><strong>Descripción:</strong> {{ entregaValidada.descripcion }}</p>
-    <p><strong>Estado:</strong> {{ entregaValidada.estado }}</p>
-    <p><strong>Código QR:</strong> {{ entregaValidada.codigoQr }}</p>
-    <p *ngIf="entregaValidada.fechaConfirmacion">
-      <strong>Fecha de confirmación:</strong> {{ entregaValidada.fechaConfirmacion }}
-    </p>
+  @if (entregaValidada(); as e) {
+    <div class="mensaje-exito" role="status">La entrega fue confirmada correctamente.</div>
+    <div class="detalle-entrega">
+      <p><strong>Entrega:</strong> #{{ e.id_entrega }}</p>
+      <p><strong>Estado:</strong> {{ e.estado }}</p>
+      @if (e.fecha_entrega) {
+        <p><strong>Fecha:</strong> {{ e.fecha_entrega }} {{ e.hora_entrega }}</p>
+      }
+      @if (e.observaciones) {
+        <p><strong>Observaciones:</strong> {{ e.observaciones }}</p>
+      }
+    </div>
+  }
+
+  <div class="acciones">
+    <a class="btn-outline" routerLink="/solicitudes">Volver a solicitudes</a>
   </div>
-</div>
+
+</main>

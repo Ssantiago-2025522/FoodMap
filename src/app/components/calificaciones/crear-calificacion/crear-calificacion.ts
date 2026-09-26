@@ -13,50 +13,63 @@ import { Calificacion } from '../../../models/calificacion.model';
 })
 export class CrearCalificacion {
 
-  entregaId: string = '';
-  calificadorId: string = '';
-  calificadoId: string = '';
+  entregaId: number | null = null;
   puntuacion: number | null = null;
   comentario: string = '';
 
   mensajeError: string = '';
   mensajeExito: string = '';
+
   calificacionCreada: Calificacion | null = null;
 
-  constructor(private calificacionService: CalificacionService) { }
+  constructor(private calificacionService: CalificacionService) {}
 
   crearCalificacion(): void {
     this.mensajeError = '';
     this.mensajeExito = '';
     this.calificacionCreada = null;
 
-    if (!this.entregaId.trim() || !this.calificadorId.trim() || !this.calificadoId.trim()) {
-      this.mensajeError = 'Debes completar entregaId, calificadorId y calificadoId.';
+    if (
+      this.entregaId === null ||
+      !Number.isInteger(this.entregaId) ||
+      this.entregaId <= 0
+    ) {
+      this.mensajeError = 'Ingresa un ID de entrega válido.';
       return;
     }
 
-    if (this.puntuacion === null || this.puntuacion < 1 || this.puntuacion > 5) {
-      this.mensajeError = 'La puntuación debe ser un valor entre 1 y 5.';
+    if (
+      this.puntuacion === null ||
+      this.puntuacion < 1 ||
+      this.puntuacion > 5
+    ) {
+      this.mensajeError = 'La puntuación debe estar entre 1 y 5.';
       return;
     }
 
-    const comentarioFinal = this.comentario.trim() ? this.comentario : undefined;
+    const comentarioFinal = this.comentario.trim()
+      ? this.comentario.trim()
+      : undefined;
 
-    const resultado = this.calificacionService.crear(
+    this.calificacionService.crear(
       this.entregaId,
-      this.calificadorId,
-      this.calificadoId,
       this.puntuacion,
       comentarioFinal
-    );
+    ).subscribe({
+      next: (resultado) => {
+        this.calificacionCreada = resultado;
+        this.mensajeExito =
+          'La calificación fue registrada correctamente.';
+        this.limpiarFormulario();
+      },
+      error: (error) => {
+        console.error('Error al crear calificación:', error);
 
-    if (resultado) {
-      this.calificacionCreada = resultado;
-      this.mensajeExito = 'La calificación fue registrada correctamente.';
-      this.limpiarFormulario();
-    } else {
-      this.mensajeError = 'No fue posible registrar la calificación.';
-    }
+        this.mensajeError =
+          error?.error?.message ||
+          'No fue posible registrar la calificación.';
+      }
+    });
   }
 
   limpiar(): void {
@@ -67,9 +80,7 @@ export class CrearCalificacion {
   }
 
   private limpiarFormulario(): void {
-    this.entregaId = '';
-    this.calificadorId = '';
-    this.calificadoId = '';
+    this.entregaId = null;
     this.puntuacion = null;
     this.comentario = '';
   }

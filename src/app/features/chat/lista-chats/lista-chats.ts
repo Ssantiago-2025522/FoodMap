@@ -32,10 +32,11 @@ export class ListaChats implements OnInit {
 
   ngOnInit(): void {
     this.chatService.obtenerChats(this.idUsuario).subscribe({
-      next: (data) => {
-        this.chats.set(data);
-        this.cargando.set(false);
-      },
+    next: (data) => {
+ console.log('CHATS RECIBIDOS:', JSON.stringify(data, null, 2));
+  this.chats.set(data);
+  this.cargando.set(false);
+},
       error: (err) => {
         console.error(err);
         this.error.set('No se pudieron cargar los chats.');

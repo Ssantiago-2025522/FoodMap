@@ -25,6 +25,7 @@ export interface Donacion {
   fechaCreacion: string;
   fechaExpiracion: string;
   imagenUrl?: string;
+  idUsuario?: number;
 }
 
 export interface FiltrosDonacion {

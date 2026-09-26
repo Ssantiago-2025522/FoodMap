@@ -12,7 +12,7 @@ export const routes: Routes = [
   },
 {
   path: 'chat',
-  redirectTo: 'lista-chats',
+  redirectTo: 'chats',
   pathMatch: 'full'
 },
   {
@@ -111,19 +111,7 @@ export const routes: Routes = [
           import('@features/chat/chat/chat').then((m) => m.Chat)
       },
       {
-        path: 'entregas/crear',
-        title: 'FoodMap | Crear entrega',
-        loadComponent: () =>
-          import('@components/entregas/crear-entrega/crear-entrega').then((m) => m.CrearEntrega)
-      },
-      {
-        path: 'entregas/detalle',
-        title: 'FoodMap | Detalle de entrega',
-        loadComponent: () =>
-          import('@components/entregas/detalle-entrega/detalle-entrega').then((m) => m.DetalleEntrega)
-      },
-      {
-        path: 'entregas/generar-qr',
+        path: 'entregas/generar-qr/:idSolicitud',
         title: 'FoodMap | Generar QR',
         loadComponent: () =>
           import('@components/entregas/generar-qr/generar-qr').then((m) => m.GenerarQr)

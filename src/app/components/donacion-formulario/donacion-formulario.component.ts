@@ -279,7 +279,6 @@ export class DonacionFormularioComponent implements OnInit {
     }
   }
 
-  /** Convertir archivo local a cadena Base64 */
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {

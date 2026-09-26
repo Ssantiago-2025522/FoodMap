@@ -1,208 +1,273 @@
-
-# FoodMap · Backend (FM-004: Solicitudes, Notificaciones y Chat)
-
-Node.js + Express + MySQL (`mysql2`). Va en la carpeta `backend/` en la raíz del repositorio.
-
-## Puesta en marcha
-
-1. **Base de datos** (MySQL 8.0.16+):
-   1. Crea la base y ejecuta `src/app/db/foodmapdb_in5bm.sql` sobre ella.
-   2. Ejecuta `backend/sql/01-migracion-solicitudes.sql` (agrega `cantidad_solicitada` y `comentario`).
-   3. (Opcional) `backend/sql/02-datos-de-prueba.sql` para tener usuarios y donaciones de ejemplo.
-2. **Configuración**: copia `.env.example` a `.env` y pon tus datos (sobre todo `DB_PASSWORD` y `DB_NAME`).
-3. **Dependencias y arranque** (Node 20+):
-   ```bash
-   cd backend
-   npm install express cors mysql2 dotenv
-   npm run dev
-   ```
-   Debe mostrar `Conectado a MySQL` y `API lista en http://localhost:3000`.
-   Comprueba abriendo http://localhost:3000/api/salud
-4. Levanta el frontend con `ng serve` (http://localhost:4200).
-
-## Endpoints
-El usuario se envía con `?usuario=ID` o `id_usuario` en el body (temporal, hasta que exista el login).
-Los errores siempre responden `{ "error": "mensaje" }`.
-
-| Método | Ruta | Descripción |
-|---|---|---|
-| GET | `/api/solicitudes/donaciones-disponibles` | Donaciones que el usuario puede pedir |
-| POST | `/api/solicitudes` | Crear solicitud `{ id_donacion, id_usuario, cantidad_solicitada, comentario }` |
-| GET | `/api/solicitudes?rol=donador\|beneficiario` | Solicitudes recibidas / enviadas |
-| GET | `/api/solicitudes/historial` | Solicitudes respondidas y sus entregas |
-| GET | `/api/solicitudes/:id` | Detalle (solo participantes) |
-| PATCH | `/api/solicitudes/:id/aceptar` | Solo el donador. Crea chat y entrega, notifica |
-| PATCH | `/api/solicitudes/:id/rechazar` | Solo el donador. Notifica |
-| PATCH | `/api/solicitudes/:id/confirmar-recepcion` | Solo el beneficiario. `{ observaciones? }` |
-| GET | `/api/notificaciones[?leida=false]` | Notificaciones del usuario |
-| PATCH | `/api/notificaciones/:id/leida` | Marcar una como leída |
-| PATCH | `/api/notificaciones/leidas` | Marcar todas como leídas |
-| POST | `/api/notificaciones/cercanos` | `{ id_usuario, latitud, longitud, radio_km }` |
-| GET | `/api/chats` | Chats del usuario |
-| GET | `/api/chats/:id` | `{ chat, mensajes }` (solo participantes) |
-| POST | `/api/chats/:id/mensajes` | `{ id_usuario, contenido }` |
-
-## Reglas de negocio
-- No se puede solicitar la propia donación ni la misma donación dos veces (409).
-- Cantidad pedida ≤ disponible. Disponible = `donacion.cantidad` − suma de solicitudes ACEPTADAS.
-  Al aceptar la última unidad, la donación pasa a `estado = FALSE`.
-- Aceptar: solicitud `ACEPTADA` + fila en `chat` + fila en `entrega` (`PENDIENTE`) + notificación al beneficiario.
-- Confirmar recepción: `entrega.estado = 'ENTREGADA'` con fecha/hora actuales + notificación al donador.
-- Cada acción crea su notificación dentro de la misma transacción (si algo falla, no queda a medias).
-- El correo y teléfono del solicitante solo los recibe el donador.
-- Cercanía: fórmula de Haversine con `ubicacion.latitud/longitud`; radio máximo 50 km; no repite avisos.
-
-## Estructura (para que otros módulos sigan el mismo patrón)
-```
-src/
-  server.js               # registra las rutas de cada módulo (una línea por módulo)
-  config/db.js            # pool MySQL y conTransaccion()
-  middlewares/            # usuario.js (identifica al usuario), errores.js
-  routes/  controllers/   # un par de archivos por módulo
-  helpers/notificar.js    # crear notificaciones
-  utils/                  # HttpError, validaciones, fragmentos SQL
-```
-Cuando exista el login, solo se cambia `middlewares/usuario.js` para leer el token.
-
-## Si algo falla
-- `Unknown column 'cantidad_solicitada'` → falta ejecutar `01-migracion-solicitudes.sql`.
-- `No se pudo conectar a MySQL` → revisa `.env` (usuario, contraseña, nombre de la base).
-- El navegador dice error de CORS → `FRONTEND_ORIGIN` debe ser la URL exacta del frontend.
 # FoodMap Backend
 
-API REST en Node.js + Express + MySQL para el frontend Angular de FoodMap.
+API REST de **FoodMap**, desarrollada con Node.js, Express y MySQL.
 
-- `POST /api/auth/register` registra un usuario y devuelve `{ token, usuario }`
-- `POST /api/auth/login` inicia sesión y devuelve `{ token, usuario }`
-- `GET /api/health` comprueba que el servidor está arriba
+El backend proporciona autenticación, gestión de donaciones y solicitudes, entregas, códigos QR, notificaciones, chat y calificaciones.
 
-Escucha en `http://localhost:8080`, que coincide con `apiUrl` en `src/environments/environment.ts`,
-y permite CORS desde `http://localhost:4200`.
+## Tecnologías
 
-## Uso desde la raíz del proyecto
+* Node.js
+* Express 5
+* MySQL
+* mysql2
+* JWT
+* bcryptjs
+* Nodemailer
+* CORS
+* dotenv
+
+## Requisitos
+
+* Node.js 22 o superior
+* MySQL 8 o superior
+
+## Instalación
+
+Desde la carpeta `backend/`:
 
 ```bash
-npm install        # instala también este backend y crea backend/.env
-npm run db:init    # crea la base de datos
-npm start          # frontend + backend
-```
-
-## Uso independiente
-
-```bash
-cd backend
 npm install
-cp .env.example .env
-npm run db:init
-npm run dev        # con nodemon
-npm start          # sin recarga automática
 ```
 
-## Variables de entorno (`.env`)
+## Variables de entorno
 
-| Variable         | Valor por defecto                        |
-| ---------------- | ----------------------------------------- |
-| `PORT`           | `8080`                                   |
-| `CORS_ORIGIN`    | `http://localhost:4200` (separa varios con coma) |
-| `DB_HOST`        | `localhost`                              |
-| `DB_PORT`        | `3306`                                   |
-| `DB_USER`        | `root`                                   |
-| `DB_PASSWORD`    | vacío                                    |
-| `DB_NAME`        | `foodmapdb_in5bm`                        |
-| `JWT_SECRET`     | generado automáticamente al instalar     |
-| `JWT_EXPIRES_IN` | `1d`                                     |
-| `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` / `SMTP_USER` / `SMTP_PASSWORD` / `SMTP_FROM` | vacíos (ver "Envío de correo") |
+Crear:
 
-`.env.example` solo tiene valores genéricos de ejemplo (`usuario` / `contrasena`, etc.), nunca
-credenciales reales. Copia ese archivo a `.env` y coloca ahí tus propios valores; `.env` está en
-`.gitignore` y nunca debe subirse al repositorio.
+```text
+backend/.env
+```
 
-> ⚠️ Si credenciales reales llegaron a subirse alguna vez al repositorio (por ejemplo en un
-> commit anterior de `.env.example`), tómalas como comprometidas y rótalas (cambia el usuario o
-> la contraseña en la base de datos), aunque ya no aparezcan en la versión actual del archivo:
-> siguen visibles en el historial de git.
+Configuración básica:
 
-## Envío de correo (recuperación de contraseña)
+```env
+PORT=8080
+CORS_ORIGIN=http://localhost:4200
 
-`POST /api/auth/olvide-contrasena` envía el enlace para restablecer la contraseña usando SMTP
-(vía Nodemailer):
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=tu_password
+DB_NAME=foodmapdb_in5bm
 
-- **Producción** (`NODE_ENV=production`): es obligatorio configurar `SMTP_HOST`, `SMTP_USER` y
-  `SMTP_PASSWORD` (Gmail, Resend, SendGrid, Amazon SES o un servidor propio). Si faltan, la
-  petición falla explícitamente en vez de fallar en silencio.
-- **Desarrollo**: si no configuras SMTP, no se envía un correo real; el enlace se imprime en la
-  consola del servidor y se incluye en la respuesta de la API (`enlaceDesarrollo`) solo para
-  poder probar el flujo localmente. Ese campo nunca aparece en producción, ni cuando ya se envió
-  un correo real.
+JWT_SECRET=tu_clave_secreta
+```
+
+Las credenciales reales y el valor de `JWT_SECRET` no deben subirse al repositorio.
+
+Si se utiliza el sistema de correo del proyecto, también deben configurarse las variables SMTP correspondientes.
 
 ## Base de datos
 
-`npm run db:init` ejecuta `../database/foodmapdb_in5bm.sql`. Si la base ya existe no modifica nada;
-`npm run db:init -- --force` la recrea desde cero. También puedes importarla a mano:
+Inicializar la base de datos:
 
 ```bash
-mysql -u root -p < database/foodmapdb_in5bm.sql
+npm run db:init
 ```
 
-Roles: `ADMIN=1`, `MODERADOR=2`, `BENEFICIARIO=3`, `DONADOR=4`.
-
-### Migraciones
-
-Los cambios de esquema posteriores al script inicial viven en `database/migrations/` (un archivo
-`.sql` por cambio, numerado en orden: `0001_...`, `0002_...`, etc.). Se aplican con un runner que
-registra cada migración ejecutada en una tabla `schema_migrations`, en vez de depender de correr
-archivos `.sql` sueltos a mano y de recordar cuáles ya se aplicaron:
+Ejecutar migraciones:
 
 ```bash
-npm run db:migrate            # aplica las migraciones pendientes
-npm run db:migrate -- --list  # muestra cuáles ya se aplicaron y cuáles faltan
+npm run db:migrate
 ```
 
-Para agregar un cambio de esquema nuevo: crea `database/migrations/000N_descripcion.sql` con el
-siguiente número disponible y ejecuta `npm run db:migrate`.
+Insertar datos de prueba:
 
-## Pruebas automatizadas
+```bash
+npm run db:seed
+```
+
+## Ejecución
+
+Para producción:
+
+```bash
+npm start
+```
+
+Para desarrollo:
+
+```bash
+npm run dev
+```
+
+El servidor utiliza Nodemon durante el desarrollo.
+
+Por defecto, la API se encuentra en:
+
+```text
+http://localhost:8080
+```
+
+Y sus endpoints principales utilizan:
+
+```text
+http://localhost:8080/api
+```
+
+## Autenticación
+
+FoodMap utiliza **JSON Web Tokens (JWT)** para autenticar las solicitudes protegidas.
+
+Después de iniciar sesión, el cliente utiliza el token obtenido para acceder a los recursos que requieren autenticación.
+
+Las rutas protegidas identifican al usuario a partir de su token, por lo que no es necesario enviar manualmente un identificador de usuario mediante parámetros como `?usuario=ID`.
+
+## Módulos principales
+
+### Autenticación
+
+```text
+POST /api/auth/register
+POST /api/auth/login
+```
+
+Permite registrar usuarios e iniciar sesión.
+
+### Solicitudes
+
+El módulo de solicitudes permite:
+
+* Listar solicitudes.
+* Consultar una solicitud específica.
+* Crear solicitudes.
+* Aceptar solicitudes.
+* Rechazar solicitudes.
+* Confirmar la recepción.
+* Consultar el código QR.
+* Validar códigos QR.
+
+Las solicitudes se relacionan con las donaciones y con los usuarios participantes.
+
+### Donaciones
+
+Permite gestionar las donaciones disponibles dentro de la plataforma.
+
+### Entregas
+
+Una entrega se genera como parte del flujo de una solicitud aceptada.
+
+El proceso principal es:
+
+```text
+Solicitud aceptada
+       ↓
+Creación de entrega
+       ↓
+Generación de token QR
+       ↓
+Validación del QR
+       ↓
+Estado ENTREGADA
+```
+
+La entrega se encuentra relacionada con una solicitud específica y utiliza un token QR único.
+
+### Notificaciones
+
+El sistema genera y consulta notificaciones relacionadas con las acciones realizadas dentro de FoodMap.
+
+### Chat
+
+Permite la comunicación entre los participantes del proceso de donación y solicitud.
+
+### Calificaciones
+
+Las calificaciones están asociadas a una entrega.
+
+Para registrar una calificación:
+
+* La entrega debe existir.
+* La entrega debe encontrarse en estado `ENTREGADA`.
+* El usuario debe participar en la entrega.
+* No se permite registrar más de una calificación para la misma entrega por el mismo usuario.
+
+## Estados de entrega
+
+El estado final utilizado por el sistema es:
+
+```text
+ENTREGADA
+```
+
+Este estado representa que la entrega fue completada correctamente mediante el flujo correspondiente.
+
+La confirmación manual de recepción también se mantiene como mecanismo de respaldo.
+
+## Roles
+
+El sistema utiliza cuatro roles principales:
+
+```text
+ADMIN
+MODERADOR
+DONADOR
+BENEFICIARIO
+```
+
+El acceso a determinados recursos depende del rol del usuario autenticado.
+
+## Estructura
+
+```text
+backend/
+├── scripts/
+│   ├── init-db.js
+│   ├── migrate.js
+│   └── seed.js
+├── src/
+│   ├── controllers/
+│   ├── routes/
+│   ├── middlewares/
+│   ├── app/
+│   └── server.js
+├── test/
+├── .env
+├── package.json
+└── README.md
+```
+
+## Scripts
+
+| Comando              | Función                         |
+| -------------------- | ------------------------------- |
+| `npm start`          | Inicia el servidor              |
+| `npm run dev`        | Inicia el servidor con Nodemon  |
+| `npm run db:init`    | Inicializa la base de datos     |
+| `npm run db:migrate` | Ejecuta migraciones             |
+| `npm run db:seed`    | Inserta datos de prueba         |
+| `npm test`           | Ejecuta las pruebas del backend |
+
+## Pruebas
+
+Las pruebas del backend utilizan el sistema de pruebas integrado de Node.js.
+
+Ejecutar:
 
 ```bash
 npm test
 ```
 
-Usa el runner de pruebas integrado en Node.js (`node --test`, sin dependencias adicionales) y
-cubre las utilidades puras del backend (`src/utils/`) y el helper de correo
-(`src/helpers/correo.js`), incluyendo el caso de SMTP no configurado en desarrollo y el error
-esperado en producción. Los archivos de prueba están en `test/*.test.js`.
-
-
-## Probar
-
-```bash
-curl -X POST http://localhost:8080/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"username":"juan","correo":"juan@test.com","telefono":"12345678","contrasena":"Password1","id_rol":4,"foto":null}'
-
-curl -X POST http://localhost:8080/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"correo":"juan@test.com","contrasena":"Password1"}'
-```
-
-## Estructura
-
-```
-scripts/init-db.js            Crea la base de datos
-src/
-├── app.js                    Express (CORS, rutas, errores)
-├── server.js                 Carga .env, verifica la BD y levanta el servidor
-├── config/db.js              Pool de conexión MySQL
-├── controllers/              authController: register y login
-├── routes/                   authRoutes
-├── middlewares/              auth.middleware (requiereAutenticacion, requiereRol) y errorHandler
-└── utils/                    jwt y ApiError
-```
+También pueden ejecutarse las pruebas directamente desde la raíz del proyecto cuando sea necesario especificar el archivo correspondiente.
 
 ## Seguridad
 
-- Las contraseñas se guardan con bcrypt.
-- El registro público solo acepta los roles BENEFICIARIO y DONADOR.
-- El JWT incluye `id_usuario` e `id_rol` y expira según `JWT_EXPIRES_IN`.
-- `requiereAutenticacion` y `requiereRol` están listos para proteger rutas futuras.
+El backend utiliza:
 
+* JWT para autenticación.
+* bcryptjs para contraseñas.
+* Variables de entorno mediante dotenv.
+* CORS.
+* Middleware de autenticación y autorización.
+* Control de acceso según roles.
+
+No deben almacenarse credenciales, contraseñas ni secretos directamente en el código fuente.
+
+## Servidor
+
+Configuración de desarrollo:
+
+```text
+Frontend: http://localhost:4200
+Backend:  http://localhost:8080
+API:      http://localhost:8080/api
+```

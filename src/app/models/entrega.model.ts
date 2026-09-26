@@ -1,16 +1,17 @@
-export enum EstadoEntrega {
-  Pendiente = 'PENDIENTE',
-  QrGenerado = 'QR_GENERADO',
-  Confirmada = 'CONFIRMADA'
-}
+export type EstadoEntrega = 'PENDIENTE' | 'ENTREGADA';
 
 export interface Entrega {
-  id: string;
-  donadorId: string;
-  beneficiarioId: string;
-  descripcion: string;
+  id_entrega: number;
+  id_solicitud: number;
   estado: EstadoEntrega;
-  codigoQr: string | null;
-  fechaCreacion: Date;
-  fechaConfirmacion: Date | null;
+  fecha_entrega: string | null;
+  hora_entrega: string | null;
+  observaciones: string | null;
+}
+
+export interface EntregaQr {
+  id_entrega: number;
+  id_solicitud: number;
+  estado: EstadoEntrega;
+  token_qr: string;
 }

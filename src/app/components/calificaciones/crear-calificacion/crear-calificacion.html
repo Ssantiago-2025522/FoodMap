@@ -1,34 +1,17 @@
 <div class="contenedor-crear-calificacion">
+
   <h2>Registrar calificación</h2>
 
   <form (ngSubmit)="crearCalificacion()">
+
     <div class="campo">
       <label for="entregaId">ID de la entrega</label>
       <input
-        type="text"
+        type="number"
         id="entregaId"
         name="entregaId"
         [(ngModel)]="entregaId"
-      />
-    </div>
-
-    <div class="campo">
-      <label for="calificadorId">Nombre de quien califica</label>
-      <input
-        type="text"
-        id="calificadorId"
-        name="calificadorId"
-        [(ngModel)]="calificadorId"
-      />
-    </div>
-
-    <div class="campo">
-      <label for="calificadoId">Nombre de quien es calificado</label>
-      <input
-        type="text"
-        id="calificadoId"
-        name="calificadoId"
-        [(ngModel)]="calificadoId"
+        min="1"
       />
     </div>
 
@@ -55,23 +38,61 @@
 
     <div class="acciones">
       <button type="submit">Registrar calificación</button>
-      <button type="button" (click)="limpiar()">Limpiar</button>
+
+      <button
+        type="button"
+        (click)="limpiar()"
+      >
+        Limpiar
+      </button>
     </div>
+
   </form>
 
-  <p class="mensaje-error" *ngIf="mensajeError">{{ mensajeError }}</p>
-  <p class="mensaje-exito" *ngIf="mensajeExito">{{ mensajeExito }}</p>
+  <p
+    class="mensaje-error"
+    *ngIf="mensajeError"
+  >
+    {{ mensajeError }}
+  </p>
 
-  <div class="detalle-calificacion" *ngIf="calificacionCreada">
+  <p
+    class="mensaje-exito"
+    *ngIf="mensajeExito"
+  >
+    {{ mensajeExito }}
+  </p>
+
+  <div
+    class="detalle-calificacion"
+    *ngIf="calificacionCreada"
+  >
     <h3>Calificación registrada</h3>
-    <p><strong>ID:</strong> {{ calificacionCreada.id }}</p>
-    <p><strong>Entrega:</strong> {{ calificacionCreada.entregaId }}</p>
-    <p><strong>Calificador:</strong> {{ calificacionCreada.calificadorId }}</p>
-    <p><strong>Calificado:</strong> {{ calificacionCreada.calificadoId }}</p>
-    <p><strong>Puntuación:</strong> {{ calificacionCreada.puntuacion }}</p>
-    <p *ngIf="calificacionCreada.comentario">
-      <strong>Comentario:</strong> {{ calificacionCreada.comentario }}
+
+    <p>
+      <strong>ID:</strong>
+      {{ calificacionCreada.id_calificacion }}
     </p>
-    <p><strong>Fecha:</strong> {{ calificacionCreada.fecha }}</p>
+
+    <p>
+      <strong>Entrega:</strong>
+      {{ calificacionCreada.id_entrega }}
+    </p>
+
+    <p>
+      <strong>Puntuación:</strong>
+      {{ calificacionCreada.puntuacion }}
+    </p>
+
+    <p *ngIf="calificacionCreada.comentario">
+      <strong>Comentario:</strong>
+      {{ calificacionCreada.comentario }}
+    </p>
+
+    <p>
+      <strong>Fecha:</strong>
+      {{ calificacionCreada.fecha }}
+    </p>
   </div>
+
 </div>

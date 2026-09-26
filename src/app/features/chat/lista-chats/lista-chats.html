@@ -25,7 +25,7 @@
         <p class="mensaje-error" role="alert">{{ error() }}</p>
     } @else {
         @for (chat of visibles(); track chat.id_chat) {
-            <a class="chat-card" [routerLink]="['/chat', chat.id_chat]">
+            <a class="chat-card" [routerLink]="['/chats', chat.id_chat]">
 
                 <div class="avatar" aria-hidden="true">
                     {{ chat.username_contraparte.charAt(0) }}

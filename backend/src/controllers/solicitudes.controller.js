@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const { pool, conTransaccion } = require('../config/db');
 const ApiError = require('../utils/ApiError');
 const { entero, texto } = require('../utils/validar');
@@ -268,6 +269,26 @@ async function rechazar(req, res, next) {
   }
 }
 
+async function completarEntrega(conn, s, e, idUsuarioConfirma, observaciones) {
+  await conn.query(
+    `UPDATE entrega
+     SET estado = 'ENTREGADA', fecha_entrega = CURDATE(), hora_entrega = CURTIME(), observaciones = ?
+     WHERE id_entrega = ?`,
+    [observaciones, e.id_entrega]
+  );
+
+  await conn.query("UPDATE donacion SET estado = 'Entregada' WHERE id_donacion = ?", [s.id_donacion]);
+
+  const beneficiario = await nombreDe(conn, idUsuarioConfirma);
+  await notificar(
+    conn, s.id_donador, 'Entrega confirmada',
+    `${beneficiario} confirmó la recepción de "${s.titulo}".`
+  );
+
+  const [[fila]] = await conn.query('SELECT * FROM entrega WHERE id_entrega = ?', [e.id_entrega]);
+  return fila;
+}
+
 async function confirmarRecepcion(req, res, next) {
   try {
     const idUsuario = req.usuario.id_usuario;
@@ -285,23 +306,70 @@ async function confirmarRecepcion(req, res, next) {
       if (!e) throw new ApiError(404, 'La solicitud no tiene una entrega registrada.');
       if (e.estado === 'ENTREGADA') throw new ApiError(409, 'La recepción ya fue confirmada.');
 
-      await conn.query(
-        `UPDATE entrega
-         SET estado = 'ENTREGADA', fecha_entrega = CURDATE(), hora_entrega = CURTIME(), observaciones = ?
-         WHERE id_entrega = ?`,
-        [observaciones, e.id_entrega]
-      );
+      return completarEntrega(conn, s, e, idUsuario, observaciones);
+    });
 
-      await conn.query("UPDATE donacion SET estado = 'Entregada' WHERE id_donacion = ?", [s.id_donacion]);
+    res.json(entrega);
+  } catch (error) {
+    next(error);
+  }
+}
 
-      const beneficiario = await nombreDe(conn, idUsuario);
-      await notificar(
-        conn, s.id_donador, 'Entrega confirmada',
-        `${beneficiario} confirmó la recepción de "${s.titulo}".`
-      );
+async function obtenerQr(req, res, next) {
+  try {
+    const idUsuario = req.usuario.id_usuario;
+    const id = entero(req.params.id, 'El id de la solicitud');
 
-      const [[fila]] = await conn.query('SELECT * FROM entrega WHERE id_entrega = ?', [e.id_entrega]);
-      return fila;
+    const entrega = await conTransaccion(async (conn) => {
+      const s = await bloquearSolicitud(conn, id);
+      if (!mismoUsuario(s.id_donador, idUsuario, 'obtenerQr')) {
+        throw new ApiError(403, 'Solo el donador puede generar el QR de esta entrega.');
+      }
+      if (s.estado !== 'ACEPTADA') throw new ApiError(409, 'La solicitud aún no fue aceptada.');
+
+      const [[e]] = await conn.query('SELECT * FROM entrega WHERE id_solicitud = ? FOR UPDATE', [id]);
+      if (!e) throw new ApiError(404, 'La solicitud no tiene una entrega registrada.');
+      if (e.estado === 'ENTREGADA') throw new ApiError(409, 'Esta entrega ya fue confirmada.');
+
+      if (!e.token_qr) {
+        const token = crypto.randomBytes(24).toString('hex');
+        await conn.query('UPDATE entrega SET token_qr = ? WHERE id_entrega = ?', [token, e.id_entrega]);
+        e.token_qr = token;
+      }
+
+      return e;
+    });
+
+    res.json({
+      id_entrega: entrega.id_entrega,
+      id_solicitud: entrega.id_solicitud,
+      estado: entrega.estado,
+      token_qr: entrega.token_qr
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function validarQr(req, res, next) {
+  try {
+    const idUsuario = req.usuario.id_usuario;
+    const token = texto(req.body?.token, 128, 'El código QR');
+    if (!token) throw new ApiError(400, 'Debes indicar el código QR.');
+    const observaciones = texto(req.body?.observaciones, 255, 'Las observaciones');
+
+    const entrega = await conTransaccion(async (conn) => {
+      const [[e]] = await conn.query('SELECT * FROM entrega WHERE token_qr = ? FOR UPDATE', [token]);
+      if (!e) throw new ApiError(404, 'El código QR no es válido.');
+
+      const s = await bloquearSolicitud(conn, e.id_solicitud);
+      if (!mismoUsuario(s.id_usuario, idUsuario, 'validarQr')) {
+        throw new ApiError(403, 'Solo quien solicitó la donación puede confirmar esta entrega.');
+      }
+      if (s.estado !== 'ACEPTADA') throw new ApiError(409, 'La solicitud aún no fue aceptada.');
+      if (e.estado === 'ENTREGADA') throw new ApiError(409, 'Esta entrega ya fue confirmada.');
+
+      return completarEntrega(conn, s, e, idUsuario, observaciones);
     });
 
     res.json(entrega);
@@ -318,5 +386,7 @@ module.exports = {
   crear,
   aceptar,
   rechazar,
-  confirmarRecepcion
+  confirmarRecepcion,
+  obtenerQr,
+  validarQr
 };

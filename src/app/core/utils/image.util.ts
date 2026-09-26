@@ -1,10 +1,6 @@
 const TAMANO_MAXIMO_PX = 400;
 const CALIDAD_JPEG = 0.85;
 
-/**
- * Lee un archivo de imagen, lo redimensiona (máx. 400x400) y lo comprime a JPEG,
- * devolviendo un data URL en base64 listo para guardar como foto de perfil.
- */
 export function archivoAFotoPerfil(archivo: File): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!archivo.type.startsWith('image/')) {

@@ -24,6 +24,8 @@ export class DonacionService {
   readonly cargando = this.cargandoSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
 
+  readonly donaciones = this.donacionesSignal.asReadonly();
+
   readonly donacionesFiltradas = computed(() => {
     const lista = this.donacionesSignal();
     const { busqueda, categoria, estado } = this.filtrosSignal();

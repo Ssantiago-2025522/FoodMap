@@ -17,39 +17,55 @@ export class ListaCalificaciones implements OnInit {
   entregaIdFiltro: string = '';
   calificaciones: Calificacion[] = [];
   mensajeInfo: string = '';
+  mensajeError: string = '';
 
-  constructor(private calificacionService: CalificacionService) { }
+  constructor(private calificacionService: CalificacionService) {}
 
   ngOnInit(): void {
-    this.cargarTodas();
+    this.mensajeInfo = 'Ingresa un ID de entrega para consultar sus calificaciones.';
   }
 
   buscarPorEntrega(): void {
     this.mensajeInfo = '';
+    this.mensajeError = '';
 
     if (!this.entregaIdFiltro.trim()) {
-      this.cargarTodas();
+      this.mensajeInfo = 'Ingresa un ID de entrega.';
+      this.calificaciones = [];
       return;
     }
 
-    this.calificaciones = this.calificacionService.obtenerPorEntrega(this.entregaIdFiltro);
+    const idEntrega = Number(this.entregaIdFiltro);
 
-    if (this.calificaciones.length === 0) {
-      this.mensajeInfo = 'No existen calificaciones para esa entrega.';
+    if (!Number.isInteger(idEntrega) || idEntrega <= 0) {
+      this.mensajeError = 'Ingresa un ID de entrega válido.';
+      this.calificaciones = [];
+      return;
     }
+
+    this.calificacionService.obtenerPorEntrega(idEntrega).subscribe({
+      next: (calificaciones) => {
+        this.calificaciones = calificaciones;
+
+        if (calificaciones.length === 0) {
+          this.mensajeInfo = 'No existen calificaciones para esa entrega.';
+        }
+      },
+      error: (error) => {
+        console.error('Error al obtener calificaciones:', error);
+
+        this.calificaciones = [];
+        this.mensajeError =
+          error?.error?.message ||
+          'No fue posible obtener las calificaciones.';
+      }
+    });
   }
 
   limpiarFiltro(): void {
     this.entregaIdFiltro = '';
-    this.cargarTodas();
-  }
-
-  private cargarTodas(): void {
-    this.mensajeInfo = '';
-    this.calificaciones = this.calificacionService.obtenerTodas();
-
-    if (this.calificaciones.length === 0) {
-      this.mensajeInfo = 'No hay calificaciones registradas.';
-    }
+    this.calificaciones = [];
+    this.mensajeError = '';
+    this.mensajeInfo = 'Ingresa un ID de entrega para consultar sus calificaciones.';
   }
 }

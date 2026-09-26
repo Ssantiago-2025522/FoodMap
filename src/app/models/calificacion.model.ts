@@ -1,9 +1,8 @@
 export interface Calificacion {
-  id: string;
-  entregaId: string;
-  calificadorId: string;
-  calificadoId: string;
+  id_calificacion: number;
   puntuacion: number;
-  comentario?: string;
-  fecha: Date;
+  comentario: string;
+  fecha: string;
+  id_usuario: number;
+  id_entrega: number;
 }

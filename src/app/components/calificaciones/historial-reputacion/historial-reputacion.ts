@@ -13,39 +13,53 @@ import { Calificacion } from '../../../models/calificacion.model';
 })
 export class HistorialReputacion {
 
-  calificadoId: string = '';
-
+  entregaId: string = '';
   mensajeError: string = '';
   consultaRealizada: boolean = false;
   historial: Calificacion[] = [];
 
-  constructor(private calificacionService: CalificacionService) { }
+  constructor(private calificacionService: CalificacionService) {}
 
   consultarHistorial(): void {
     this.mensajeError = '';
     this.consultaRealizada = false;
     this.historial = [];
 
-    if (!this.calificadoId.trim()) {
-      this.mensajeError = 'Debes ingresar un ID de usuario calificado.';
+    if (!this.entregaId.trim()) {
+      this.mensajeError = 'Debes ingresar un ID de entrega.';
       return;
     }
 
-    const calificacionesDelUsuario = this.calificacionService
-      .obtenerTodas()
-      .filter(calificacion => calificacion.calificadoId === this.calificadoId);
+    const idEntrega = Number(this.entregaId);
 
-    if (calificacionesDelUsuario.length === 0) {
-      this.mensajeError = 'Este usuario no tiene calificaciones registradas.';
+    if (!Number.isInteger(idEntrega) || idEntrega <= 0) {
+      this.mensajeError = 'Debes ingresar un ID de entrega válido.';
       return;
     }
 
-    this.historial = calificacionesDelUsuario;
-    this.consultaRealizada = true;
+    this.calificacionService.obtenerPorEntrega(idEntrega).subscribe({
+      next: (calificaciones) => {
+        if (calificaciones.length === 0) {
+          this.mensajeError =
+            'Esta entrega no tiene calificaciones registradas.';
+          return;
+        }
+
+        this.historial = calificaciones;
+        this.consultaRealizada = true;
+      },
+      error: (error) => {
+        console.error('Error al consultar historial:', error);
+
+        this.mensajeError =
+          error?.error?.message ||
+          'No fue posible consultar el historial.';
+      }
+    });
   }
 
   limpiar(): void {
-    this.calificadoId = '';
+    this.entregaId = '';
     this.mensajeError = '';
     this.consultaRealizada = false;
     this.historial = [];

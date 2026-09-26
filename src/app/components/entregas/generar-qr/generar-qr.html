@@ -1,34 +1,26 @@
-<div class="contenedor-generar-qr">
-  <h2>Generar código QR de entrega</h2>
+<main class="contenedor-generar-qr">
 
-  <div class="campo">
-    <label for="idEntrega">ID de la entrega</label>
-    <input
-      type="text"
-      id="idEntrega"
-      name="idEntrega"
-      [(ngModel)]="idEntrega"
-    />
-  </div>
+  <header class="generar-qr__encabezado">
+    <h2>Código QR de la entrega</h2>
+    <p class="subtitulo">Muéstraselo al beneficiario para que confirme la recepción.</p>
+  </header>
+
+  @if (cargando()) {
+    <p class="mensaje-estado">Generando código QR…</p>
+  } @else if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+    <button type="button" class="btn-outline" (click)="cargar()">Reintentar</button>
+  } @else if (imagenQr()) {
+    <div class="generar-qr__imagen">
+      <img [src]="imagenQr()" alt="Código QR de la entrega" />
+    </div>
+    <p class="generar-qr__ayuda">
+      El beneficiario debe escanear este código o ingresar su texto en la pantalla de validación.
+    </p>
+  }
 
   <div class="acciones">
-    <button type="button" (click)="generarQr()">Generar QR</button>
-    <button type="button" (click)="limpiar()">Limpiar</button>
+    <a class="btn-outline" routerLink="/solicitudes">Volver a solicitudes</a>
   </div>
 
-  <p class="mensaje-error" *ngIf="mensajeError">{{ mensajeError }}</p>
-
-  <div class="detalle-qr" *ngIf="entregaConQr">
-    <h3>QR generado</h3>
-    <p><strong>ID:</strong> {{ entregaConQr.id }}</p>
-    <p><strong>Donador:</strong> {{ entregaConQr.donadorId }}</p>
-    <p><strong>Beneficiario:</strong> {{ entregaConQr.beneficiarioId }}</p>
-    <p><strong>Descripción:</strong> {{ entregaConQr.descripcion }}</p>
-    <p><strong>Estado:</strong> {{ entregaConQr.estado }}</p>
-    <p><strong>Código QR:</strong> {{ entregaConQr.codigoQr }}</p>
-
-    <div class="imagen-qr" *ngIf="imagenQr">
-      <img [src]="imagenQr" alt="Código QR de la entrega" />
-    </div>
-  </div>
-</div>
+</main>

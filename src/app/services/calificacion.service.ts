@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { EntregaService } from './entrega.service';
-import { EstadoEntrega } from '../models/entrega.model';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { API_URL } from '../core/api.config';
 import { Calificacion } from '../models/calificacion.model';
 
 @Injectable({
@@ -8,69 +9,25 @@ import { Calificacion } from '../models/calificacion.model';
 })
 export class CalificacionService {
 
-  private calificaciones: Calificacion[] = [];
+  private baseUrl = `${API_URL}/calificaciones`;
 
-  constructor(private entregaService: EntregaService) { }
+  constructor(private http: HttpClient) {}
 
   crear(
-    entregaId: string,
-    calificadorId: string,
-    calificadoId: string,
+    id_entrega: number,
     puntuacion: number,
     comentario?: string
-  ): Calificacion | undefined {
+  ): Observable<Calificacion> {
+    return this.http.post<Calificacion>(this.baseUrl, {
+      id_entrega,
+      puntuacion,
+      comentario: comentario ?? ''
+    });
+  }
 
-    const entrega = this.entregaService.obtenerPorId(entregaId);
-
-    if (!entrega) {
-      return undefined;
-    }
-
-    if (entrega.estado !== EstadoEntrega.Confirmada) {
-      return undefined;
-    }
-
-    if (puntuacion < 1 || puntuacion > 5) {
-      return undefined;
-    }
-
-    if (!calificadorId.trim() || !calificadoId.trim()) {
-      return undefined;
-    }
-
-    const yaCalifico = this.calificaciones.some(
-      calificacion =>
-        calificacion.entregaId === entregaId &&
-        calificacion.calificadorId === calificadorId
+  obtenerPorEntrega(idEntrega: number): Observable<Calificacion[]> {
+    return this.http.get<Calificacion[]>(
+      `${this.baseUrl}/entrega/${idEntrega}`
     );
-
-    if (yaCalifico) {
-      return undefined;
-    }
-
-    const nuevaCalificacion: Calificacion = {
-      id: crypto.randomUUID(),
-      entregaId: entregaId,
-      calificadorId: calificadorId,
-      calificadoId: calificadoId,
-      puntuacion: puntuacion,
-      comentario: comentario,
-      fecha: new Date()
-    };
-
-    this.calificaciones.push(nuevaCalificacion);
-    return nuevaCalificacion;
-  }
-
-  obtenerTodas(): Calificacion[] {
-    return this.calificaciones;
-  }
-
-  obtenerPorId(id: string): Calificacion | undefined {
-    return this.calificaciones.find(calificacion => calificacion.id === id);
-  }
-
-  obtenerPorEntrega(entregaId: string): Calificacion[] {
-    return this.calificaciones.filter(calificacion => calificacion.entregaId === entregaId);
   }
 }

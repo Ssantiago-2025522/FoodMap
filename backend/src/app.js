@@ -8,6 +8,7 @@ const usuarioRoutes = require('./routes/usuarioRoutes');
 const notificacionesRoutes = require('./routes/notificaciones.routes');
 const solicitudesRoutes = require('./routes/solicitudes.routes');
 const chatsRoutes = require('./routes/chats.routes');
+const calificacionesRoutes = require('./routes/calificaciones.routes');
 const { noEncontrado, errorHandler } = require('./middlewares/errorHandler');
 
 const app = express();
@@ -39,11 +40,6 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Ruta para corregir el 404 del Navbar
-app.get('/api/notificaciones', (req, res) => {
-  res.json([]);
-});
-
 app.use('/api/auth', authRoutes);
 app.use('/api/donaciones', donacionRoutes);
 app.use('/api/reportes', reporteRoutes);
@@ -51,6 +47,7 @@ app.use('/api/usuarios', usuarioRoutes);
 app.use('/api/solicitudes', solicitudesRoutes);
 app.use('/api/notificaciones', notificacionesRoutes);
 app.use('/api/chats', chatsRoutes);
+app.use('/api/calificaciones', calificacionesRoutes);
 
 app.use(noEncontrado);
 app.use(errorHandler);

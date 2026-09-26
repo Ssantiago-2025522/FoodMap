@@ -8,11 +8,12 @@ const SELECT_CHAT = `
          d.id_usuario AS id_donador,
          ub.username AS beneficiario_username,
          ud.username AS donador_username,
+         d.titulo AS titulo_donacion,
          lm.contenido AS ultimo_mensaje,
          lm.fecha_envio AS ultima_fecha
   FROM chat c
   JOIN solicitud s ON s.id_solicitud = c.id_solicitud
-  JOIN donacion d ON d.id_donacion = c.id_donacion
+  JOIN donacion d ON d.id_donacion = s.id_donacion
   JOIN usuario ub ON ub.id_usuario = s.id_usuario
   JOIN usuario ud ON ud.id_usuario = d.id_usuario
   LEFT JOIN mensaje lm ON lm.id_mensaje = (
@@ -21,23 +22,25 @@ const SELECT_CHAT = `
       WHERE m.id_chat = c.id_chat
       ORDER BY m.fecha_envio DESC, m.id_mensaje DESC
       LIMIT 1
-  )`;
+  )
+`;
 
 function aResumen(f, idUsuario) {
+
   const soyDonador = Number(f.id_donador) === Number(idUsuario);
 
   return {
     id_chat: f.id_chat,
     fecha_creacion: f.fecha_creacion,
     id_solicitud: f.id_solicitud,
-    id_beneficiario: f.id_beneficiario,
-    id_donador: f.id_donador,
-    beneficiario_username: f.beneficiario_username,
-    donador_username: f.donador_username,
+    titulo_donacion: f.titulo_donacion,
+    username_contraparte: soyDonador
+      ? f.beneficiario_username
+      : f.donador_username,
     ultimo_mensaje: f.ultimo_mensaje,
-    ultima_fecha: f.ultima_fecha,
-    rol_usuario: soyDonador ? 'donador' : 'beneficiario'
+    fecha_ultimo_mensaje: f.ultima_fecha
   };
+
 }
 
 async function cargarChat(idChat, idUsuario) {
@@ -61,7 +64,7 @@ async function cargarChat(idChat, idUsuario) {
 }
 
 async function listar(req, res) {
-  const idUsuario = req.idUsuario;
+  const idUsuario = req.usuario.id_usuario;
 
   const [filas] = await pool.query(
     `${SELECT_CHAT}
@@ -74,7 +77,7 @@ async function listar(req, res) {
 }
 
 async function obtener(req, res) {
-  const idUsuario = req.idUsuario;
+  const idUsuario = req.usuario.id_usuario;
   const idChat = entero(req.params.id, 'El id del chat');
 
   const fila = await cargarChat(idChat, idUsuario);
@@ -97,7 +100,7 @@ async function obtener(req, res) {
 }
 
 async function enviarMensaje(req, res) {
-  const idUsuario = req.idUsuario;
+  const idUsuario = req.usuario.id_usuario;
   const idChat = entero(req.params.id, 'El id del chat');
 
   const contenido = texto(

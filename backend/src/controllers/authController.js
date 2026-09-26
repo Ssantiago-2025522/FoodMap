@@ -12,8 +12,6 @@ const ROLES_AUTOREGISTRO = [ROLES.BENEFICIARIO, ROLES.DONADOR];
 const CAMPOS_USUARIO =
   'id_usuario, username, correo, telefono, id_rol, foto, fecha_registro';
 
-// La foto es opcional y se guarda como data URL (base64). Se limita el tamaño
-// para evitar que alguien intente guardar archivos enormes en la base de datos.
 const FOTO_MAX_CARACTERES = 2_000_000; // ~1.5 MB de imagen aproximadamente
 const DURACION_TOKEN_RECUPERACION_MS = 60 * 60 * 1000; // 1 hora
 
@@ -260,10 +258,6 @@ async function solicitarRecuperacion(req, res, next) {
     const { enviado } = await enviarCorreoRecuperacion(filas[0].correo, enlace);
 
     const respuesta = { ...mensajeRespuesta };
-    // El enlace solo se incluye en la respuesta cuando NO se envió un correo
-    // real (por ejemplo, en desarrollo sin SMTP configurado), para poder
-    // probar el flujo. Nunca se incluye en producción, y tampoco cuando ya
-    // se envió un correo real, sin importar el entorno.
     if (process.env.NODE_ENV !== 'production' && !enviado) {
       respuesta.enlaceDesarrollo = enlace;
     }

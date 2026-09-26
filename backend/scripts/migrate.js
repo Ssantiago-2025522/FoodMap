@@ -1,12 +1,4 @@
 /**
- * Control de migraciones de base de datos para FoodMap.
- *
- * Aplica, en orden, los archivos .sql de `database/migrations/` que todavía
- * no se hayan ejecutado en esta base de datos, y registra cada uno en la
- * tabla `schema_migrations` para no volver a aplicarlo. Así se evita
- * depender de ejecutar archivos .sql sueltos "a mano" y de recordar cuáles
- * ya se aplicaron.
- *
  * Uso:
  *   npm run db:migrate            Aplica las migraciones pendientes
  *   npm run db:migrate -- --list  Solo muestra el estado (sin aplicar nada)

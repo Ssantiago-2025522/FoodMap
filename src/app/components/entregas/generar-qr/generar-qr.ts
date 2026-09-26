@@ -1,61 +1,54 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { toDataURL } from 'qrcode';
+import { EntregaService } from '../../../services/entrega.service';
 import { QrService } from '../../../services/qr.service';
-import { Entrega } from '../../../models/entrega.model';
+import { EntregaQr } from '../../../models/entrega.model';
 
 @Component({
   selector: 'app-generar-qr',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './generar-qr.html',
   styleUrl: './generar-qr.css'
 })
-export class GenerarQr {
+export class GenerarQr implements OnInit {
+  private route = inject(ActivatedRoute);
+  private entregaService = inject(EntregaService);
+  private qrService = inject(QrService);
 
-  idEntrega: string = '';
+  private idSolicitud = Number(this.route.snapshot.paramMap.get('idSolicitud'));
 
-  mensajeError: string = '';
-  entregaConQr: Entrega | null = null;
-  imagenQr: string | null = null;
+  cargando = signal(true);
+  error = signal('');
+  entrega = signal<EntregaQr | null>(null);
+  imagenQr = signal<string | null>(null);
 
-  constructor(private qrService: QrService) { }
-
-  async generarQr(): Promise<void> {
-    this.mensajeError = '';
-    this.entregaConQr = null;
-    this.imagenQr = null;
-
-    if (!this.idEntrega.trim()) {
-      this.mensajeError = 'Debes ingresar un ID de entrega.';
-      return;
-    }
-
-    const resultado = this.qrService.generarQr(this.idEntrega);
-
-    if (!resultado) {
-      this.mensajeError = 'No se pudo generar el código QR para esta entrega.';
-      return;
-    }
-
-    this.entregaConQr = resultado;
-
-    if (resultado.codigoQr) {
-      try {
-        this.imagenQr = await toDataURL(resultado.codigoQr);
-      } catch (error) {
-        console.error('Error al generar la imagen del QR:', error);
-        this.mensajeError = 'La entrega se procesó, pero no se pudo generar la imagen del QR.';
-      }
-    }
+  ngOnInit(): void {
+    this.cargar();
   }
 
-  limpiar(): void {
-    this.idEntrega = '';
-    this.mensajeError = '';
-    this.entregaConQr = null;
-    this.imagenQr = null;
+  cargar(): void {
+    this.cargando.set(true);
+    this.error.set('');
+    this.imagenQr.set(null);
+
+    this.entregaService.obtenerQr(this.idSolicitud).subscribe({
+      next: async (entrega) => {
+        this.entrega.set(entrega);
+        try {
+          const imagen = await this.qrService.generarImagen(entrega.token_qr);
+          this.imagenQr.set(imagen);
+        } catch (error) {
+          console.error('Error al generar la imagen del QR:', error);
+          this.error.set('El código se generó, pero no se pudo dibujar la imagen QR.');
+        }
+        this.cargando.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.error?.message ?? 'No se pudo obtener el código QR de esta entrega.');
+        this.cargando.set(false);
+      }
+    });
   }
 }
-

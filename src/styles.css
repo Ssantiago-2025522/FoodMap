@@ -9,6 +9,26 @@
   --gris-suave: #eef2f0;
   --gris-borde: rgba(45, 52, 54, 0.14);
   --sombras: rgba(45, 52, 54, 0.12);
+
+ 
+  --naranja: #F4A261;
+  --color-naranja: #F4A261;
+  --color-verde: var(--verde-principal);
+  --color-verde-oscuro: var(--verde-oscuro);
+  --verde: var(--verde-principal);
+  --color-crema: var(--crema);
+  --color-gris-oscuro: var(--gris-oscuro);
+  --color-blanco: var(--blanco);
+  --color-borde: var(--gris-borde);
+  --color-rojo-error: #B42318;
+
+  --fuente-titulos: 'Playfair Display', serif;
+  --fuente-cuerpo: 'DM Sans', sans-serif;
+
+
+  --radius-input: 10px;
+  --radius-pill: 999px;
+  --radius-gran-curva: 20px;
 }
 
 * {
@@ -144,8 +164,6 @@ button[type='button']:hover {
   margin-top: 12px;
 }
 
-.contenedor-crear-entrega,
-.contenedor-detalle-entrega,
 .contenedor-generar-qr,
 .contenedor-validar-qr,
 .contenedor-crear-calificacion,

@@ -1,20 +1,5 @@
 const nodemailer = require('nodemailer');
 
-/**
- * Envío de correos de FoodMap.
- *
- * En producción (NODE_ENV=production) es obligatorio configurar un proveedor
- * SMTP real (Gmail, Resend, SendGrid, Amazon SES, un servidor propio, etc.)
- * mediante las variables de entorno SMTP_HOST, SMTP_PORT, SMTP_USER,
- * SMTP_PASSWORD y SMTP_FROM (ver `.env.example`). Si no están configuradas y
- * el entorno es de producción, el envío falla explícitamente en vez de
- * fallar en silencio.
- *
- * En desarrollo, si no hay SMTP configurado, el correo simplemente se
- * registra en la consola del servidor para poder probar el flujo de
- * "olvidé mi contraseña" sin depender de un proveedor externo.
- */
-
 let transportador = null;
 
 function smtpConfigurado() {
@@ -27,7 +12,6 @@ function obtenerTransportador() {
   transportador = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT) || 587,
-    // SMTP_SECURE=true para el puerto 465 (TLS implícito); en 587/25 se usa STARTTLS.
     secure: process.env.SMTP_SECURE === 'true',
     auth: {
       user: process.env.SMTP_USER,
@@ -38,12 +22,6 @@ function obtenerTransportador() {
   return transportador;
 }
 
-/**
- * Envía el correo con el enlace para restablecer la contraseña.
- *
- * @returns {Promise<{ enviado: boolean }>} `enviado` es `true` solo cuando el
- * correo se envió realmente a través del proveedor SMTP configurado.
- */
 async function enviarCorreoRecuperacion(correo, enlace) {
   if (!smtpConfigurado()) {
     if (process.env.NODE_ENV === 'production') {

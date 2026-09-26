@@ -94,7 +94,6 @@ export class DonacionTarjetaComponent implements OnInit {
       d.foto ||
       d.imageUrl;
 
-    // Si la donación no tiene imagen
     if (
       !url ||
       typeof url !== 'string' ||
@@ -106,7 +105,6 @@ export class DonacionTarjetaComponent implements OnInit {
     return url.trim();
   }
 
-  // Si la imagen no carga, muestra la imagen de respaldo
   onImagenError(event: Event): void {
 
     const img = event.target as HTMLImageElement;
@@ -144,7 +142,7 @@ export class DonacionTarjetaComponent implements OnInit {
 
   abrirChat(): void {
     this.router.navigate(
-      ['/lista-chats'],
+      ['/chats'],
       {
         queryParams: {
           idDonacion: this.donacion.id

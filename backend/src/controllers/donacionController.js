@@ -233,12 +233,19 @@ async function actualizar(req, res, next) {
     const fechaFinal = fechaExpiracion || fecha_vencimiento;
 
     const [existentes] = await conexion.query(
-      'SELECT id_donacion, id_ubicacion FROM donacion WHERE id_donacion = ? LIMIT 1',
+      'SELECT id_donacion, id_ubicacion, id_usuario FROM donacion WHERE id_donacion = ? LIMIT 1',
       [Number(id)]
     );
 
     if (existentes.length === 0) {
       throw new ApiError(404, 'La donación indicada no existe.');
+    }
+
+    const esPropietario = Number(existentes[0].id_usuario) === Number(req.usuario?.id_usuario);
+    const esAdmin = Number(req.usuario?.id_rol) === 1;
+
+    if (!esPropietario && !esAdmin) {
+      throw new ApiError(403, 'No tienes permiso para modificar esta donación.');
     }
 
     if (estado && !ESTADOS_VALIDOS.includes(estado)) {
@@ -359,6 +366,22 @@ async function eliminar(req, res, next) {
 
     if (!id || id === 'undefined' || isNaN(Number(id))) {
       throw new ApiError(400, 'El ID de la donación proporcionado no es válido.');
+    }
+
+    const [existentes] = await pool.query(
+      'SELECT id_usuario FROM donacion WHERE id_donacion = ? LIMIT 1',
+      [Number(id)]
+    );
+
+    if (existentes.length === 0) {
+      throw new ApiError(404, 'La donación indicada no existe.');
+    }
+
+    const esPropietario = Number(existentes[0].id_usuario) === Number(req.usuario?.id_usuario);
+    const esAdmin = Number(req.usuario?.id_rol) === 1;
+
+    if (!esPropietario && !esAdmin) {
+      throw new ApiError(403, 'No tienes permiso para eliminar esta donación.');
     }
 
     const [resultado] = await pool.query('DELETE FROM donacion WHERE id_donacion = ?', [Number(id)]);
