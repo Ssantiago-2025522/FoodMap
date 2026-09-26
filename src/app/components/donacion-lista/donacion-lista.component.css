@@ -1,0 +1,28 @@
+.lista-donaciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 220px);
+  gap: 12px;
+  align-items: start;
+  justify-content: start;
+  width: 100%;
+}
+
+.grid-donaciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.lista-vacia {
+  text-align: center;
+  padding: 3rem;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  color: #64748b;
+}
+
+@media (max-width: 360px) {
+  .lista-donaciones {
+    grid-template-columns: repeat(2, minmax(0, 220px));
+  }
+}

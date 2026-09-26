@@ -1,0 +1,98 @@
+:host {
+  display: block;
+}
+
+.encabezado-app .subtitulo {
+  color: var(--color-gris-oscuro);
+  opacity: 0.75;
+  margin-top: 0.4rem;
+  font-size: 1rem;
+}
+
+.detalle-card {
+  max-width: 700px;
+}
+
+.detalle-card h2 {
+  font-family: var(--fuente-titulos);
+  color: var(--color-gris-oscuro);
+  margin-bottom: 1.25rem;
+}
+
+.info-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-borde);
+  color: var(--color-gris-oscuro);
+}
+
+.info-item:last-of-type {
+  border-bottom: none;
+}
+
+.info-item strong {
+  margin-right: 0.4rem;
+}
+
+.comentario {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  background: var(--color-crema);
+  border-radius: var(--radius-input);
+}
+
+.comentario h3 {
+  font-size: 1rem;
+  margin-bottom: 0.4rem;
+  color: var(--color-gris-oscuro);
+}
+
+.comentario p {
+  color: var(--color-gris-oscuro);
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0.4rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--color-gris-oscuro);
+}
+
+.form-group textarea {
+  width: 100%;
+  background: var(--color-crema);
+  border: 1.5px solid var(--color-borde);
+  border-radius: var(--radius-input);
+  padding: 0.9rem 1rem;
+  font: inherit;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.btn-rechazar {
+  background: transparent;
+  border: 1.5px solid var(--color-rojo-error);
+  color: var(--color-rojo-error);
+  height: 48px;
+  padding: 0 22px;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-rechazar:hover {
+  background: var(--color-rojo-error);
+  color: var(--color-blanco);
+}

@@ -1,0 +1,49 @@
+<div class="card-blanca contenedor-filtros">
+  <div class="grupo-filtro">
+    <label for="input-pais">País:</label>
+    <input
+      id="input-pais"
+      type="text"
+      list="lista-paises"
+      placeholder="Escribe un país (ej. México, España)..."
+      [(ngModel)]="nombrePaisEscrito"
+      (change)="alSeleccionarPais()"
+    />
+    <datalist id="lista-paises">
+      @for (p of paises; track p.codigo) {
+        <option [value]="p.nombre"></option>
+      }
+    </datalist>
+  </div>
+
+  <div class="grupo-filtro busqueda-amplia">
+    <label for="busqueda">Buscar:</label>
+    <input
+      id="busqueda"
+      type="text"
+      placeholder="Buscar alimento, ONG o zona..."
+      [(ngModel)]="textoBusqueda"
+      (ngModelChange)="onFiltroChange()"
+    />
+  </div>
+
+  <div class="grupo-filtro">
+    <label for="categoria">Categoría:</label>
+    <select id="categoria" [(ngModel)]="categoriaSeleccionada" (change)="onFiltroChange()">
+      @for (cat of categorias; track cat) {
+        <option [value]="cat">{{ cat }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="grupo-filtro">
+    <label for="estado">Estado:</label>
+    <select id="estado" [(ngModel)]="estadoSeleccionado" (change)="onFiltroChange()">
+      @for (est of estados; track est) {
+        <option [value]="est">{{ est }}</option>
+      }
+    </select>
+  </div>
+
+  <button class="btn-outline btn-limpiar" (click)="limpiarFiltros()">Limpiar</button>
+</div>

@@ -1,0 +1,26 @@
+<main class="contenedor-generar-qr">
+
+  <header class="generar-qr__encabezado">
+    <h2>Código QR de la entrega</h2>
+    <p class="subtitulo">Muéstraselo al beneficiario para que confirme la recepción.</p>
+  </header>
+
+  @if (cargando()) {
+    <p class="mensaje-estado">Generando código QR…</p>
+  } @else if (error()) {
+    <p class="mensaje-error" role="alert">{{ error() }}</p>
+    <button type="button" class="btn-outline" (click)="cargar()">Reintentar</button>
+  } @else if (imagenQr()) {
+    <div class="generar-qr__imagen">
+      <img [src]="imagenQr()" alt="Código QR de la entrega" />
+    </div>
+    <p class="generar-qr__ayuda">
+      El beneficiario debe escanear este código o ingresar su texto en la pantalla de validación.
+    </p>
+  }
+
+  <div class="acciones">
+    <a class="btn-outline" routerLink="/solicitudes">Volver a solicitudes</a>
+  </div>
+
+</main>

@@ -1,0 +1,30 @@
+<header class="main-header">
+
+  <div class="logo">
+    FoodMap
+  </div>
+
+  <nav class="nav-links">
+
+    <a routerLink="/solicitudes" routerLinkActive="activo">Solicitudes</a>
+
+    <a routerLink="/notificaciones" routerLinkActive="activo">
+      Notificaciones
+      @if (noLeidas() > 0) {
+        <span class="badge" [attr.aria-label]="noLeidas() + ' sin leer'">
+          {{ noLeidas() > 99 ? '99+' : noLeidas() }}
+        </span>
+      }
+    </a>
+
+    <a routerLink="/historial" routerLinkActive="activo">Historial</a>
+
+    <a routerLink="/lista-chats" routerLinkActive="activo">Chat</a>
+
+  </nav>
+
+  <div class="profile">
+    Mi Perfil
+  </div>
+
+</header>

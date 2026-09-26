@@ -1,0 +1,57 @@
+<section class="reporte-formulario">
+    <h1>{{ modoEdicion ? 'Detalle del Reporte #' + (data.id_reporte || data.id || '') : 'Nuevo Reporte' }}</h1>
+
+    <form (ngSubmit)="guardar()">
+        @if (!modoEdicion) {
+            <div class="campo">
+                <label>Motivo</label>
+                <input type="text" [(ngModel)]="data.motivo" name="motivo" required />
+            </div>
+
+            <div class="campo">
+                <label>Descripción</label>
+                <textarea [(ngModel)]="data.descripcion" name="descripcion" required></textarea>
+            </div>
+
+            <div class="campo">
+                <label>ID Usuario</label>
+                <input type="number" [(ngModel)]="data.id_usuario" name="id_usuario" required />
+            </div>
+
+            <div class="campo">
+                <label>ID Donación</label>
+                <input type="number" [(ngModel)]="data.id_donacion" name="id_donacion" required />
+            </div>
+        } @else {
+            <div class="campo">
+                <label>Motivo</label>
+                <input type="text" [value]="data.motivo" readonly />
+            </div>
+
+            <div class="campo">
+                <label>Descripción</label>
+                <textarea readonly>{{ data.descripcion }}</textarea>
+            </div>
+
+            <div class="campo">
+                <label>Fecha</label>
+                <input type="text" [value]="data.fecha" readonly />
+            </div>
+
+            <div class="campo">
+                <label>Estado</label>
+                <select [(ngModel)]="data.estado" name="estado">
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Resuelto">Resuelto</option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <label>Resolución</label>
+                <textarea [(ngModel)]="data.resolucion" name="resolucion"></textarea>
+            </div>
+        }
+
+        <button type="submit">{{ modoEdicion ? 'Guardar cambios' : 'Guardar' }}</button>
+    </form>
+</section>

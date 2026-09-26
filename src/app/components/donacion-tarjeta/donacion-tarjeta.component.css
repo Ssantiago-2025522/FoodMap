@@ -1,0 +1,199 @@
+:host {
+  --dt-color-bg: #ffffff;
+  --dt-color-border: #ece6d8;
+  --dt-color-title: #1f3d2e;      /* verde oscuro, igual al header/títulos */
+  --dt-color-subtitle: #7b8fa1;   /* azul-gris de la descripción */
+  --dt-color-text: #3a3a34;
+  --dt-color-muted: #8a8171;
+  --dt-color-accent: #e0935f;     /* naranja del botón "+ Nueva Donación" */
+  --dt-color-accent-dark: #c97a46;
+  --dt-color-danger: #c0392b;
+  --dt-color-danger-bg: #fdecea;
+
+  display: block;
+  height: 100%;
+}
+
+.tarjeta-donacion {
+  display: flex;
+  flex-direction: column;
+  width: 220px;
+  min-height: 300px;
+  background: var(--dt-color-bg);
+  border: 1px solid var(--dt-color-border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(31, 61, 46, 0.06);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.tarjeta-donacion:hover {
+  box-shadow: 0 8px 20px rgba(31, 61, 46, 0.12);
+  transform: translateY(-3px);
+}
+
+/* --- Imagen --- */
+.imagen-contenedor {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  background: #eee7d8;
+  overflow: hidden;
+}
+
+.donacion-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.badge {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: var(--dt-color-muted);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  text-transform: capitalize;
+}
+
+.badge.disponible { background: #4f9d69; }
+.badge.reservada   { background: #d99a3d; }
+.badge.entregada   { background: #9aa1a8; }
+
+/* --- Contenido --- */
+.contenido-tarjeta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 10px 12px 12px;
+}
+
+.contenido-tarjeta h3 {
+  margin: 0 0 2px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 16px;
+  color: var(--dt-color-title);
+}
+
+.descripcion {
+  margin: 0 0 7px;
+  color: var(--dt-color-subtitle);
+  font-size: 11px;
+  font-style: italic;
+}
+
+.detalles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 9px;
+}
+
+.detalles p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--dt-color-text);
+}
+
+.detalles strong {
+  color: var(--dt-color-title);
+  font-weight: 600;
+}
+
+/* Empuja las acciones al fondo aunque el texto varíe en longitud */
+.acciones-donante,
+.acciones-receptor {
+  margin-top: auto;
+  padding-top: 7px;
+  border-top: 1px solid var(--dt-color-border);
+}
+
+/* --- Selector de estado (DONADOR / ADMIN) --- */
+.selector-estado {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 7px;
+}
+
+.selector-estado label {
+  font-size: 11px;
+  color: var(--dt-color-muted);
+  font-weight: 600;
+}
+
+.selector-estado select {
+  flex: 1;
+  padding: 4px 6px;
+  border: 1px solid var(--dt-color-border);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 11px;
+  color: var(--dt-color-text);
+  cursor: pointer;
+}
+
+.selector-estado select:focus {
+  outline: none;
+  border-color: var(--dt-color-accent);
+}
+
+.botones-accion {
+  display: flex;
+  gap: 6px;
+}
+
+.botones-accion button,
+.acciones-receptor button {
+  flex: 1;
+  padding: 6px 8px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.btn-editar {
+  border: 1px solid var(--dt-color-accent);
+  background: #fff;
+  color: var(--dt-color-accent-dark);
+}
+
+.btn-editar:hover { background: #fdf1e8; }
+
+.btn-eliminar {
+  border: 1px solid var(--dt-color-danger);
+  background: var(--dt-color-danger-bg);
+  color: var(--dt-color-danger);
+}
+
+.btn-eliminar:hover { background: #fbdbd7; }
+
+/* --- Botón de chat (BENEFICIARIO) --- */
+.btn-chat {
+  width: 100%;
+  border: 1px solid var(--dt-color-title);
+  background: #fff;
+  color: var(--dt-color-title);
+}
+
+.btn-chat:hover:not(:disabled) {
+  background: var(--dt-color-title);
+  color: #fff;
+}
+
+.btn-chat:disabled {
+  border-color: var(--dt-color-border);
+  background: #f5f2ea;
+  color: #b7b0a0;
+  cursor: not-allowed;
+}

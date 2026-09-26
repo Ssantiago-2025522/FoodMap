@@ -1,0 +1,114 @@
+.admin-panel {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.admin-panel__header {
+    margin-bottom: 32px;
+}
+
+.admin-panel__header h1 {
+    margin-top: 10px;
+}
+
+.admin-panel__subtitulo {
+    color: #64748b;
+    margin-top: 8px;
+    font-size: 1rem;
+}
+
+.admin-panel__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.admin-tarjeta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 22px;
+    background: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    border-radius: 0;
+    box-shadow: none;
+    text-decoration: none;
+    color: inherit;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.admin-tarjeta:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: var(--color-verde);
+    background-color: var(--color-crema);
+}
+
+.admin-tarjeta--destacada {
+    background: linear-gradient(135deg, var(--color-verde) 0%, var(--color-verde-oscuro) 100%);
+    color: var(--color-blanco);
+    border: 1px solid var(--color-verde-oscuro);
+}
+
+.admin-tarjeta--destacada:hover {
+    box-shadow: none;
+    background: var(--color-verde-oscuro);
+}
+
+.admin-tarjeta--destacada .admin-tarjeta__texto p {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.admin-tarjeta--destacada .admin-tarjeta__icono {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.admin-tarjeta__icono {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    border-radius: 0;
+    background: rgba(46, 139, 87, 0.1);
+}
+
+.admin-tarjeta__texto {
+    flex: 1;
+}
+
+.admin-tarjeta__texto h2 {
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+    font-family: var(--fuente-titulos);
+}
+
+.admin-tarjeta__texto p {
+    font-size: 0.88rem;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+.admin-tarjeta__flecha {
+    font-size: 1.2rem;
+    opacity: 0.6;
+}
+
+.admin-panel__volver {
+    background: transparent;
+    border: 1px solid var(--color-borde);
+    border-radius: 0;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: var(--fuente-cuerpo);
+    font-size: 0.9rem;
+    color: var(--color-gris-oscuro);
+    transition: background-color 0.15s ease;
+}
+
+.admin-panel__volver:hover {
+    background-color: rgba(46, 139, 87, 0.08);
+}

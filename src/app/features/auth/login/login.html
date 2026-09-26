@@ -1,0 +1,147 @@
+
+<div class="login-container">
+  <div class="banner-section">
+    <div class="banner-content">
+      <h1 class="main-heading">
+        Cada plato rescatado <br />
+        <span class="highlight-text">es una historia</span> que <br />
+        no se desperdicia.
+      </h1>
+
+      <p class="brand-subline">POWERED BY FOODMAP</p>
+
+      <p class="banner-description">
+        Conectamos a quienes tienen excedentes de alimentos aptos con las
+        personas y organizaciones que más los necesitan, hoy, en tu ciudad.
+      </p>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <p class="stat-number">3.2 ton</p>
+          <p class="stat-label">rescatadas hoy</p>
+        </div>
+
+        <div class="stat-card">
+          <p class="stat-number">847</p>
+          <p class="stat-label">porciones entregadas</p>
+        </div>
+
+        <div class="stat-card">
+          <p class="stat-number">124</p>
+          <p class="stat-label">organizaciones activas</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="images-grid">
+      <img
+        src="img/img1.jpg"
+        alt="Verduras frescas"
+        class="banner-img"
+      />
+
+      <img
+        src="img/img2.jpg"
+        alt="Mercado de frutas"
+        class="banner-img"
+      />
+
+      <img
+        src="img/img3.jpg"
+        alt="Voluntarios empaquetando"
+        class="banner-img"
+      />
+    </div>
+  </div>
+
+  <div class="form-section">
+    <div class="form-wrapper">
+      <h2 class="form-title">Bienvenido de vuelta</h2>
+
+      <p class="form-subtitle">
+        Inicia sesión para continuar rescatando alimentos.
+      </p>
+
+      @if (errorMessage()) {
+        <div class="error-banner">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <form
+        (ngSubmit)="login()"
+        #loginForm="ngForm"
+        class="login-form"
+      >
+        <div class="form-group">
+          <label for="correo" class="form-label">
+            Correo electrónico
+          </label>
+
+          <input
+            type="email"
+            id="correo"
+            name="correo"
+            [(ngModel)]="credentials.correo"
+            placeholder="tu@correo.com"
+            required
+            class="form-input"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="contrasena" class="form-label">
+            Contraseña
+          </label>
+
+          <input
+            type="password"
+            id="contrasena"
+            name="contrasena"
+            [(ngModel)]="credentials.contrasena"
+            placeholder="••••••••"
+            required
+            class="form-input"
+          />
+        </div>
+
+        <button
+          type="submit"
+          [disabled]="isLoading()"
+          class="btn-primary"
+        >
+          <span>
+            {{ isLoading() ? 'Cargando...' : 'Iniciar sesión' }}
+          </span>
+
+          @if (!isLoading()) {
+            <svg
+              class="btn-icon"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
+              />
+            </svg>
+          }
+        </button>
+      </form>
+
+      <p class="register-footer">
+        ¿Aún no tienes cuenta?
+        <a
+          routerLink="/register"
+          class="register-link"
+        >
+          Regístrate gratis
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+

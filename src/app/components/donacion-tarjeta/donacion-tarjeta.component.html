@@ -1,0 +1,115 @@
+<div class="tarjeta-donacion">
+
+  <div class="imagen-contenedor">
+
+    <img
+      [src]="obtenerUrlImagen()"
+      [alt]="donacion.titulo"
+      class="donacion-img"
+      loading="lazy"
+      (error)="onImagenError($event)"
+    />
+
+    <span
+      class="badge"
+      [ngClass]="obtenerClaseEstado(donacion.estado)">
+      {{ donacion.estado }}
+    </span>
+
+  </div>
+
+  <div class="contenido-tarjeta">
+
+    <h3>{{ donacion.titulo }}</h3>
+
+    <p class="descripcion">
+      {{ donacion.descripcion }}
+    </p>
+
+    <div class="detalles">
+
+      <p>
+        <strong>Categoría:</strong>
+        {{ donacion.categoria }}
+      </p>
+
+      <p>
+        <strong>Cantidad:</strong>
+        {{ donacion.cantidad }}
+      </p>
+
+      <p>
+        <strong>Ubicación:</strong>
+        {{ donacion.ubicacion }}
+      </p>
+
+      <p>
+        <strong>Vence:</strong>
+        {{ donacion.fechaExpiracion }}
+      </p>
+
+    </div>
+
+    @if (esDonanteOAdmin) {
+
+      <div class="acciones-donante">
+
+        <div class="selector-estado">
+
+          <label>Estado:</label>
+
+          <select
+            [value]="donacion.estado"
+            (change)="onCambiarEstado($event)">
+
+            @for (est of estadosDisponibles; track est) {
+              <option [value]="est">
+                {{ est }}
+              </option>
+            }
+
+          </select>
+
+        </div>
+
+        <div class="botones-accion">
+
+          <button
+            type="button"
+            class="btn-editar"
+            (click)="onEditar()">
+            Editar
+          </button>
+
+          <button
+            type="button"
+            class="btn-eliminar"
+            (click)="onEliminar()">
+            Eliminar
+          </button>
+
+        </div>
+
+      </div>
+
+    } @else {
+
+      <div class="acciones-receptor">
+
+        <button
+          type="button"
+          class="btn-chat"
+          (click)="abrirChat()"
+          [disabled]="donacion.estado !== 'Disponible'">
+
+           Contactar por Chat
+
+        </button>
+
+      </div>
+
+    }
+
+  </div>
+
+</div>

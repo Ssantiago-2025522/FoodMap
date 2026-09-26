@@ -1,0 +1,18 @@
+<div class="lista-donaciones">
+  @if (donacionService.cargando()) {
+    <p>Cargando donaciones...</p>
+  } @else if (donacionService.error()) {
+    <p>{{ donacionService.error() }}</p>
+  } @else {
+    @for (donacion of donaciones(); track donacion.id) {
+      <app-donacion-tarjeta
+        [donacion]="donacion"
+        (editar)="editarDonacion.emit($event)"
+        (cambiarEstado)="cambiarEstado($event)"
+        (eliminar)="eliminarDonacion($event)">
+      </app-donacion-tarjeta>
+    } @empty {
+      <p>No hay donaciones disponibles.</p>
+    }
+  }
+</div>

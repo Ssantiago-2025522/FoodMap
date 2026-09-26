@@ -1,0 +1,149 @@
+<section class="perfil">
+  <h1>Mi perfil</h1>
+
+  @if (user(); as u) {
+    <!-- Foto de perfil (opcional) -->
+    <div class="perfil__tarjeta perfil__foto-tarjeta">
+      <div class="perfil__avatar-wrap">
+        @if (fotoVistaPrevia()) {
+          <img [src]="fotoVistaPrevia()" alt="Foto de perfil" class="perfil__avatar" />
+        } @else {
+          <div class="perfil__avatar perfil__avatar--inicial" aria-hidden="true">{{ iniciales }}</div>
+        }
+        @if (fotoCargando()) {
+          <div class="perfil__avatar-overlay">Guardando...</div>
+        }
+      </div>
+
+      <div class="perfil__foto-acciones">
+        <p class="perfil__ayuda">La foto de perfil es opcional.</p>
+
+        <label class="perfil__boton perfil__boton--secundario" for="fotoPerfil">
+          {{ fotoVistaPrevia() ? 'Cambiar foto' : 'Añadir foto' }}
+        </label>
+        <input
+          id="fotoPerfil"
+          type="file"
+          accept="image/png, image/jpeg, image/webp"
+          class="perfil__input-archivo"
+          [disabled]="fotoCargando()"
+          (change)="onFotoSeleccionada($event)"
+        />
+
+        @if (fotoVistaPrevia()) {
+          <button
+            type="button"
+            class="perfil__boton perfil__boton--peligro"
+            [disabled]="fotoCargando()"
+            (click)="quitarFoto()"
+          >
+            Quitar foto
+          </button>
+        }
+      </div>
+
+      @if (fotoError()) {
+        <p class="perfil__mensaje perfil__mensaje--error">{{ fotoError() }}</p>
+      }
+      @if (fotoMensaje()) {
+        <p class="perfil__mensaje perfil__mensaje--exito">{{ fotoMensaje() }}</p>
+      }
+    </div>
+
+    <!-- Datos generales -->
+    <div class="perfil__tarjeta">
+      <dl class="perfil__datos">
+        <dt>Correo</dt>
+        <dd>{{ u.correo }}</dd>
+
+        <dt>Teléfono</dt>
+        <dd>{{ u.telefono }}</dd>
+
+        <dt>Rol</dt>
+        <dd>{{ rol }}</dd>
+      </dl>
+    </div>
+
+    <!-- Editar nombre de usuario -->
+    <div class="perfil__tarjeta">
+      <h2 class="perfil__subtitulo">Nombre de usuario</h2>
+
+      <form [formGroup]="formNombre" (ngSubmit)="guardarNombre()" class="perfil__form">
+        <div class="perfil__campo">
+          <label for="username">Usuario</label>
+          <input id="username" type="text" formControlName="username" class="perfil__input" />
+          @if (nombreInvalido('username')) {
+            <small class="perfil__error-campo">El nombre de usuario debe tener al menos 3 caracteres.</small>
+          }
+        </div>
+
+        @if (nombreError()) {
+          <p class="perfil__mensaje perfil__mensaje--error">{{ nombreError() }}</p>
+        }
+        @if (nombreMensaje()) {
+          <p class="perfil__mensaje perfil__mensaje--exito">{{ nombreMensaje() }}</p>
+        }
+
+        <button type="submit" class="perfil__boton perfil__boton--primario" [disabled]="nombreGuardando()">
+          {{ nombreGuardando() ? 'Guardando...' : 'Guardar nombre' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Cambiar contraseña -->
+    <div class="perfil__tarjeta">
+      <h2 class="perfil__subtitulo">Cambiar contraseña</h2>
+
+      <form [formGroup]="formContrasena" (ngSubmit)="cambiarContrasena()" class="perfil__form">
+        <div class="perfil__campo">
+          <label for="contrasenaActual">Contraseña actual</label>
+          <input
+            id="contrasenaActual"
+            type="password"
+            formControlName="contrasenaActual"
+            class="perfil__input"
+          />
+          @if (contrasenaInvalida('contrasenaActual')) {
+            <small class="perfil__error-campo">Debes indicar tu contraseña actual.</small>
+          }
+        </div>
+
+        <div class="perfil__campo">
+          <label for="contrasenaNueva">Contraseña nueva</label>
+          <input id="contrasenaNueva" type="password" formControlName="contrasena" class="perfil__input" />
+          @if (contrasenaInvalida('contrasena')) {
+            <small class="perfil__error-campo">
+              Debe tener al menos 8 caracteres, una mayúscula y un número.
+            </small>
+          }
+        </div>
+
+        <div class="perfil__campo">
+          <label for="confirmarContrasena">Confirmar contraseña nueva</label>
+          <input
+            id="confirmarContrasena"
+            type="password"
+            formControlName="confirmarContrasena"
+            class="perfil__input"
+          />
+          @if (contrasenaInvalida('confirmarContrasena')) {
+            <small class="perfil__error-campo">Las contraseñas no coinciden.</small>
+          }
+        </div>
+
+        @if (contrasenaError()) {
+          <p class="perfil__mensaje perfil__mensaje--error">{{ contrasenaError() }}</p>
+        }
+        @if (contrasenaMensaje()) {
+          <p class="perfil__mensaje perfil__mensaje--exito">{{ contrasenaMensaje() }}</p>
+        }
+
+        <button type="submit" class="perfil__boton perfil__boton--primario" [disabled]="contrasenaGuardando()">
+          {{ contrasenaGuardando() ? 'Guardando...' : 'Cambiar contraseña' }}
+        </button>
+      </form>
+    </div>
+  }
+
+  <button type="button" class="perfil__salir" (click)="logout()">Cerrar sesión</button>
+</section>

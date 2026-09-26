@@ -1,0 +1,75 @@
+<main class="contenedor-principal seccion-espaciada">
+
+    <header class="encabezado-app">
+        <div>
+            <span class="badge-sostenible">FoodMap</span>
+            <h1>{{ titulo_solicitud }}</h1>
+        </div>
+        <button class="btn-naranja" routerLink="/solicitudes/crear">
+    + Crear Solicitud
+</button>
+    </header>
+
+    <div class="solicitudes-barra">
+        <div class="tabs" role="tablist" aria-label="Tipo de solicitudes">
+            <button type="button" role="tab" class="tab"
+                [class.activa]="rol() === 'beneficiario'"
+                [attr.aria-selected]="rol() === 'beneficiario'"
+                (click)="cambiarRol('beneficiario')">
+                Enviadas
+            </button>
+            <button type="button" role="tab" class="tab"
+                [class.activa]="rol() === 'donador'"
+                [attr.aria-selected]="rol() === 'donador'"
+                (click)="cambiarRol('donador')">
+                Recibidas
+            </button>
+        </div>
+    </div>
+
+    @if (cargando()) {
+        <p class="mensaje-estado">Cargando solicitudes…</p>
+    } @else if (error()) {
+        <p class="mensaje-estado mensaje-error" role="alert">{{ error() }}</p>
+        <button class="btn-outline" (click)="cargar()">Reintentar</button>
+    } @else {
+        <div class="solicitud-grid">
+
+            @for (solicitud of solicitudes(); track solicitud.id_solicitud) {
+                <article class="card-blanca solicitud-card">
+
+                    <h3>{{ solicitud.titulo_donacion }}</h3>
+
+                    <p>{{ solicitud.descripcion_donacion }}</p>
+
+                    <p><strong>Cantidad:</strong> {{ solicitud.cantidad_donacion }}</p>
+
+                    <p><strong>{{ rol() === 'donador' ? 'Beneficiario' : 'Donador' }}:</strong> {{ contraparte(solicitud) }}</p>
+
+                    <p><strong>Ubicación:</strong> {{ solicitud.municipio }}, {{ solicitud.departamento }}</p>
+
+                    <p><strong>Fecha:</strong> {{ solicitud.fecha_solicitud | date: 'dd/MM/yyyy HH:mm' }}</p>
+
+                    <p>
+                        <span class="estado" [class]="'estado ' + solicitud.estado.toLowerCase()">
+                            {{ etiquetaEstado(solicitud.estado) }}
+                        </span>
+                    </p>
+
+                    <button class="btn-outline" [routerLink]="['/solicitudes', solicitud.id_solicitud]">
+                        Ver Detalle
+                    </button>
+
+                </article>
+            } @empty {
+                <p class="mensaje-estado">
+                    {{ rol() === 'donador'
+                        ? 'Todavía nadie ha solicitado tus donaciones.'
+                        : 'Aún no has enviado ninguna solicitud.' }}
+                </p>
+            }
+
+        </div>
+    }
+
+</main>

@@ -1,0 +1,114 @@
+<section class="reportes">
+
+    <header class="reportes__header">
+        <h1>Gestión de Reportes</h1>
+        <a class="boton" routerLink="/admin/reportes/nuevo">Nuevo reporte</a>
+    </header>
+
+    <div class="reportes__filtros">
+
+        <label>
+            Estado
+            <select [(ngModel)]="filtroEstado">
+                <option value="TODOS">Todos</option>
+                <option value="PENDIENTE">Pendiente</option>
+                <option value="EN_REVISION">En revisión</option>
+                <option value="RESUELTO">Resuelto</option>
+            </select>
+        </label>
+
+        <label>
+            ID de reporte
+            <input type="text" [(ngModel)]="filtroId" placeholder="Buscar por ID de reporte">
+        </label>
+
+        <label>
+            ID de donación
+            <input type="text" [(ngModel)]="filtroDonacion" placeholder="Buscar por ID de donación">
+        </label>
+
+        <label>
+            ID de usuario
+            <input type="text" [(ngModel)]="filtroUsuario" placeholder="Buscar por ID de usuario">
+        </label>
+
+    </div>
+
+    @if (isLoading) {
+        <p>Cargando reportes...</p>
+    }
+
+    @if (errorMessage) {
+        <p class="reportes__error">{{ errorMessage }}</p>
+    }
+
+    @if (!isLoading && reportesFiltrados.length === 0) {
+        <p>No hay reportes que coincidan con los filtros.</p>
+    }
+
+    @if (!isLoading && reportesFiltrados.length > 0) {
+
+        <table class="reportes__tabla">
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Donación</th>
+                    <th>Visibilidad</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @for (reporte of reportesFiltrados; track reporte.id_reporte) {
+                    <tr>
+                        <td>{{ reporte.id_reporte }}</td>
+                        <td>{{ reporte.motivo }}</td>
+                        <td class="celda-descripcion" [title]="reporte.descripcion">{{ reporte.descripcion }}</td>
+                        <td>{{ reporte.fecha | date: 'short' }}</td>
+                        <td>{{ reporte.id_usuario }}</td>
+                        <td>{{ reporte.id_donacion }}</td>
+                        <td>
+                            <div class="celda-visibilidad">
+                                <span class="badge" [class.badge--oculta]="reporte.donacion_oculta" [class.badge--visible]="!reporte.donacion_oculta">
+                                    {{ reporte.donacion_oculta ? 'Oculta' : 'Visible' }}
+                                </span>
+                                <button
+                                    type="button"
+                                    class="boton-tabla"
+                                    (click)="alternarVisibilidadDonacion(reporte)"
+                                >
+                                    {{ reporte.donacion_oculta ? 'Mostrar' : 'Ocultar' }}
+                                </button>
+                            </div>
+                        </td>
+                        <td>
+                            <select
+                                class="select-estado"
+                                [class.select-estado--pendiente]="reporte.estado === 'PENDIENTE'"
+                                [class.select-estado--revision]="reporte.estado === 'EN_REVISION'"
+                                [class.select-estado--resuelto]="reporte.estado === 'RESUELTO'"
+                                [ngModel]="reporte.estado"
+                                (ngModelChange)="cambiarEstado(reporte, $event)"
+                            >
+                                <option value="PENDIENTE">Pendiente</option>
+                                <option value="EN_REVISION">En revisión</option>
+                                <option value="RESUELTO">Resuelto</option>
+                            </select>
+                        </td>
+                        <td>
+                            <a class="enlace-ver" [routerLink]="['/admin/reportes', reporte.id_reporte]">Ver</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    }
+
+</section>

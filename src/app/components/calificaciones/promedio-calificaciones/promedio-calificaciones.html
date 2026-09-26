@@ -1,0 +1,54 @@
+<div class="contenedor-promedio-calificaciones">
+
+  <h2>Calcular promedio de calificaciones</h2>
+
+  <div class="campo">
+
+    <label for="entregaId">ID de la entrega</label>
+
+    <input
+      type="number"
+      id="entregaId"
+      name="entregaId"
+      [(ngModel)]="entregaId"
+    />
+
+  </div>
+
+  <div class="acciones">
+
+    <button type="button" (click)="calcularPromedio()">
+      Calcular promedio
+    </button>
+
+    <button type="button" (click)="limpiar()">
+      Limpiar
+    </button>
+
+  </div>
+
+  <p class="mensaje-error" *ngIf="mensajeError">
+    {{ mensajeError }}
+  </p>
+
+  <div class="resultado-promedio" *ngIf="calculoRealizado">
+
+    <h3>Resultado</h3>
+
+    <p>
+      <strong>Entrega:</strong> {{ entregaId }}
+    </p>
+
+    <p>
+      <strong>Cantidad de calificaciones:</strong>
+      {{ cantidadCalificaciones }}
+    </p>
+
+    <p>
+      <strong>Promedio:</strong>
+      {{ promedio }}
+    </p>
+
+  </div>
+
+</div>

@@ -1,0 +1,191 @@
+.usuarios {
+    padding: 24px 32px;
+}
+
+.usuarios__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.usuarios__header h1 {
+    margin: 0;
+    color: var(--color-gris-oscuro);
+    font-size: 1.7rem;
+}
+
+.usuarios__filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end;
+    margin-bottom: 20px;
+    padding: 14px 18px;
+    background: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    border-radius: 0;
+}
+
+.usuarios__filtros label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-gris-oscuro);
+    gap: 4px;
+}
+
+.usuarios__filtros input {
+    padding: 7px 10px;
+    font-size: 0.9rem;
+    border: 1px solid var(--color-borde);
+    border-radius: 0;
+    background: var(--color-crema);
+    color: var(--color-gris-oscuro);
+    min-width: 220px;
+}
+
+.usuarios__error {
+    color: var(--color-rojo-error);
+    background: #fde4e1;
+    border: 1px solid var(--color-rojo-error);
+    padding: 10px 14px;
+    border-radius: 0;
+}
+
+.usuarios__tabla {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--color-blanco);
+    border: 1px solid var(--color-borde);
+    border-radius: 0;
+    overflow: hidden;
+    font-size: 0.9rem;
+}
+
+.usuarios__tabla th,
+.usuarios__tabla td {
+    padding: 12px 14px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.usuarios__tabla thead {
+    background-color: var(--color-verde-oscuro);
+    color: var(--color-blanco);
+}
+
+.usuarios__tabla thead th {
+    font-weight: 600;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: none;
+    white-space: nowrap;
+}
+
+.usuarios__tabla tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.usuarios__tabla tbody tr:hover {
+    background-color: rgba(46, 139, 87, 0.06);
+}
+
+.celda-usuario {
+    font-weight: 600;
+    color: var(--color-gris-oscuro);
+}
+
+.select-rol {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 0;
+    border: 1px solid var(--color-borde);
+    background: var(--color-crema);
+    color: var(--color-gris-oscuro);
+}
+
+.select-rol--admin {
+    background: rgba(244, 162, 97, 0.2);
+    border-color: var(--color-naranja);
+    color: #8a5218;
+}
+
+.celda-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.enlace-editar {
+    color: var(--color-verde-oscuro);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.enlace-editar:hover {
+    text-decoration: underline;
+}
+
+.boton-tabla {
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    border: 1px solid var(--color-borde);
+    border-radius: 0;
+    background: var(--color-blanco);
+    color: var(--color-gris-oscuro);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.boton-tabla:hover {
+    background: var(--color-crema);
+}
+
+.boton-tabla--peligro {
+    border-color: var(--color-rojo-error);
+    color: var(--color-rojo-error);
+}
+
+.boton-tabla--peligro:hover {
+    background: #fde4e1;
+}
+
+.boton {
+    border: 1px solid var(--color-verde-oscuro);
+    background: var(--color-verde);
+    padding: 9px 18px;
+    border-radius: 0;
+    text-decoration: none;
+    color: var(--color-blanco);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.boton:hover {
+    background: var(--color-verde-oscuro);
+}
+
+/* La tabla tiene 7 columnas y una celda de acciones con varios botones;
+   sin esto, en tablet/móvil empujaba el ancho de toda la página en vez
+   de desbordar solo dentro de sí misma. Mismo mecanismo que ya usa
+   lista-calificaciones.css. */
+@media (max-width: 1000px) {
+    .usuarios {
+        padding: 20px 16px;
+    }
+
+    .usuarios__tabla {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
